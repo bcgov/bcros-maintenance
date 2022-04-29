@@ -22,8 +22,7 @@ jobs:
           echo "TAG_NAME=prod" >> $GITHUB_ENV
       - name: Login Openshift and Turn on downpage
         run: |
-          oc login --server=${{secrets.OPENSHIFT4_LOGIN_REGISTRY}} --token=${{secrets.OPENSHIFT4_SA_TOKEN}}
-          oc patch route bc-registry-namerequest-dev -p '{"spec": {"to": {"name": "downpage-dev"}, "port": {"targetPort": "namerequest-dev-tcp"}}}'
+          #oc login --server=${{secrets.OPENSHIFT4_LOGIN_REGISTRY}} --token=${{secrets.OPENSHIFT4_SA_TOKEN}}          
           #oc patch route bc-registry-search-prod -p '{"spec": {"to": {"name": "downpage-prod"}, "port": {"targetPort": "downpage-prod-tcp"}}}' -n ${{secrets.OPENSHIFT4_NAMESPACE_FRONTEND}}-prod
           #oc patch route bc-registry-namerequest-prod -p '{"spec": {"to": {"name": "downpage-prod"}, "port": {"targetPort": "downpage-prod-tcp"}}}' -n ${{secrets.OPENSHIFT4_NAMESPACE_FRONTEND}}-prod
           #oc patch route bc-registry-business-prod -p '{"spec": {"to": {"name": "downpage-prod"}, "port": {"targetPort": "downpage-prod-tcp"}}}' -n ${{secrets.OPENSHIFT4_NAMESPACE_FRONTEND}}-prod
