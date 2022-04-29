@@ -32,7 +32,7 @@ jobs:
         uses: RocketChat/Rocket.Chat.GitHub.Action.Notification@master
         
         with:
-          type: ""
+          type: "Sucessfully"
           job_name: "Downpage is ON on ${{env.TAG_NAME}}*"
           channel: "#registries-ops"
           url: ${{ secrets.ROCKETCHAT_WEBHOOK }}
