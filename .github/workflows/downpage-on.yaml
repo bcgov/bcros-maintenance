@@ -22,18 +22,18 @@ jobs:
           echo "TAG_NAME=prod" >> $GITHUB_ENV
       - name: Login Openshift and Turn on downpage
         run: |
-          #oc login --server=${{secrets.OPENSHIFT4_LOGIN_REGISTRY}} --token=${{secrets.OPENSHIFT4_SA_TOKEN}}          
-          #oc patch route bc-registry-search-prod -p '{"spec": {"to": {"name": "downpage-prod"}, "port": {"targetPort": "downpage-prod-tcp"}}}' -n ${{secrets.OPENSHIFT4_NAMESPACE_FRONTEND}}-prod
-          #oc patch route bc-registry-namerequest-prod -p '{"spec": {"to": {"name": "downpage-prod"}, "port": {"targetPort": "downpage-prod-tcp"}}}' -n ${{secrets.OPENSHIFT4_NAMESPACE_FRONTEND}}-prod
-          #oc patch route bc-registry-business-prod -p '{"spec": {"to": {"name": "downpage-prod"}, "port": {"targetPort": "downpage-prod-tcp"}}}' -n ${{secrets.OPENSHIFT4_NAMESPACE_FRONTEND}}-prod
-          #oc patch route bc-registry-auth-prod -p '{"spec": {"to": {"name": "downpage-prod"}, "port": {"targetPort": "downpage-prod-tcp"}}}' -n ${{secrets.OPENSHIFT4_NAMESPACE_FRONTEND}}-prod
+          oc login --server=${{secrets.OPENSHIFT4_LOGIN_REGISTRY}} --token=${{secrets.OPENSHIFT4_SA_TOKEN}}          
+          oc patch route bc-registry-search-prod -p '{"spec": {"to": {"name": "downpage-prod"}, "port": {"targetPort": "downpage-prod-tcp"}}}' -n ${{secrets.OPENSHIFT4_NAMESPACE_FRONTEND}}-prod
+          oc patch route bc-registry-namerequest-prod -p '{"spec": {"to": {"name": "downpage-prod"}, "port": {"targetPort": "downpage-prod-tcp"}}}' -n ${{secrets.OPENSHIFT4_NAMESPACE_FRONTEND}}-prod
+          oc patch route bc-registry-business-prod -p '{"spec": {"to": {"name": "downpage-prod"}, "port": {"targetPort": "downpage-prod-tcp"}}}' -n ${{secrets.OPENSHIFT4_NAMESPACE_FRONTEND}}-prod
+          oc patch route bc-registry-auth-prod -p '{"spec": {"to": {"name": "downpage-prod"}, "port": {"targetPort": "downpage-prod-tcp"}}}' -n ${{secrets.OPENSHIFT4_NAMESPACE_FRONTEND}}-prod
 
       - name: Rocket.Chat Notification
         uses: RocketChat/Rocket.Chat.GitHub.Action.Notification@master
         
         with:
           type: ${{ job.status }}
-          job_name: "Downpage is ON on ${{env.TAG_NAME}}*"
+          job_name: "*Downpage is ON on ${{env.TAG_NAME}}*"
           channel: "#registries-ops"
           url: ${{ secrets.ROCKETCHAT_WEBHOOK }}
           commit: true
