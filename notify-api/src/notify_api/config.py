@@ -111,6 +111,10 @@ class _Config():  # pylint: disable=too-few-public-methods
     MAIL_FROM_ID = os.getenv('MAIL_FROM_ID', '')
     MAIL_DEBUG = os.getenv('MAIL_DEBUG', 'False')
 
+    # MILLIONVERIFIER
+    MILLIONVERIFIER_API_URL = os.getenv('MILLIONVERIFIER_API_URL', '')
+    MILLIONVERIFIER_API_KEY = os.getenv('MILLIONVERIFIER_API_KEY', '')
+
     # JWT_OIDC Settings
     JWT_OIDC_WELL_KNOWN_CONFIG = os.getenv('JWT_OIDC_WELL_KNOWN_CONFIG')
     JWT_OIDC_ALGORITHMS = os.getenv('JWT_OIDC_ALGORITHMS')

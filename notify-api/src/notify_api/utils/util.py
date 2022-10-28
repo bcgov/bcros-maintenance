@@ -22,7 +22,7 @@ import urllib.request
 
 def cors_preflight(methods: str = 'GET'):
     """Render an option method on the class."""
-    def wrapper(f):
+    def wrapper(f):  # pylint: disable=invalid-name
         def options(self, *args, **kwargs):  # pylint: disable=unused-argument
             return {'Allow': 'GET'}, 200, \
                    {'Access-Control-Allow-Origin': '*',

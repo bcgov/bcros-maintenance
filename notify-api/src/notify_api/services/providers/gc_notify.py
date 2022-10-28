@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """This provides send email through GC Notify Service."""
+import base64
 import logging
 
 from flask import current_app
@@ -40,13 +41,25 @@ class GCNotify:
         try:
             client = NotificationsAPIClient(api_key=self.api_key, base_url=self.gc_notify_url)
 
+            email_content = {
+                'email_subject': self.notification.content[0].subject,
+                'email_body': self.notification.content[0].body,
+            }
+
+            if self.notification.content[0].attachments:
+                for idx, attachment in enumerate(self.notification.content[0].attachments):
+                    attachment_encoded = base64.b64encode(attachment.file_bytes)
+                    email_content[f'attachment{idx}'] = {
+                        'file': attachment_encoded.decode(),
+                        'filename': attachment.file_name,
+                        'sending_method': 'attach'
+                    }
+
             client.send_email_notification(
                 email_address=self.notification.recipients,
                 template_id=self.gc_notify_template_id,
-                personalisation={
-                    'email_subject': self.notification.content[0].subject,
-                    'email_body': self.notification.content[0].body
-                })
+                personalisation=email_content
+            )
 
         except Exception as err:  # pylint: disable=broad-except # noqa F841;
             logger.error('Email GC Notify Error: %s', err)

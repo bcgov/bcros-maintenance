@@ -35,14 +35,16 @@ class ContentRequest(BaseModel):  # pylint: disable=too-few-public-methods
     attachments: Optional[ListAttachmentRequest] = None
 
     @validator('subject', always=True)
-    def subject_not_empty(cls, v_field):  # pylint: disable=no-self-argument, no-self-use # noqa: N805
+    @classmethod
+    def subject_not_empty(cls, v_field):
         """Valiate field is not empty."""
         if not v_field:
             raise ValueError('The email subject must not empty.')
         return v_field
 
     @validator('body', always=True)
-    def body_not_empty(cls, v_field):  # pylint: disable=no-self-argument, no-self-use # noqa: N805
+    @classmethod
+    def body_not_empty(cls, v_field):
         """Valiate field is not empty."""
         if not v_field:
             raise ValueError('The email body must not empty.')

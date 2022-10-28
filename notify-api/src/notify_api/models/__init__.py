@@ -12,10 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """This exports all of the models and schemas used by the application."""
-from .db import db  # noqa: I001
 from .attachment import Attachment
 from .content import Content, ContentRequest
+from .db import db  # noqa: I001
+from .email import EmailValidator
 from .notification import Notification, NotificationRequest
 
 
-__all__ = ('db', 'attachment', 'content', 'notification')
+__all__ = ('db', 'attachment', 'content', 'email', 'notification')

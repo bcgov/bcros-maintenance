@@ -36,7 +36,8 @@ class NotificationRequest(BaseModel):  # pylint: disable=too-few-public-methods
     content: ContentRequest = None
 
     @validator('recipients', always=True)
-    def validate_recipients(cls, v_field):  # pylint: disable=no-self-argument, no-self-use # noqa: N805
+    @classmethod
+    def validate_recipients(cls, v_field):
         """Validate recipients."""
         if not v_field:
             raise ValueError('The recipients must not empty')

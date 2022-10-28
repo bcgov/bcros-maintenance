@@ -24,3 +24,14 @@ class Role(BaseEnum):
     SMS = 'sms'
     JOB = 'job'
     INVALID = 'invalid'
+
+
+class MillionverifierResult(BaseEnum):
+    """The result of email verification."""
+
+    OK = 'ok'
+    CATCH_ALL = 'catch_all'
+    UNKNOWN = 'unknown'
+    ERROR = 'error'
+    DISPOSABLE = 'disposable'
+    INVALID = 'invalid'

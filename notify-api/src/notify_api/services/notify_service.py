@@ -27,7 +27,7 @@ from notify_api.services.providers import _all_providers  # noqa: E402
 logger = logging.getLogger(__name__)
 
 
-class NotifyService:
+class NotifyService():
     """Provides services to manages notification."""
 
     def __init__(self):
@@ -41,9 +41,8 @@ class NotifyService:
                 # Send TEXT through GC Notify
                 return Notification.NotificationProvider.GC_NOTIFY
 
-            # Send email through GC Notify if email body is not html and no attachement
-            if not bool(BeautifulSoup(notification.content[0].body, 'html.parser').find()) and \
-               not notification.content[0].attachments:
+            # Send email through GC Notify if email body is not html
+            if not bool(BeautifulSoup(notification.content[0].body, 'html.parser').find()):
                 return Notification.NotificationProvider.GC_NOTIFY
         else:
             if notification.type_code == Notification.NotificationType.TEXT:

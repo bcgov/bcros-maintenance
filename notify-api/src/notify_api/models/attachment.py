@@ -34,17 +34,19 @@ class AttachmentRequest(BaseModel):  # pylint: disable=too-few-public-methods
     attach_order: str = None
 
     @validator('file_name', always=True)
-    def not_empty(cls, v_field):  # pylint: disable=no-self-argument, no-self-use # noqa: N805
+    @classmethod
+    def not_empty(cls, v_field):
         """Valiate field is not empty."""
         if not v_field:
             raise ValueError('The file name must not empty.')
         return v_field
 
     @validator('attach_order')
-    def must_contain_one(cls,           # noqa: N805
+    @classmethod
+    def must_contain_one(cls,
                          v_field,
                          values,
-                         **kwargs):     # pylint: disable=no-self-use, no-self-argument, unused-argument
+                         **kwargs):     # pylint: disable=unused-argument
         """Valiate field is not empty."""
         if not values.get('file_bytes') and not values.get('file_url'):
             raise ValueError('The file content must attach.')
