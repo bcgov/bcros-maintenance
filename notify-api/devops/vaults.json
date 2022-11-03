@@ -3,7 +3,8 @@
         "vault": "notify",
         "application": [
             "smtp",
-            "gc-notify"
+            "gc-notify",
+            "millionverifier"
         ]
     },
     {
