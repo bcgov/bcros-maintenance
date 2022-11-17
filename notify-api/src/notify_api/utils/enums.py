@@ -12,26 +12,28 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Enum definitions."""
+from enum import auto
+
 from notify_api.utils.base import BaseEnum
 
 
 class Role(BaseEnum):
     """User Role."""
 
-    SYSTEM = 'system'
-    STAFF = 'staff'
-    PUBLIC_USER = 'public_user'
-    SMS = 'sms'
-    JOB = 'job'
-    INVALID = 'invalid'
+    SYSTEM = auto()
+    STAFF = auto()
+    PUBLIC_USER = auto()
+    SMS = auto()
+    JOB = auto()
+    INVALID = auto()
 
 
 class MillionverifierResult(BaseEnum):
     """The result of email verification."""
 
-    OK = 'ok'
-    CATCH_ALL = 'catch_all'
-    UNKNOWN = 'unknown'
-    ERROR = 'error'
-    DISPOSABLE = 'disposable'
-    INVALID = 'invalid'
+    OK = auto()
+    CATCH_ALL = auto()
+    UNKNOWN = auto()
+    ERROR = auto()
+    DISPOSABLE = auto()
+    INVALID = auto()

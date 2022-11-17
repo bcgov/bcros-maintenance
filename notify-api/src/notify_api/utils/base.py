@@ -14,7 +14,7 @@
 """This module holds all of the basic data about a business."""
 
 from enum import Enum, EnumMeta
-from typing import Optional
+from typing import Optional, List, Any
 
 
 class BaseMeta(EnumMeta):
@@ -44,3 +44,8 @@ class BaseEnum(str, Enum, metaclass=BaseMeta):
             if enum_value.value == value:
                 return enum_value
         return None
+
+    @staticmethod
+    def _generate_next_value_(name: str, start: int, count: int, last_values: List[Any]) -> str:
+        """Return the lower-cased version of the member name."""
+        return name.lower()
