@@ -105,3 +105,8 @@ class Attachment(db.Model):
             raise NotifyException(error=f'Create attachment record Error {err}',
                                   status_code=HTTPStatus.INTERNAL_SERVER_ERROR) from err
         return db_attachment
+
+    def delete_attachment(self):
+        """Delete notification attachment.."""
+        db.session.delete(self)
+        db.session.commit()

@@ -20,7 +20,7 @@ from bs4 import BeautifulSoup
 from flask import current_app
 
 from notify_api.errors import BadGatewayException, NotifyException
-from notify_api.models import Content, Notification, NotificationRequest
+from notify_api.models import Notification, NotificationHistory, NotificationRequest
 from notify_api.services.providers import _all_providers  # noqa: E402
 
 
@@ -51,7 +51,7 @@ class NotifyService():
 
         return Notification.NotificationProvider.SMTP
 
-    def notify(self, notification_request: NotificationRequest) -> Notification:
+    def notify(self, notification_request: NotificationRequest) -> NotificationHistory:
         """Send the notification."""
         try:
             notification = Notification.create_notification(notification_request)
@@ -68,10 +68,10 @@ class NotifyService():
             notification.provider_code = provider
             notification.update_notification()
 
-            # remove email content because the size too big
-            update_content: Content = notification.content
-            update_content[0].body = ''
-            update_content[0].update_content()
+            # save to history
+            notification_history = NotificationHistory.create_history(notification)
+            notification.delete_notification()
+
         except (BadGatewayException, NotifyException, Exception) as err:  # NOQA # pylint: disable=broad-except
             logger.error('Send notification Error: %s', err)
             notification.sent_date = datetime.utcnow()
@@ -80,4 +80,35 @@ class NotifyService():
             notification.update_notification()
 
             raise err
-        return notification
+        return notification_history
+
+    def resend(self):
+        """Resend the notifications."""
+        try:
+            notifications = Notification.find_resend_notifications()
+
+            for notification in notifications:
+                provider: str = self.get_provider(notification)
+                if notification.type_code == Notification.NotificationType.TEXT:
+                    _all_providers[provider](notification).send_sms()
+                else:
+                    _all_providers[provider](notification).send()
+
+                # update the notification status
+                notification.sent_date = datetime.utcnow()
+                notification.status_code = Notification.NotificationStatus.DELIVERED
+                notification.provider_code = provider
+                notification.update_notification()
+
+                # save to history
+                NotificationHistory.create_history(notification)
+                notification.delete_notification()
+
+        except (BadGatewayException, NotifyException, Exception) as err:  # NOQA # pylint: disable=broad-except
+            logger.error('Send notification Error: %s', err)
+            notification.sent_date = datetime.utcnow()
+            notification.status_code = Notification.NotificationStatus.FAILURE
+
+            notification.update_notification()
+
+            raise err

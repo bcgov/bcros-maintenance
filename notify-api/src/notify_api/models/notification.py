@@ -126,10 +126,19 @@ class Notification(db.Model):
 
     @classmethod
     def find_notifications_by_status(cls, status: str = None):
-        """Return a Notification by the id."""
+        """Return all Notifications by the status."""
         notifications = None
         if status:
             notifications = cls.query.filter_by(status_code=status).all()
+        return notifications
+
+    @classmethod
+    def find_resend_notifications(cls):
+        """Return all Notifications that need to resend."""
+        resend_statuses = (Notification.NotificationStatus.PENDING.value, Notification.NotificationStatus.FAILURE.value)
+
+        notifications = cls.query.\
+            filter(Notification.status_code.in_(resend_statuses)).all()
         return notifications
 
     @classmethod
@@ -155,3 +164,9 @@ class Notification(db.Model):
         db.session.commit()
 
         return self
+
+    def delete_notification(self):
+        """Delete notification content."""
+        self.content[0].delete_content()
+        db.session.delete(self)
+        db.session.commit()

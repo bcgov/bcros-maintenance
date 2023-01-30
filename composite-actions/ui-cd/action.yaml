@@ -1,0 +1,63 @@
+name: "BC Registries UI Apps CD action"
+author: "Patrick Wei"
+description: "CD for BC Registries UI Apps"
+inputs:
+  WORKING_DIRECTORY:
+    description: "The application directory"
+    required: true
+  OP_CONNECT_HOST:
+    description: "1password connect server url"
+    required: true
+  OP_CONNECT_TOKEN:
+    description: "1password connect server token"
+    required: true
+  APP_ENV:
+    description: "The application running environment"
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+      # Get environment variables from 1password
+      - name: Setup .env file
+        working-directory: ${{inputs.WORKING_DIRECTORY}}
+        env:
+          OP_CONNECT_HOST: ${{ secrets.OP_CONNECT_URL }}
+          OP_CONNECT_TOKEN: ${{ secrets.OP_CONNECT_TOKEN }}
+          APP_ENV: dev-new
+        run: |
+          curl -sSfo op.zip \
+              https://cache.agilebits.com/dist/1P/op2/pkg/v2.0.0/op_linux_amd64_v2.0.0.zip \
+              && unzip -od /usr/local/bin/ op.zip \
+              && rm op.zip ;\
+          op inject -i ./devops/vaults.env -o .env -f
+
+      - id: 'auth'
+        name: 'Authenticate to Google Cloud'
+        uses: 'google-github-actions/auth@v1'
+        with:
+          workload_identity_provider: ${{ secrets.WORKLOAD_IDENTIFY_POOLS_PROVIDER }}
+          service_account: ${{ secrets.GCLOUD_SERVICE_ACCOUNT }}
+
+      # Setup gcloud CLI
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v1
+
+      # Build and push image to Google Container Registry
+      - name: Build
+        working-directory: ${{inputs.WORKING_DIRECTORY}}
+        run: |-
+          gcloud builds submit \
+            --config \
+            --./devops/cloudbuild-cd.yaml
+
+      - name: Set git tag format - datetime.short-sha
+        id: customtag
+        run: echo "tag=`date +'%Y%m%d%H%M'`.`git rev-parse --short ${{ github.sha }}`" >> $GITHUB_OUTPUT
+
+      - name: Add git tag
+        uses: mathieudutour/github-tag-action@v6.1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          custom_tag: ${{ steps.customtag.outputs.tag }}
+          tag_prefix: ${{ env.TAG_NAME }}.

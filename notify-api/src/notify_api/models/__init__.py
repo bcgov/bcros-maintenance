@@ -17,6 +17,7 @@ from .content import Content, ContentRequest
 from .db import db  # noqa: I001
 from .email import EmailValidator
 from .notification import Notification, NotificationRequest
+from .notification_history import NotificationHistory
 
 
-__all__ = ('db', 'attachment', 'content', 'email', 'notification')
+__all__ = ('db', 'attachment', 'content', 'email', 'notification', 'notification_history')

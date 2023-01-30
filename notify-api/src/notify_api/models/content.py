@@ -111,3 +111,13 @@ class Content(db.Model):
         db.session.flush()
         db.session.commit()
         return self
+
+    def delete_content(self):
+        """Delete notification content."""
+        if self.attachments:
+            for attachment in self.attachments:
+                # delete email attachment
+                attachment.delete_attachment()
+
+        db.session.delete(self)
+        db.session.commit()

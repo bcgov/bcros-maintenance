@@ -46,3 +46,14 @@ def send_sms_notification(body: NotificationRequest):
         return jsonify({'error': babel(err.error)}), err.status_code
 
     return jsonify(notification.json), HTTPStatus.OK
+
+
+@bp.route('/resend', methods=['POST', 'OPTIONS'])
+@cross_origin(origin='*')
+@jwt.requires_auth
+@jwt.has_one_of_roles([Role.SYSTEM.value, Role.JOB.value])
+def resend_notifications():
+    """Resend pending or failure notifications."""
+    NotifyService().resend()
+
+    return jsonify(), HTTPStatus.OK

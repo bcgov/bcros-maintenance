@@ -41,11 +41,11 @@ def send_notification(body: NotificationRequest):
     """Create and send EMAIL notification endpoint."""
     try:
         body.notify_type = Notification.NotificationType.EMAIL
-        notification = NotifyService().notify(body)
+        notification_history = NotifyService().notify(body)
     except (BadGatewayException, NotifyException, Exception) as err: # NOQA # pylint: disable=broad-except
         return jsonify({'error': babel(err.error)}), err.status_code
 
-    return jsonify(notification.json), HTTPStatus.OK
+    return jsonify(notification_history.json), HTTPStatus.OK
 
 
 @bp.route('/sms', methods=['POST'])
