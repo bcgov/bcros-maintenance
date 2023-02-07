@@ -62,8 +62,10 @@ class GCNotify:
             )
 
         except Exception as err:  # pylint: disable=broad-except # noqa F841;
-            logger.error('Email GC Notify Error: %s', err)
-            raise BadGatewayException(error=f'Email GC Notify Error {err}') from err
+            # bypass team-only API key bad request error
+            if 'this recipient using a team-only API key' not in f'{err}':
+                logger.error('Email GC Notify Error: %s', err)
+                raise BadGatewayException(error=f'Email GC Notify Error {err}') from err
         return True
 
     def send_sms(self):
