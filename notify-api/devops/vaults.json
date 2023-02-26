@@ -4,7 +4,8 @@
         "application": [
             "smtp",
             "gc-notify",
-            "millionverifier"
+            "millionverifier",
+            "app"
         ]
     },
     {
