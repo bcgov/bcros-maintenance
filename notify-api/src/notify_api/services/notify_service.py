@@ -14,17 +14,20 @@
 
 """This provides the service for email notify calls."""
 import logging
+import warnings
 from datetime import datetime
 
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, MarkupResemblesLocatorWarning
 from flask import current_app
 
 from notify_api.errors import BadGatewayException, NotifyException
-from notify_api.models import Notification, NotificationHistory, NotificationRequest
+from notify_api.models import Notification, NotificationHistory, NotificationRequest, SafeList
 from notify_api.services.providers import _all_providers  # noqa: E402
 
 
 logger = logging.getLogger(__name__)
+
+warnings.filterwarnings('ignore', category=MarkupResemblesLocatorWarning, module='bs4')
 
 
 class NotifyService():
@@ -57,10 +60,21 @@ class NotifyService():
             notification = Notification.create_notification(notification_request)
 
             provider: str = self.get_provider(notification)
-            if notification.type_code == Notification.NotificationType.TEXT:
-                _all_providers[provider](notification).send_sms()
-            else:
-                _all_providers[provider](notification).send()
+
+            is_safe_to_send = True
+
+            # Email must set in safe list of Dev and Test environment
+            if current_app.config.get('DEVELOPMENT'):
+                for recipient in notification.recipients.split(','):
+                    is_safe_to_send = SafeList.is_in_safe_list(recipient.lower().strip())
+                    if not is_safe_to_send:
+                        break
+
+            if is_safe_to_send:
+                if notification.type_code == Notification.NotificationType.TEXT:
+                    _all_providers[provider](notification).send_sms()
+                else:
+                    _all_providers[provider](notification).send()
 
             # update the notification status
             notification.sent_date = datetime.utcnow()

@@ -18,6 +18,7 @@ from .db import db  # noqa: I001
 from .email import EmailValidator
 from .notification import Notification, NotificationRequest
 from .notification_history import NotificationHistory
+from .safe_list import SafeList, SafeListRequest
 
 
-__all__ = ('db', 'attachment', 'content', 'email', 'notification', 'notification_history')
+__all__ = ('db', 'attachment', 'content', 'email', 'notification', 'notification_history', 'safe_list')

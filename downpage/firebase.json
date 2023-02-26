@@ -1,0 +1,62 @@
+{
+  "hosting": {
+    "site": "downpage",
+    "public": "/",
+    "ignore": [
+      "**/k8s/**",
+      "**/.*",
+      "**/.history/**",
+      "Dockerfile",
+      "nginx.conf",
+      "Makefile"
+    ],
+    "headers": [
+      {
+        "source": "**",
+        "headers": [
+          {
+            "key": "Access-Control-Allow-Origin",
+            "value": "*"
+          },
+          {
+            "key": "X-Frame-Options",
+            "value": "DENY"
+          },
+          {
+            "key": "X-Content-Type-Options",
+            "value": "nosniff"
+          },
+          {
+            "key": "X-XSS-Protection",
+            "value": "1; mode=block"
+          },
+          {
+            "key": "Content-Security-Policy",
+            "value": "default-src 'self'; frame-src 'self' *.gov.bc.ca *.hotjar.com; script-src 'self' 'unsafe-eval' 'unsafe-inline' *.gov.bc.ca *.hotjar.com *.googleapis.com; style-src 'self' 'unsafe-inline' *.cloudflare.com *.googleapis.com *.jsdelivr.net; font-src 'self' *.gov.bc.ca *.hotjar.com *.cloudflare.com *.gstatic.com *.jsdelivr.net; img-src 'self' *.hotjar.com *.postescanada-canadapost.ca data:; connect-src 'self' *.gov.bc.ca *.launchdarkly.com *.hotjar.com *.postescanada-canadapost.ca *.sentry.io *.apigee.net wss://*.hotjar.com *.hotjar.io; manifest-src 'self';"
+          },
+          {
+            "key": "Cache-Control",
+            "value": "public, max-age=31536000"
+          },
+          {
+            "key": "Referrer-Policy",
+            "value": "no-referrer"
+          },
+          {
+            "key": "Feature-Policy",
+            "value": "microphone 'self'"
+          }
+        ]
+      }
+    ]
+  },
+  "emulators": {
+    "hosting": {
+      "port": 8086
+    },
+    "ui": {
+      "enabled": true
+    },
+    "singleProjectMode": true
+  }
+}

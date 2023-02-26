@@ -26,7 +26,8 @@ from flask import Flask, redirect, url_for
 from flask_migrate import Migrate
 from sentry_sdk.integrations.flask import FlaskIntegration
 
-from notify_api import config, models
+from notify_api import models
+from notify_api.config import config
 from notify_api.models import db
 from notify_api.resources import v1_endpoint, v2_endpoint
 from notify_api.translations import babel
@@ -38,11 +39,11 @@ from notify_api.utils.run_version import get_run_version
 setup_logging(os.path.join(os.path.abspath(os.path.dirname(__file__)), 'logging.conf'))
 
 
-def create_app(run_mode=os.getenv('FLASK_ENV', 'production')):
+def create_app(config_name):
     """Return a configured Flask App using the Factory method."""
     app = Flask(__name__)
     app.url_map.strict_slashes = False
-    app.config.from_object(config.CONFIGURATION[run_mode])
+    app.config.from_object(config[config_name])
 
     # Configure Sentry
     if app.config.get('SENTRY_ENABLE') == 'True':

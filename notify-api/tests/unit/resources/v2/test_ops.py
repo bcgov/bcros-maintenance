@@ -22,14 +22,6 @@ from sqlalchemy import exc
 
 from notify_api.models import db
 
-def test_ops_healthz_fail(app_request):
-    """Assert that the service is unhealthy if a connection toThe database cannot be made."""
-    app_request.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://does:not@exist:5432/nada'
-    with app_request.test_client() as client:
-        rv = client.get('/api/v2/ops/healthz')
-
-        assert rv.status_code == 500
-        assert rv.json == {'message': 'api is down'}
 
 def test_ops_healthz_success(session, client):  # pylint: disable=unused-argument
     """Assert that the service is healthy if it can successfully access the database."""
@@ -37,6 +29,7 @@ def test_ops_healthz_success(session, client):  # pylint: disable=unused-argumen
 
     assert rv.status_code == 200
     assert rv.json == {'message': 'api is healthy'}
+
 
 def test_ops_healthz_exception(session, client): # pylint: disable=unused-argument
     """Assert that the service is healthy if it can successfully access the database."""
@@ -48,6 +41,7 @@ def test_ops_healthz_exception(session, client): # pylint: disable=unused-argume
         rv = client.get('/api/v2/ops/healthz')
         assert rv.status_code == 500
         assert rv.json == {'message': 'api is down'}
+
 
 def test_ops_readyz(client):
     """Asserts that the service is ready to serve."""

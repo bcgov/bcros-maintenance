@@ -12,11 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Provides the WSGI entry point for running the application."""
+import os
+
 from notify_api import create_app
 
 
 # Openshift s2i expects a lower case name of application
-application = create_app()  # pylint: disable=invalid-name
+application = create_app(os.getenv('APP_ENV') or 'production')  # pylint: disable=invalid-name
 
 if __name__ == '__main__':
     application.run()

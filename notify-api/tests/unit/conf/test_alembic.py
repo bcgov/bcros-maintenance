@@ -20,9 +20,11 @@ from alembic.script import ScriptDirectory
 
 from tests.conftest import not_raises
 
+
 def test_for_no_branches_in_versions():
+    """Test no branch."""
     config = Config()
-    config.set_main_option("script_location", "migrations")
+    config.set_main_option('script_location', 'migrations')
     script = ScriptDirectory.from_config(config)
 
     with not_raises(Exception):

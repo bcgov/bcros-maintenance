@@ -146,7 +146,7 @@ db: ## Run the db migration
 	. venv/bin/activate && flask db upgrade
 
 run: ## Run the project in local
-	. venv/bin/activate && gunicorn --bind 0.0.0.0:5000 --reload --config gunicorn_config.py wsgi:application
+	. venv/bin/activate && flask run
 #################################################################################
 # Self Documenting Commands                                                     #
 #################################################################################

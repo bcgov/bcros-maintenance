@@ -20,46 +20,16 @@ Flask config, rather than reading environment variables directly
 or by accessing this configuration directly.
 """
 import os
-import sys
-
-from dotenv import find_dotenv, load_dotenv
 
 
-# this will load all the envars from a .env file located in the project root (api)
-load_dotenv(find_dotenv())
+class Config:  # pylint: disable=too-few-public-methods
+    """Config object."""
 
-CONFIGURATION = {
-    'development': 'notify_api.config.DevConfig',
-    'testing': 'notify_api.config.TestConfig',
-    'production': 'notify_api.config.ProdConfig',
-    'default': 'notify_api.config.ProdConfig'
-}
+    print('enter Config')
 
-
-def get_named_config(config_name: str = 'production'):
-    """Return the configuration object based on the name.
-
-    :raise: KeyError: if an unknown configuration is requested
-    """
-    if config_name in ['production', 'staging', 'default']:
-        config = ProdConfig()
-    elif config_name == 'testing':
-        config = TestConfig()
-    elif config_name == 'development':
-        config = DevConfig()
-    else:
-        raise KeyError(f'Unknown configuration: {config_name}')
-    return config
-
-
-class _Config():  # pylint: disable=too-few-public-methods
-    """Base class configuration that should set reasonable defaults.
-
-    Used as the base for all the other configurations.
-    """
-
-    TESTING = False
     DEBUG = False
+    TESTING = False
+    DEVELOPMENT = False
 
     PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
 
@@ -130,21 +100,33 @@ class _Config():  # pylint: disable=too-few-public-methods
         JWT_OIDC_JWKS_CACHE_TIMEOUT = 300
 
 
-class DevConfig(_Config):  # pylint: disable=too-few-public-methods
-    """Creates the Development Config object."""
+class ProductionConfig(Config):  # pylint: disable=too-few-public-methods
+    """Config object for production environment."""
 
-    TESTING = False
+    DEBUG = False
+
+
+class TestingConfig(Config):  # pylint: disable=too-few-public-methods
+    """Config object for testing(staging) environment."""
+
+    DEVELOPMENT = True
     DEBUG = True
 
 
-class TestConfig(_Config):  # pylint: disable=too-few-public-methods
-    """In support of testing only.
+class DevelopmentConfig(Config):  # pylint: disable=too-few-public-methods
+    """Config object for development environment."""
 
-    Used by the py.test suite
-    """
-
+    DEVELOPMENT = True
     DEBUG = True
+
+
+class UnitTestingConfig(Config):  # pylint: disable=too-few-public-methods
+    """Config object for unit testing environment."""
+
+    DEVELOPMENT = False
     TESTING = True
+    DEBUG = True
+
     # POSTGRESQL
     DB_USER = os.getenv('DATABASE_TEST_USERNAME', '')
     DB_PASSWORD = os.getenv('DATABASE_TEST_PASSWORD', '')
@@ -213,14 +195,9 @@ NrQw+2OdQACBJiEHsdZzAkBcsTk7frTH4yGx0VfHxXDPjfTj4wmD6gZIlcIr9lZg
 -----END RSA PRIVATE KEY-----"""
 
 
-class ProdConfig(_Config):  # pylint: disable=too-few-public-methods
-    """Production environment configuration."""
-
-    SECRET_KEY = os.getenv('SECRET_KEY', None)
-
-    if not SECRET_KEY:
-        SECRET_KEY = os.urandom(24)
-        print('WARNING: SECRET_KEY being set as a one-shot', file=sys.stderr)
-
-    TESTING = False
-    DEBUG = False
+config = {
+    'development': DevelopmentConfig,
+    'testing': TestingConfig,
+    'production': ProductionConfig,
+    'unitTesting': UnitTestingConfig,
+}

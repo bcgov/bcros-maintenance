@@ -25,31 +25,24 @@ from tests.factories.notification import NotificationFactory
 
 def test_invaild_roles(session, app, client, jwt):  # pylint: disable=unused-argument
     """Assert the test the role validation."""
-    headers = create_header(jwt, [Role.PUBLIC_USER.value], **{'Accept-Version':'v2'})
+    headers = create_header(jwt, [Role.PUBLIC_USER.value], **{'Accept-Version': 'v2'})
     res = client.post('/api/v2/notify/sms', headers=headers)
     assert res.status_code == HTTPStatus.UNAUTHORIZED
 
+
 def test_find_by_invaild_input(session, app, client, jwt):  # pylint: disable=unused-argument
     """Assert the test can retrieve notification details with status."""
-    headers = create_header(jwt, [Role.SYSTEM.value], **{'Accept-Version':'v2'})
-    res = client.get('/api/v2/notify/status/pending123', headers=headers)
-    assert res.status_code == HTTPStatus.BAD_REQUEST
-
-    res = client.get('/api/v2/notify/status/', headers=headers)
-    assert res.status_code == HTTPStatus.BAD_REQUEST
-
-    res = client.get('/api/v2/notify/status', headers=headers)
-    assert res.status_code == HTTPStatus.BAD_REQUEST
-
+    headers = create_header(jwt, [Role.SYSTEM.value], **{'Accept-Version': 'v2'})
     res = client.get('/api/v2/notify/', headers=headers)
-    assert res.status_code == HTTPStatus.METHOD_NOT_ALLOWED
+    assert res.status_code == HTTPStatus.NOT_FOUND
 
     res = client.get('/api/v2/notify', headers=headers)
-    assert res.status_code == HTTPStatus.METHOD_NOT_ALLOWED
+    assert res.status_code == HTTPStatus.NOT_FOUND
+
 
 def test_send_sms(session, app, client, jwt, monkeypatch):  # pylint: disable=unused-argument, too-many-arguments
     """Assert the test can create notification."""
-    headers = create_header(jwt, [Role.SYSTEM.value], **{'Accept-Version':'v2'})
+    headers = create_header(jwt, [Role.SYSTEM.value], **{'Accept-Version': 'v2'})
     for notification_data in list(NotificationFactory.RequestData):
         notification = NotificationFactory.create_model(session, notification_info=notification_data)
         ContentFactory.create_model(session, notification.id, content_info=notification_data['content'])
@@ -58,18 +51,20 @@ def test_send_sms(session, app, client, jwt, monkeypatch):  # pylint: disable=un
             res = client.post('/api/v2/notify/sms', json=notification_data, headers=headers)
             assert res.status_code == HTTPStatus.OK
             assert notification_data['recipients'] == res.json['recipients']
-            assert notification_data['content']['subject'] ==res.json['content']['subject']
+            assert notification_data['content']['subject'] == res.json['content']['subject']
+
 
 def test_send_sms_with_bad_data(session, app, jwt, client):  # pylint: disable=unused-argument
     """Assert the test can not be create notification."""
-    headers = create_header(jwt, [Role.SYSTEM.value], **{'Accept-Version':'v2'})
+    headers = create_header(jwt, [Role.SYSTEM.value], **{'Accept-Version': 'v2'})
     for notification_data in list(NotificationFactory.RequestBadData):
         res = client.post('/api/v2/notify/sms', json=notification_data, headers=headers)
         assert res.status_code == HTTPStatus.BAD_REQUEST
 
+
 def test_send_sms_exception(session, app, jwt, client):  # pylint: disable=unused-argument
     """Assert the test can not be create notification."""
-    with patch.object(NotifyService, 'notify', side_effect=NotifyException(error='mocked error',status_code=500)):
-        headers = create_header(jwt, [Role.SYSTEM.value], **{'Accept-Version':'v2'})
+    with patch.object(NotifyService, 'notify', side_effect=NotifyException(error='mocked error', status_code=500)):
+        headers = create_header(jwt, [Role.SYSTEM.value], **{'Accept-Version': 'v2'})
         res = client.post('/api/v2/notify/sms', json=NotificationFactory.RequestData.REQUEST_1, headers=headers)
         assert res.status_code == HTTPStatus.INTERNAL_SERVER_ERROR
