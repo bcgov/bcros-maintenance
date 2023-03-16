@@ -55,11 +55,13 @@ class GCNotify:
                         'sending_method': 'attach'
                     }
 
-            client.send_email_notification(
-                email_address=self.notification.recipients,
-                template_id=self.gc_notify_template_id,
-                personalisation=email_content
-            )
+            # send one email at a time
+            for recipient in self.notification.recipients.split(','):
+                client.send_email_notification(
+                    email_address=recipient,
+                    template_id=self.gc_notify_template_id,
+                    personalisation=email_content
+                )
 
         except Exception as err:  # pylint: disable=broad-except # noqa F841;
             # bypass team-only API key bad request error
