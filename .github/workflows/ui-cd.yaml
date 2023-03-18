@@ -9,8 +9,6 @@ on:
       tagname:
         type: string
     secrets:
-      APP_NAME:
-        required: true
       OP_CONNECT_URL:
         required: true
       OP_CONNECT_TOKEN:
