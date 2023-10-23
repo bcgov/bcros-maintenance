@@ -3,8 +3,8 @@ steps:
   - name: node:$_DEPLOYMENT_NODE_VERSION
     script: |
       #!/usr/bin/env bash
-      npm install --global pnpm@8.9.0
-      pnpm -F $_DEPLOYMENT_PCKG_NAME install
+      npm install --global pnpm
+      pnpm install
       pnpm -F $_DEPLOYMENT_PCKG_NAME build
 
   #
