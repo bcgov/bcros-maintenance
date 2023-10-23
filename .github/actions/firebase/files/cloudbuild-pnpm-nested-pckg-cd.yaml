@@ -1,12 +1,20 @@
 steps:
   # install / Generate the static site
   - name: node:$_DEPLOYMENT_NODE_VERSION
+    env:
+    - '_DEPLOYMENT_PCKG_NAME=$_DEPLOYMENT_PCKG_NAME'
     script: |
       #!/usr/bin/env bash
       npm install --global pnpm
       pnpm install
       echo executing build:$_DEPLOYMENT_PCKG_NAME
-      pnpm build
+      pnpm build:$_DEPLOYMENT_PCKG_NAME
+
+  - name: 'gcr.io/cloud-builders/gcloud'
+    env:
+    - '_DEPLOYMENT_PCKG_NAME=$_DEPLOYMENT_PCKG_NAME'
+    entrypoint: bash
+    args: ['-c', 'mv $_DEPLOYMENT_PCKG_NAME/dist .']
 
   #
   # Deploy to firebase channel, using the PR #
