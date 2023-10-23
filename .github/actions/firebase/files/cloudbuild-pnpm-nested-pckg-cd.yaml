@@ -5,7 +5,7 @@ steps:
       #!/usr/bin/env bash
       npm install --global pnpm
       pnpm install
-      pnpm -F $_DEPLOYMENT_PCKG_NAME build
+      pnpm build:$_DEPLOYMENT_PCKG_NAME
 
   #
   # Deploy to firebase channel, using the PR #
