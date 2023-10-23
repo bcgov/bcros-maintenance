@@ -113,7 +113,7 @@ jobs:
           firebase="$(jq '.hosting.site="${{ env.FIREBASE_HOST_NAME }}"' firebase-${{ env.ENVIRONMENT }}.json)"
           echo -E "${firebase}" > firebase-${{ env.ENVIRONMENT }}.json
           gcloud builds submit \
-            --substitutions _DEPLOYMENT_ENVIRONMENT=${{ env.ENVIRONMENT }},_DEPLOYMENT_PROJECT=${{ env.GCP_PROJECT }},_DEPLOYMENT_HOST_NAME=${{ env.FIREBASE_HOST_NAME }},_DEPLOYMENT_PCKG_NAME=${{ inputs.package_name }} \
+            --substitutions _DEPLOYMENT_ENVIRONMENT=${{ env.ENVIRONMENT }},_DEPLOYMENT_NODE_VERSION=${{ env.NODE_VERSION }},_DEPLOYMENT_PROJECT=${{ env.GCP_PROJECT }},_DEPLOYMENT_HOST_NAME=${{ env.FIREBASE_HOST_NAME }},_DEPLOYMENT_PCKG_NAME=${{ inputs.package_name }} \
             --config cloudbuild-pnpm-nested-pckg-cd.yaml
 
       - name: Build (normal)
