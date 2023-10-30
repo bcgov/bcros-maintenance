@@ -1,4 +1,11 @@
 steps:
+  # put .env in the right place
+  - name: 'gcr.io/cloud-builders/gcloud'
+    env:
+    - '_DEPLOYMENT_PCKG_NAME=$_DEPLOYMENT_PCKG_NAME'
+    entrypoint: bash
+    args: ['-c', 'mv .env $_DEPLOYMENT_PCKG_NAME']
+
   # install / Generate the static site
   - name: node:$_DEPLOYMENT_NODE_VERSION
     env:
