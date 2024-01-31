@@ -11,22 +11,19 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """Core error handlers and custom exceptions.
 
 Following best practices from:
 http://flask.pocoo.org/docs/1.0/errorhandling/
 http://flask.pocoo.org/docs/1.0/patterns/apierrors/
 """
-
-import logging
 import sys
 
 from flask import jsonify
 from werkzeug.exceptions import HTTPException
 from werkzeug.routing import RoutingException
 
-logger = logging.getLogger(__name__)
+from notify_api.utils.logging import logger
 
 
 def init_app(app):
@@ -46,7 +43,6 @@ def handle_http_error(error):
     if isinstance(error, RoutingException):
         return error
 
-    print(error.description)
     logger.error("Http exception", exc_info=error.description)
     response = jsonify({"errors": error.description})
     response.status_code = error.code

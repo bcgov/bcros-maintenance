@@ -13,7 +13,6 @@
 # limitations under the License.
 
 """This provides the service for email notify calls."""
-import logging
 import warnings
 from datetime import datetime
 
@@ -30,8 +29,7 @@ from notify_api.models import (
     SafeList,
 )
 from notify_api.services.providers import _all_providers  # noqa: E402
-
-logger = logging.getLogger(__name__)
+from notify_api.utils.logging import logger
 
 warnings.filterwarnings("ignore", category=MarkupResemblesLocatorWarning, module="bs4")
 

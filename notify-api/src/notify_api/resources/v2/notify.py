@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """API endpoints for managing a notify resource."""
-import logging
 from http import HTTPStatus
 
 from flask import Blueprint, jsonify
@@ -25,8 +24,6 @@ from notify_api.models import Notification, NotificationRequest
 from notify_api.services.notify_service import NotifyService
 from notify_api.utils.auth import jwt
 from notify_api.utils.enums import Role
-
-logger = logging.getLogger(__name__)
 
 bp = Blueprint("Notify_V2", __name__, url_prefix="/notify")
 

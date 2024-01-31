@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """This provides send email through SMTP."""
-import logging
 import re
 import smtplib
 import unicodedata
@@ -25,13 +24,8 @@ from typing import List
 from flask import current_app
 
 from notify_api.errors import BadGatewayException
-from notify_api.models import (
-    Notification,
-    NotificationSendResponse,
-    NotificationSendResponses,
-)
-
-logger = logging.getLogger(__name__)
+from notify_api.models import Notification, NotificationSendResponse, NotificationSendResponses
+from notify_api.utils.logging import logger
 
 
 class EmailSMTP:  # pylint: disable=too-few-public-methods

@@ -19,11 +19,7 @@ from unittest.mock import patch
 import pytest
 
 from notify_api.errors import BadGatewayException, NotifyException
-from notify_api.models.notification import (
-    Notification,
-    NotificationRequest,
-    NotificationSendResponses,
-)
+from notify_api.models.notification import Notification, NotificationRequest, NotificationSendResponses
 from notify_api.models.safe_list import SafeList
 from notify_api.services.notify_service import NotifyService
 from notify_api.services.providers.email_smtp import EmailSMTP

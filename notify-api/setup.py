@@ -21,16 +21,11 @@ from os.path import basename, splitext
 
 from setuptools import find_packages, setup
 
-
 _version_re = re.compile(r"__version__\s+=\s+(.*)")  # pylint: disable=invalid-name
 
 with open("src/notify_api/version.py", "rb") as f:
-    version = str(
-        ast.literal_eval(
-            _version_re.search(  # pylint: disable=invalid-name
-                f.read().decode("utf-8")
-            ).group(1)
-        )
+    VERSION = str(
+        ast.literal_eval(_version_re.search(f.read().decode("utf-8")).group(1))  # pylint: disable=invalid-name
     )
 
 
@@ -40,11 +35,7 @@ def read_requirements(filename):
 
     :return: Python requirements
     """
-    return [
-        line.strip()
-        for line in read(filename).split("\n")
-        if not line.startswith(('"', "#", "-", "git+"))
-    ]
+    return [line.strip() for line in read(filename).split("\n") if not line.startswith(('"', "#", "-", "git+"))]
 
 
 def read(*paths, **kwargs):
@@ -69,7 +60,7 @@ REQUIREMENTS = read_requirements("requirements.txt")
 
 setup(
     name="notify_api",
-    version=version,
+    version=VERSION,
     author_email="patrick.wei@gov.bc.ca",
     packages=find_packages("src"),
     package_dir={"": "src"},

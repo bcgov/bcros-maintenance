@@ -14,20 +14,13 @@
 """Notification Content data model."""
 from __future__ import annotations
 
-from typing import (  # noqa: F401 # pylint: disable=unused-import
-    ForwardRef,
-    List,
-    Optional,
-)
+from typing import ForwardRef, List, Optional  # noqa: F401 # pylint: disable=unused-import
 
 from pydantic import BaseModel, validator
 
 from notify_api.utils.util import to_camel
 
-from .attachment import (  # noqa: F401 # pylint: disable=unused-import
-    Attachment,
-    AttachmentRequest,
-)
+from .attachment import Attachment, AttachmentRequest  # noqa: F401 # pylint: disable=unused-import
 from .db import db  # noqa: I001
 
 ListAttachmentRequest = ForwardRef("List[AttachmentRequest]")

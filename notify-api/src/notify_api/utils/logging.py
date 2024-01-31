@@ -1,4 +1,4 @@
-# Copyright © 2019 Province of British Columbia
+# Copyright 2021 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,20 +12,76 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Centralized setup of logging for the service."""
-import logging.config
-import sys
-from os import path
+from typing import Dict
+
+import structlog
+from flask import request
+
+from notify_api.utils import metadata
 
 
-def setup_logging(conf):
-    """Create the services logger.
-
-    TODO should be reworked to load in the proper loggers and remove others
+def field_name_modifier(
+    logger: structlog.PrintLogger, log_method: str, event_dict: Dict  # pylint: disable=redefined-outer-name
+) -> Dict:
+    """Changes the keys for some of the fields,
+    to match Cloud Logging's expectations
+    https://cloud.google.com/run/docs/logging#special-fields
     """
-    # log_file_path = path.join(path.abspath(path.dirname(__file__)), conf)
+    # structlog example adapted from
+    # https://github.com/ymotongpoo/cloud-logging-configurations/blob/master/python/structlog/main.py
 
-    if conf and path.isfile(conf):
-        logging.config.fileConfig(conf)
-        print(f"Configure logging, from conf: {conf}", file=sys.stdout)
-    else:
-        print(f"Unable to configure logging, attempted conf: {conf}", file=sys.stderr)
+    event_dict["severity"] = event_dict["level"]
+    del event_dict["level"]
+
+    if "event" in event_dict:
+        event_dict["message"] = event_dict["event"]
+        del event_dict["event"]
+    return event_dict
+
+
+def trace_modifier(
+    logger: structlog.PrintLogger, log_method: str, event_dict: Dict  # pylint: disable=redefined-outer-name
+) -> Dict:
+    """Adds Tracing correlation
+    https://cloud.google.com/run/docs/logging#correlate-logs
+    """
+    # Only attempt to get the context if in a request
+    if request:
+        trace_header = request.headers.get("X-Cloud-Trace-Context")
+        # Only append the trace if it exists in the request
+        if trace_header:
+            trace = trace_header.split("/")
+            project = metadata.get_project_id()
+            event_dict["logging.googleapis.com/trace"] = f"projects/{project}/traces/{trace[0]}"
+    return event_dict
+
+
+def get_json_logger() -> structlog._config.BoundLoggerLazyProxy:
+    """Create a JSON logger using the field name and trace modifiers created above"""
+    # extend using https://www.structlog.org/en/stable/processors.html
+    structlog.configure(
+        processors=[
+            structlog.stdlib.add_log_level,
+            structlog.stdlib.PositionalArgumentsFormatter(),
+            field_name_modifier,
+            trace_modifier,
+            structlog.processors.TimeStamper("iso"),
+            structlog.processors.JSONRenderer(),
+        ],
+        wrapper_class=structlog.stdlib.BoundLogger,
+    )
+    return structlog.get_logger()
+
+
+logger = get_json_logger()
+
+
+def flush() -> None:
+    """flush."""
+    # Setting PYTHONUNBUFFERED in Dockerfile/Buildpack ensured no buffering
+
+    # https://docs.python.org/3/library/logging.html#logging.shutdown
+    # When the logging module is imported, it registers this
+    # function as an exit handler (see atexit), so normally
+    # there’s no need to do that manually.
+    # pass

@@ -13,7 +13,7 @@ defaults:
 
 jobs:
   notify-api-ci:
-    uses: bcgov/bcregistry-sre/.github/workflows/api-ci.yaml@main
+    uses: bcgov/bcregistry-sre/.github/workflows/backend-ci.yaml@main
     with:
       app_name: "notify-api"
       working_directory: "./notify-api"

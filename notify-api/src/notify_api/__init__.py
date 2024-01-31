@@ -25,9 +25,10 @@ from notify_api.models import db
 from notify_api.resources import v1_endpoint, v2_endpoint
 from notify_api.translations import babel
 from notify_api.utils.auth import jwt
-from notify_api.utils.logging import setup_logging
 
-setup_logging(os.path.join(os.path.abspath(os.path.dirname(__file__)), "logging.conf"))
+# from notify_api.utils.logging import setup_logging
+
+# setup_logging(os.path.join(os.path.abspath(os.path.dirname(__file__)), "logging.conf"))
 
 
 def create_app(run_mode=os.getenv("DEPLOYMENT_ENV", "production"), **kwargs):

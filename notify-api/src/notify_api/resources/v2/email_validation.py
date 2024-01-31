@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """API endpoints for validate email address."""
-import logging
 from http import HTTPStatus
 
 from flask import Blueprint
@@ -20,11 +19,6 @@ from flask_cors import cross_origin
 from flask_pydantic import validate
 
 from notify_api.models import EmailValidator
-
-# from notify_api.utils.auth import jwt
-
-
-logger = logging.getLogger(__name__)
 
 bp = Blueprint("EMAIL_VALIDATION", __name__, url_prefix="/email_validation")
 

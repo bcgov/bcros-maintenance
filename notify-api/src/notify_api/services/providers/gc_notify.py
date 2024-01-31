@@ -13,20 +13,14 @@
 # limitations under the License.
 """This provides send email through GC Notify Service."""
 import base64
-import logging
 from typing import List
 
 from flask import current_app
 from notifications_python_client import NotificationsAPIClient
 
 from notify_api.errors import BadGatewayException
-from notify_api.models import (
-    Notification,
-    NotificationSendResponse,
-    NotificationSendResponses,
-)
-
-logger = logging.getLogger(__name__)
+from notify_api.models import Notification, NotificationSendResponse, NotificationSendResponses
+from notify_api.utils.logging import logger
 
 
 class GCNotify:

@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """API endpoints for validate email address."""
-import logging
 from http import HTTPStatus
 
 from flask import Blueprint
@@ -22,8 +21,7 @@ from flask_pydantic import validate
 from notify_api.models import SafeList, SafeListRequest
 from notify_api.utils.auth import jwt
 from notify_api.utils.enums import Role
-
-logger = logging.getLogger(__name__)
+from notify_api.utils.logging import logger
 
 bp = Blueprint("SAFE_LIST", __name__, url_prefix="/safe_list")
 
