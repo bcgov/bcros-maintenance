@@ -93,10 +93,10 @@ jobs:
           oc scale --replicas=0 dc/activity-log-listener-${{ env.TAG_NAME }} -n 6e0e49-${{ env.TAG_NAME }}
           oc scale --replicas=1 dc/activity-log-listener-${{ env.TAG_NAME }} -n 6e0e49-${{ env.TAG_NAME }}
 
-      - name: Restart business-events-listener
+      - name: Restart names-events-listener
         run: |
-          oc scale --replicas=0 dc/business-events-listener-${{ env.TAG_NAME }} -n 6e0e49-${{ env.TAG_NAME }}
-          oc scale --replicas=1 dc/business-events-listener-${{ env.TAG_NAME }} -n 6e0e49-${{ env.TAG_NAME }}
+          oc scale --replicas=0 dc/names-events-listener-${{ env.TAG_NAME }} -n 6e0e49-${{ env.TAG_NAME }}
+          oc scale --replicas=1 dc/names-events-listener-${{ env.TAG_NAME }} -n 6e0e49-${{ env.TAG_NAME }}
 
       - name: Restart events-listener (auth)
         run: |
