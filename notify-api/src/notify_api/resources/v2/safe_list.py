@@ -25,7 +25,7 @@ from notify_api.utils.logging import logger
 bp = Blueprint("SAFE_LIST", __name__, url_prefix="/safe_list")
 
 
-@bp.route("/", methods=["POST", "OPTIONS"])
+@bp.route("/", methods=["POST"])
 @jwt.requires_auth
 @jwt.has_one_of_roles([Role.SYSTEM.value, Role.STAFF.value])
 @validate()
@@ -40,7 +40,14 @@ def safe_list(body: SafeListRequest):  # pylint: disable=unused-argument
     return {}, HTTPStatus.OK
 
 
-@bp.route("/", methods=["GET", "OPTIONS"])
+@bp.route("/", methods=["OPTIONS"])
+@validate()
+def get_safe_list_preflight():
+    """Handle safe list cors preflight."""
+    return {}, HTTPStatus.OK
+
+
+@bp.route("/", methods=["GET"])
 @jwt.requires_auth
 @jwt.has_one_of_roles([Role.SYSTEM.value, Role.STAFF.value])
 @validate()
