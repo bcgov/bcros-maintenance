@@ -33,8 +33,8 @@ steps:
           if [[ ! -z `gcloud artifacts docker images describe ${_REGION}-docker.pkg.dev/${_BUILD_PROJECT}/firebase-repo/${_APP_NAME}:prod --verbosity=none` ]]
           then
             gcloud artifacts docker tags add \
-              ${_REGION}-docker.pkg.dev/${_BUILD_PROJECT}/firebase-repo/${_APP_NAME}:prod--$(date +%F) \
-              ${_REGION}-docker.pkg.dev/${_BUILD_PROJECT}/firebase-repo/${_APP_NAME}:prod
+              ${_REGION}-docker.pkg.dev/${_BUILD_PROJECT}/firebase-repo/${_APP_NAME}:prod \
+              ${_REGION}-docker.pkg.dev/${_BUILD_PROJECT}/firebase-repo/${_APP_NAME}:prod--$(date +%F)
           fi
 
           gcloud artifacts docker tags add \
