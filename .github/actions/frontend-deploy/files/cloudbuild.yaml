@@ -106,7 +106,7 @@ steps:
     fi
 
 # Build application
-- name: "northamerica-northeast1-docker.pkg.dev/c4hnrd-tools/firebase-repo/${_APP_NAME}:${_SHORT_SHA}"
+- name: "northamerica-northeast1-docker.pkg.dev/c4hnrd-tools/firebase-repo/${_APP_NAME}:${_DEPLOYMENT_ENVIRONMENT}"
   dir: "app"
   script: |
     #!/usr/bin/env sh
@@ -151,7 +151,7 @@ steps:
     firebase deploy --project=${RUNNING_PROJECT} --config=firebase-${_DEPLOYMENT_ENVIRONMENT}.json --only hosting
 
 # E2E testing
-- name: "northamerica-northeast1-docker.pkg.dev/c4hnrd-tools/firebase-repo/${_APP_NAME}:${_SHORT_SHA}"
+- name: "northamerica-northeast1-docker.pkg.dev/c4hnrd-tools/firebase-repo/${_APP_NAME}:${_DEPLOYMENT_ENVIRONMENT}"
   dir: "app"
   script: |
     #!/usr/bin/env sh
