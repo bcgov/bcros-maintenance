@@ -40,6 +40,9 @@ do
                 gcloud projects add-iam-policy-binding ${PROJECT_ID} \
                     --member="serviceAccount:$SA_FULL_NAME" \
                     --role="roles/iam.serviceAccountTokenCreator"
+                gcloud projects add-iam-policy-binding ${PROJECT_ID} \
+                    --member="serviceAccount:$SA_FULL_NAME" \
+                    --role="roles/run.invoker"
 
                 # create key
                 gcloud iam service-accounts keys create ${SA_NAME}-${PROJECT_ID}.json --iam-account=${SA_FULL_NAME}
