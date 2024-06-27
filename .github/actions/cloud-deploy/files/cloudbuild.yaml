@@ -33,6 +33,19 @@ steps:
       for env_name in "${targets[@]}"; do
         export APP_ENV=${env_name}
         op inject  -f -i ./devops/vaults.gcp.env -o ./devops/vaults.${env_name}
+
+        CPU_THROTTLING=$(awk -F '=' '/^CPU_THROTTLING/ {print $2}' ./devops/vaults.${env_name})
+        if [ -z "$CPU_THROTTLING" ]; then
+          CPU_THROTTLING="true"
+        fi
+
+        # Set the cpu-throttling annotation based on the CPU_THROTTLING value
+        if [ "$CPU_THROTTLING" = "true" ]; then
+          yq e '.spec.template.metadata.annotations["run.googleapis.com/cpu-throttling"] = "true"' ./devops/gcp/k8s/service.template.yaml > ./devops/gcp/k8s/service.${env_name}.yaml
+        else
+          yq e '.spec.template.metadata.annotations["run.googleapis.com/cpu-throttling"] = "false"' ./devops/gcp/k8s/service.template.yaml > ./devops/gcp/k8s/service.${env_name}.yaml
+        fi
+
         export VAL=$(awk '{f1=f2=$0; sub(/=.*/,"",f1); sub(/[^=]+=/,"",f2); printf "- name: %s\n  value: %s\n",f1,f2}' ./devops/vaults.${env_name} | sed 's/\"/\"/g')
 
         # generate manifest for each environment
