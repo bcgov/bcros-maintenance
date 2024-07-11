@@ -41,15 +41,15 @@ steps:
 
         # Set the cpu-throttling annotation based on the CPU_THROTTLING value
         if [ "$CPU_THROTTLING" = "true" ]; then
-          yq e '.spec.template.metadata.annotations["run.googleapis.com/cpu-throttling"] = "true"' ./devops/gcp/k8s/service.template.yaml > ./devops/gcp/k8s/service.${env_name}.yaml
+          yq e '.spec.template.metadata.annotations["run.googleapis.com/cpu-throttling"] = "true"' ./devops/gcp/k8s/service.template.yaml > ./devops/gcp/k8s/temp-service.${env_name}.yaml
         else
-          yq e '.spec.template.metadata.annotations["run.googleapis.com/cpu-throttling"] = "false"' ./devops/gcp/k8s/service.template.yaml > ./devops/gcp/k8s/service.${env_name}.yaml
+          yq e '.spec.template.metadata.annotations["run.googleapis.com/cpu-throttling"] = "false"' ./devops/gcp/k8s/service.template.yaml > ./devops/gcp/k8s/temp-service.${env_name}.yaml
         fi
 
         export VAL=$(awk '{f1=f2=$0; sub(/=.*/,"",f1); sub(/[^=]+=/,"",f2); printf "- name: %s\n  value: %s\n",f1,f2}' ./devops/vaults.${env_name} | sed 's/\"/\"/g')
 
         # generate manifest for each environment
-        yq e '.spec.template.spec.containers[0].env += env(VAL)' ./devops/gcp/k8s/service.${env_name}.yaml
+        yq e '.spec.template.spec.containers[0].env += env(VAL)' ./devops/gcp/k8s/temp-service.${env_name}.yaml > ./devops/gcp/k8s/service.${env_name}.yaml
 
         # sidecard OAS proxy service, only Test environment need this service
         #if [[ "$env_name" != "test" ]]; then
