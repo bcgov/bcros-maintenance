@@ -38,6 +38,14 @@ steps:
       for env_name in "${targets[@]}"; do
         export APP_ENV=${env_name}
         op inject  -f -i ./devops/vaults.gcp.env -o ./devops/vaults.${env_name}
+
+        export VPC_CONNECTOR=$(awk -F '=' '/^VPC_CONNECTOR/ {print $2}' ./devops/vaults.${env_name})
+        if [ "$VPC_CONNECTOR" ]; then
+          yq e '.spec.template.metadata.annotations["run.googleapis.com/vpc-access-egress"] = "private-ranges-only" |
+                .spec.template.metadata.annotations["run.googleapis.com/vpc-access-connector"] = env(VPC_CONNECTOR)' \
+                ./devops/gcp/k8s/service.template.yaml > ./devops/gcp/k8s/temp-service.${env_name}.yaml
+        fi
+
         export VAL=$(awk '{f1=f2=$0; sub(/=.*/,"",f1); sub(/[^=]+=/,"",f2); printf "- name: %s\n  value: %s\n",f1,f2}' ./devops/vaults.${env_name} | sed 's/\"/\"/g')
 
         # generate manifest for each environment
