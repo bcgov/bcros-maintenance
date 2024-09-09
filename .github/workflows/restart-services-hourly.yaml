@@ -1,9 +1,6 @@
 name: Restart Services hourly
 
 on:
-  schedule:
-    # At every hour
-    - cron: "0 * * * *"
   workflow_dispatch:
     inputs:
       environement:
