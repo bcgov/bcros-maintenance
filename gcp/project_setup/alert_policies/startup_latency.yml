@@ -1,0 +1,23 @@
+{
+  "displayName": "${CLOUD_RUN_NAME}-startup-latency",
+  "documentation": {
+    "content": "Alerts if start up latency for container exceeds 5 seconds",
+    "mimeType": "text/markdown"
+  },
+  "userLabels": {},
+  "conditions": [
+    {
+      "displayName": "New condition",
+      "conditionPrometheusQueryLanguage": {
+        "duration": "0s",
+        "evaluationInterval": "30s",
+        "query": "run_googleapis_com:container_startup_latencies_sum{monitored_resource=\"cloud_run_revision\", service_name=\"${CLOUD_RUN_NAME}\"} > 5000\n"
+      }
+    }
+  ],
+  "alertStrategy": {},
+  "combiner": "OR",
+  "enabled": true,
+  "notificationChannels": [],
+  "severity": "ERROR"
+}

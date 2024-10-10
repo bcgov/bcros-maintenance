@@ -1,0 +1,23 @@
+{
+  "displayName": "${CLOUD_RUN_NAME}-maximum-request-latency",
+  "documentation": {
+    "content": "Alerts if slowest 1% of requests takes longer than 15 seconds",
+    "mimeType": "text/markdown"
+  },
+  "userLabels": {},
+  "conditions": [
+    {
+      "displayName": "Cloud Run Revision - Request Latency",
+      "conditionPrometheusQueryLanguage": {
+        "duration": "300s",
+        "evaluationInterval": "30s",
+        "query": "histogram_quantile(0.99, sum(rate(run_googleapis_com:request_latencies_bucket{service_name=\"${CLOUD_RUN_NAME}\"}[5m])) by (le)) > 15000\n"
+      }
+    }
+  ],
+  "alertStrategy": {},
+  "combiner": "OR",
+  "enabled": true,
+  "notificationChannels": [],
+  "severity": "WARNING"
+}
