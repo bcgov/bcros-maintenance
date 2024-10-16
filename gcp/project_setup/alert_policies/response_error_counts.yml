@@ -1,7 +1,7 @@
 {
   "displayName": "${CLOUD_RUN_NAME}-error-response",
   "documentation": {
-    "content": "Rate of 4xx/5xx request responses exceeds 3 per minute",
+    "content": "Rate of 5xx request responses exceeds 3 per minute",
     "mimeType": "text/markdown"
   },
   "userLabels": {},
@@ -11,7 +11,7 @@
       "conditionPrometheusQueryLanguage": {
         "duration": "0s",
         "evaluationInterval": "30s",
-        "query": "sum by (service_name) (rate(run_googleapis_com:request_count{monitored_resource=\"cloud_run_revision\", service_name=\"${CLOUD_RUN_NAME}\", response_code_class=~\"4..|5..\"}[1m]) * 60) > 3\n"
+        "query": "sum by (service_name) (rate(run_googleapis_com:request_count{monitored_resource=\"cloud_run_revision\", service_name=\"${CLOUD_RUN_NAME}\", response_code_class=~\"5..\"}[1m]) * 60) > 3\n"
       }
     }
   ],
