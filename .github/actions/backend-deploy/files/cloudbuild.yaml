@@ -231,11 +231,12 @@ steps:
     echo "$DEPLOYED_REVISION" > /workspace/deployed_revision.txt
     echo "Deployed revision: $DEPLOYED_REVISION"
 
-    # Update traffic to 0 for the new revision and wait for the new revision to be ready
-    gcloud run services update-traffic "${_APP_NAME}-${_DEPLOYMENT_ENV}" \
-        --region="${_REGION}" \
-        --project="$PROJECT_ID" \
-        --to-revisions="$PREVIOUS_REVISION=100"
+    if [[ -n "$PREVIOUS_REVISION" ]]; then
+      # Update traffic to 0 for the new revision and wait for the new revision to be ready
+      gcloud run services update-traffic "${_APP_NAME}-${_DEPLOYMENT_ENV}" \
+          --region="${_REGION}" \
+          --project="$PROJECT_ID" \
+          --to-revisions="$PREVIOUS_REVISION=100"
 
 # Step 3: Trigger database migration job (if applicable)
 - name: 'gcr.io/cloud-builders/gcloud'
