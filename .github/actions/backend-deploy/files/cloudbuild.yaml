@@ -237,6 +237,7 @@ steps:
           --region="${_REGION}" \
           --project="$PROJECT_ID" \
           --to-revisions="$PREVIOUS_REVISION=100"
+    fi
 
 # Step 3: Trigger database migration job (if applicable)
 - name: 'gcr.io/cloud-builders/gcloud'
