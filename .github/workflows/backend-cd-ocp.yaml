@@ -120,7 +120,7 @@ jobs:
           SECRET_JSON=$(oc create secret generic ${SECRET_NAME} -n ${NAMESPACE} --from-env-file=.env --dry-run=client -o json)
           echo $SECRET_JSON | oc replace -f -
           oc patch secret ${SECRET_NAME} --type='json' -p='[{"op":"add","path":"/metadata/labels", "value":'$LABELS'}]' -n ${NAMESPACE}
-          oc patch secret ${SECRET_NAME} --type='json' -p='[{"op":"add","path":"/metadata/annotations", "value":'$ANNOTATIONS'}]' -n ${NAMESPACE}
+          oc patch secret ${SECRET_NAME} --type='json' -p='[{"op":"add","path":"/metadata/annotations", "value":'$ANNOTATIONS'}]' -n ${NAMESPACE} && rm .env
 
       - name: Build/push image
         if: ${{ needs.setup.outputs.TARGET == 'dev' }}
