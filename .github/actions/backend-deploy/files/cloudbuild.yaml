@@ -19,7 +19,12 @@ steps:
       local env_name=$1
       export APP_ENV=${env_name}
       # Inject environment-specific variables
-      op inject -f -i ./devops/vaults.gcp.env -o "./devops/vaults.${env_name}"
+
+      if [[ -z "$(op inject -f -i ./devops/vaults.gcp.env -o ./devops/vaults.${env_name})" ]]; then
+         echo "Error: failed to generate secrets via 1password vault." >&2
+         exit 1
+      fi
+
 
       # Extract VPC connector and environment variables
       export VPC_CONNECTOR=$(awk -F '=' '/^VPC_CONNECTOR/ {print $2}' "./devops/vaults.${env_name}")

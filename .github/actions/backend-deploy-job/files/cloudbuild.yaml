@@ -37,7 +37,11 @@ steps:
 
       for env_name in "${targets[@]}"; do
         export APP_ENV=${env_name}
-        op inject  -f -i ./devops/vaults.gcp.env -o ./devops/vaults.${env_name}
+
+        if [[ -z "$(op inject -f -i ./devops/vaults.gcp.env -o ./devops/vaults.${env_name})" ]]; then
+           echo "Error: failed to generate secrets via 1password vault." >&2
+           exit 1
+        fi
 
         export VPC_CONNECTOR=$(awk -F '=' '/^VPC_CONNECTOR/ {print $2}' ./devops/vaults.${env_name})
         export VAL=$(awk '{f1=f2=$0; sub(/=.*/,"",f1); sub(/[^=]+=/,"",f2); printf "- name: %s\n  value: %s\n",f1,f2}' ./devops/vaults.${env_name} | sed 's/\"/\"/g')
