@@ -164,8 +164,8 @@ steps:
 
           # replace the yaml
           gcloud run jobs replace ./devops/gcp/k8s/${JOB_NAME}.yaml --project=${JOB_NAMESPACE} --region=${_REGION}
+        done
       done
-    done
     fi
 
 availableSecrets:
