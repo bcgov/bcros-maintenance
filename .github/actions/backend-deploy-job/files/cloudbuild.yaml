@@ -142,13 +142,9 @@ steps:
       do
         JOB_SCRIPT_NAME=$(echo "${file##*/}")
         export COMMAND="./${JOB_SCRIPT_NAME}"
-        for suffix in "" "adhoc";
+        for suffix in "adhoc" "scheduled";
         do
-          if [ "$suffix" = "adhoc" ]; then
-              export JOB_NAME=$(echo "${_APP_NAME}-${_DEPLOY_TARGET}-${suffix}-${JOB_SCRIPT_NAME}" | cut -d'.' -f 1 | tr "_" "-")
-          else
-              export JOB_NAME=$(echo "${_APP_NAME}-${_DEPLOY_TARGET}-${JOB_SCRIPT_NAME}" | cut -d'.' -f 1 | tr "_" "-")
-          fi
+          export JOB_NAME=$(echo "${_APP_NAME}-${_DEPLOY_TARGET}-${suffix}-${JOB_SCRIPT_NAME}" | cut -d'.' -f 1 | tr "_" "-")
 
           # replace job and command
           yq e '.metadata.name = env(JOB_NAME) | .spec.template.spec.template.spec.containers[0].command = env(COMMAND)' \
