@@ -138,28 +138,32 @@ steps:
       yq -i 'del(.metadata.selfLink)' ./devops/gcp/k8s/job.${_DEPLOY_TARGET}.yaml
       yq -i 'del(.metadata.uid)' ./devops/gcp/k8s/job.${_DEPLOY_TARGET}.yaml
 
-      for file in run_*sh;
-      do
-          JOB_SCRIPT_NAME=$(echo "${file##*/}")
-          export JOB_NAME=$(echo ${_APP_NAME}-${_DEPLOY_TARGET}-${JOB_SCRIPT_NAME} | cut  -d'.' -f 1 | tr "_" "-")
-          export COMMAND="./${JOB_SCRIPT_NAME}"
-
-          # replace job and
+      for file in run_*sh; do
+        JOB_SCRIPT_NAME=$(echo "${file##*/}")
+        export COMMAND="./${JOB_SCRIPT_NAME}"
+        for suffix in "" "adhoc"; do
+          if [ "$suffix" = "adhoc" ]; then
+              export JOB_NAME=$(echo "${_APP_NAME}-${_DEPLOY_TARGET}-${suffix}-${JOB_SCRIPT_NAME}" | cut -d'.' -f 1 | tr "_" "-")
+          else
+              export JOB_NAME=$(echo "${_APP_NAME}-${_DEPLOY_TARGET}-${JOB_SCRIPT_NAME}" | cut -d'.' -f 1 | tr "_" "-")
+          fi
+          
+          # replace job and command
           yq e '.metadata.name = env(JOB_NAME) | .spec.template.spec.template.spec.containers[0].command = env(COMMAND)' \
-            ./devops/gcp/k8s/job.${_DEPLOY_TARGET}.yaml > ./devops/gcp/k8s/${JOB_NAME}.yaml
+              ./devops/gcp/k8s/job.${_DEPLOY_TARGET}.yaml > ./devops/gcp/k8s/${JOB_NAME}.yaml
 
           # create job if not exist
           res=$(gcloud run jobs describe $JOB_NAME --project=${JOB_NAMESPACE} --region=${_REGION} || echo "NOT_EXIST")
 
           if [ "$res" = "NOT_EXIST" ]; then
-            echo "Creating your job..."
-            gcloud run jobs create $JOB_NAME --project=${JOB_NAMESPACE} --region=${_REGION}
+              echo "Creating job $JOB_NAME..."
+              gcloud run jobs create $JOB_NAME --project=${JOB_NAMESPACE} --region=${_REGION}
           fi
-
+          
           # replace the yaml
           gcloud run jobs replace ./devops/gcp/k8s/${JOB_NAME}.yaml --project=${JOB_NAMESPACE} --region=${_REGION}
-
       done
+    done
     fi
 
 availableSecrets:
