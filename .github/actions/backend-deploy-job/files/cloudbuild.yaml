@@ -142,7 +142,7 @@ steps:
       do
         JOB_SCRIPT_NAME=$(echo "${file##*/}")
         export COMMAND="./${JOB_SCRIPT_NAME}"
-        for suffix in "adhoc" "scheduled";
+        for suffix in "ops" "scheduled";
         do
           export JOB_NAME=$(echo "${_APP_NAME}-${_DEPLOY_TARGET}-${suffix}-${JOB_SCRIPT_NAME}" | cut -d'.' -f 1 | tr "_" "-")
 
