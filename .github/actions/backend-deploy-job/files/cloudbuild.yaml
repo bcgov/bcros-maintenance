@@ -138,10 +138,12 @@ steps:
       yq -i 'del(.metadata.selfLink)' ./devops/gcp/k8s/job.${_DEPLOY_TARGET}.yaml
       yq -i 'del(.metadata.uid)' ./devops/gcp/k8s/job.${_DEPLOY_TARGET}.yaml
 
-      for file in run_*sh; do
+      for file in run_*sh;
+      do
         JOB_SCRIPT_NAME=$(echo "${file##*/}")
         export COMMAND="./${JOB_SCRIPT_NAME}"
-        for suffix in "" "adhoc"; do
+        for suffix in "" "adhoc";
+        do
           if [ "$suffix" = "adhoc" ]; then
               export JOB_NAME=$(echo "${_APP_NAME}-${_DEPLOY_TARGET}-${suffix}-${JOB_SCRIPT_NAME}" | cut -d'.' -f 1 | tr "_" "-")
           else
