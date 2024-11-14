@@ -18,13 +18,13 @@ bigquery.googleapis.com/projects/${HOST_PROJECT_ID}/datasets/cloud_run_logs_${TA
 # create alerts
 ALERT_POLICIES_DIR="alert_policies"
 
-for policy_file in "$ALERT_POLICIES_DIR"/*.yml; do
+for policy_file in "$ALERT_POLICIES_DIR"/*.json; do
   policy_name=$(basename "$policy_file")
 
   echo "Processing $policy_name..."
 
-  envsubst < "$policy_file" > alert_policy.yml
-  gcloud alpha monitoring policies create --policy-from-file=alert_policy.yml
+  envsubst < "$policy_file" > alert_policy.json
+  gcloud alpha monitoring policies create --policy-from-file=alert_policy.json
 
   if [ $? -eq 0 ]; then
     echo "Successfully created alert policy from $policy_name."
@@ -32,6 +32,6 @@ for policy_file in "$ALERT_POLICIES_DIR"/*.yml; do
     echo "Failed to create alert policy from $policy_name."
   fi
 
-  rm -f alert_policy.yml
+  rm -f alert_policy.json
 
 done
