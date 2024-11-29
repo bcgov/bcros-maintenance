@@ -57,7 +57,7 @@ steps:
       --project="${_BUILD_PROJECT}"
 
 # Step 1: Build and deploy the job
-- name: 'gcr.io/cloud-builders/gcloud'
+- name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
   script: |
     #!/usr/bin/env bash
     set -euo pipefail
