@@ -1,0 +1,20 @@
+privilegedAccess:
+  gcpIamAccess:
+    resourceType: cloudresourcemanager.googleapis.com/Project
+    roleBindings:
+      - role: roleitops
+maxRequestDuration: 28800s
+eligibleUsers:
+  - principals:
+approvalWorkflow:
+  manualApprovals:
+    steps:
+      - approvalsNeeded: 1
+        approverEmailRecipients:
+        approvers:
+          - principals:
+requesterJustificationConfig:
+  unstructured: {}
+additionalNotificationTargets:
+  adminEmailRecipients:
+  requesterEmailRecipients:
