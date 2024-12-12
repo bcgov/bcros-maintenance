@@ -145,19 +145,18 @@ def create_pam_grant_request(request):
     try:
         request_json = request.get_json()
 
-        if not request_json or 'assignee' not in request_json or 'entitlement' not in request_json or 'project' not in request_json:
+        if not request_json or 'assignee' not in request_json or 'entitlement' not in request_json or 'duration' not in request_json:
             return json.dumps({'status': 'error', 'message': 'Missing required fields'}), 400
 
         assignee = request_json['assignee']
         entitlement = request_json['entitlement']
-        project = request_json['project']
         duration = request_json['duration']
 
-        if check_user_in_project(assignee, project):
+        if check_user_in_project(assignee, project_id):
 
             client = resourcemanager_v3.ProjectsClient()
-            project_name = f"projects/{project}"
-            entitlement = f"projects/{project}/roles/{entitlement}"
+            project_name = f"projects/{project_id}"
+            entitlement = f"projects/{project_id}/roles/{entitlement}"
 
             desired_timezone = ZoneInfo("America/Vancouver")
             current_time_utc = datetime.now(timezone.utc)
@@ -209,7 +208,6 @@ def create_pam_grant_request(request):
 
             logging.warning('Role assigned to user')
             create_iam_user(project_number, instance_connection_name, assignee)
-            logging.warning('IAM user created')
             create_one_time_scheduler_job(project_id, 'pam-revoke-topic', entitlement, assignee, duration)
 
             global db

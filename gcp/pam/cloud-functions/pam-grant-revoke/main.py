@@ -6,7 +6,6 @@ from googleapiclient.discovery import build
 from google.cloud import resourcemanager_v3, scheduler_v1
 
 
-
 instance_connection_name = os.environ['DB_INSTANCE_CONNECTION_NAME']
 project_number = os.environ['PROJECT_NUMBER']
 
@@ -14,7 +13,7 @@ project_number = os.environ['PROJECT_NUMBER']
 def remove_iam_binding(project_id, role, email):
     client = resourcemanager_v3.ProjectsClient()
     project_name = f"projects/{project_id}"
-    cond_role = 'roles/' + role + '_withcond_'
+    cond_role = role + '_withcond_'
 
     def modify_policy_remove_member(policy):
         """Callback to remove a member from a specific role."""
