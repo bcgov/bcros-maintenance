@@ -32,6 +32,51 @@ password = response.payload.data.decode("UTF-8")
 # Lazy initialization of global db connection
 db = None
 
+
+def update_project_iam_policy_with_condition(project_id, entitlement, assignee, duration):
+    client = resourcemanager_v3.ProjectsClient()
+    project_name = f"projects/{project_id}"
+    entitlement = f"projects/{project_id}/roles/{entitlement}"
+
+    desired_timezone = ZoneInfo("America/Vancouver")
+    current_time_utc = datetime.now(timezone.utc)
+    expiration_time = (current_time_utc + timedelta(minutes=duration)).astimezone(desired_timezone).isoformat("T")
+
+    condition = expr_pb2.Expr(
+        title="Temporary Access",
+        expression=f"request.time < timestamp('{expiration_time}')"
+    )
+
+    policy = client.get_iam_policy(request={"resource": project_name})
+
+    if policy.version < 3:
+        policy.version = 3
+
+    for binding in policy.bindings:
+        if entitlement in binding.role and f"user:{assignee}" in binding.members:
+            if len(binding.members) > 1:
+                binding.members.remove(f"user:{assignee}")
+                user_removed_from_binding = True
+            else:
+                policy.bindings.remove(binding)
+            break
+
+    new_binding = policy_pb2.Binding(
+        role=entitlement,
+        members=[f"user:{assignee}"],
+        condition=condition,
+    )
+    policy.bindings.append(new_binding)
+
+    client.set_iam_policy(
+        request={
+            "resource": project_name,
+            "policy": policy,
+        }
+    )
+    logging.warning(f'Role {entitlement} assigned to user {assignee}')
+
+
 def check_user_in_project(user_email, project_id):
     client = resourcemanager_v3.ProjectsClient()
     project_name = f"projects/{project_id}"
@@ -152,73 +197,22 @@ def create_pam_grant_request(request):
         entitlement = request_json['entitlement']
         duration = request_json['duration']
 
-        if check_user_in_project(assignee, project_id):
+        if not check_user_in_project(assignee, project_id):
+            return json.dumps({'status': 'error', 'message': 'Unauthorized: User is not part of the project'}), 401
 
-            client = resourcemanager_v3.ProjectsClient()
-            project_name = f"projects/{project_id}"
-            entitlement = f"projects/{project_id}/roles/{entitlement}"
+        update_project_iam_policy_with_condition(project_id, entitlement, assignee, duration)
+        create_iam_user(project_number, instance_connection_name, assignee)
+        create_one_time_scheduler_job(project_id, 'pam-revoke-topic', entitlement, assignee, duration)
 
-            desired_timezone = ZoneInfo("America/Vancouver")
-            current_time_utc = datetime.now(timezone.utc)
-            expiration_time = (current_time_utc + timedelta(minutes=duration)).astimezone(desired_timezone).isoformat("T")
+        global db
+        if not db:
+            db = connect_to_instance_with_retries()
 
-            condition = expr_pb2.Expr(
-                title="Temporary Access",
-                expression=f"request.time < timestamp('{expiration_time}')"
-            )
+        with db.connect() as conn:
+            grant_readonly_statement = f"GRANT readonly TO \"{assignee}\";"
+            conn.execute(sqlalchemy.text(grant_readonly_statement))
 
-
-
-            policy = client.get_iam_policy(request={"resource": project_name})
-
-            # Upgrade policy version to 3 if necessary
-            if policy.version < 3:
-                policy.version = 3
-
-            # Check if the user already has the role assigned
-            existing_binding = None
-            for binding in policy.bindings:
-                if binding.role == entitlement and f"user:{assignee}" in binding.members:
-                    existing_binding = binding
-                    break
-
-            if existing_binding:
-                # If the user already has the role, check if it has conditions
-                if existing_binding.condition:
-                    logging.warning(f"User {assignee} already has the role with a condition. Updating condition.")
-                    existing_binding.condition = condition
-                else:
-                    logging.warning(f"User {assignee} already has the role without a condition. Adding condition.")
-                    existing_binding.condition = condition
-            else:
-                new_binding = policy_pb2.Binding(
-                    role=entitlement,
-                    members=[f"user:{assignee}"],
-                    condition=condition,
-                )
-                policy.bindings.append(new_binding)
-
-            # Update the policy
-            client.set_iam_policy(
-                request={
-                    "resource": project_name,
-                    "policy": policy,
-                }
-            )
-
-            logging.warning('Role assigned to user')
-            create_iam_user(project_number, instance_connection_name, assignee)
-            create_one_time_scheduler_job(project_id, 'pam-revoke-topic', entitlement, assignee, duration)
-
-            global db
-            if not db:
-                db = connect_to_instance_with_retries()
-
-            with db.connect() as conn:
-                grant_readonly_statement = f"GRANT readonly TO \"{assignee}\";"
-                conn.execute(sqlalchemy.text(grant_readonly_statement))
-
-            return json.dumps({'status': 'success', 'message': 'PAM grant request processed successfully'}), 200
+        return json.dumps({'status': 'success', 'message': 'PAM grant request processed successfully'}), 200
 
     except Exception as e:
         logging.error(f"Error creating PAM grant request: {str(e)}")
