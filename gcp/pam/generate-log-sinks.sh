@@ -20,32 +20,17 @@ for ev in "${environments[@]}"
 
             gcloud config set project $PROJECT_ID
 
-            gcloud services enable eventarc.googleapis.com
-
-            gcloud pubsub topics create pam-grant-topic
-            gcloud pubsub topics create pam-revoke-topic
-
             PROJECT_NUMBER=$(gcloud projects describe "${PROJECT_ID}" --format="get(projectNumber)")
 
-            gcloud pubsub topics add-iam-policy-binding pam-grant-topic \
-            --member="serviceAccount:service-${PROJECT_NUMBER}@gcp-sa-logging.iam.gserviceaccount.com" \
-            --role="roles/pubsub.publisher"
+            gcloud pubsub topics create pam-revoke-topic
 
             gcloud pubsub topics add-iam-policy-binding pam-revoke-topic \
-            --member="serviceAccount:service-${PROJECT_NUMBER}@gcp-sa-logging.iam.gserviceaccount.com" \
+            --member="serviceAccount:${PROJECT_NUMBER}-compute@developer.gserviceaccount.com" \
             --role="roles/pubsub.publisher"
 
             gcloud secrets add-iam-policy-binding DATA_WAREHOUSE_SA_TOKEN \
             --member="serviceAccount:${PROJECT_NUMBER}-compute@developer.gserviceaccount.com" \
             --role="roles/secretmanager.secretAccessor"
-
-            gcloud logging sinks create pam-grant-logs-sink \
-            pubsub.googleapis.com/projects/${PROJECT_ID}/topics/pam-grant-topic \
-            --log-filter='protoPayload.methodName="SetIamPolicy" AND protoPayload.serviceData.policyDelta.bindingDeltas.condition:* AND protoPayload.serviceData.policyDelta.bindingDeltas.action="ADD" AND protoPayload.serviceData.policyDelta.bindingDeltas.role:*'
-
-            gcloud logging sinks create pam-revoke-logs-sink \
-            pubsub.googleapis.com/projects/${PROJECT_ID}/topics/pam-revoke-topic \
-            --log-filter='(resource.type="audited_resource" AND (protoPayload.methodName="PAMEndGrant" OR protoPayload.methodName="PAMDeleteGrant")) OR protoPayload.methodName="google.cloud.privilegedaccessmanager.v1alpha.PrivilegedAccessManager.RevokeGrant"'
 
             gcloud projects add-iam-policy-binding "$PROJECT_ID" \
               --member="serviceAccount:${PROJECT_NUMBER}-compute@developer.gserviceaccount.com" \
@@ -56,23 +41,22 @@ for ev in "${environments[@]}"
               --role="roles/iam.serviceAccountAdmin"
 
 
-            gcloud functions deploy pam-update-db-grants \
-              --runtime python312 \
-              --trigger-topic pam-grant-topic \
-              --entry-point pam_event_handler \
-              --source cloud-functions/pam-update-db-grants \
-              --set-env-vars DB_USER=${DB_USER},DB_NAME=${DB_NAME},DB_INSTANCE_CONNECTION_NAME=${DB_INSTANCE_CONNECTION_NAME},PROJECT_NUMBER=${PROJECT_NUMBER},PROJECT_ID=${PROJECT_ID},SECRET_ID=${SECRET_ID} \
-              --region  $REGION \
-              --retry
-
-            gcloud functions deploy pam-revoke-db-grants \
+            gcloud functions deploy pam-grant-revoke \
               --runtime python312 \
               --trigger-topic pam-revoke-topic \
               --entry-point pam_event_handler \
-              --source cloud-functions/pam-revoke-db-grants \
+              --source cloud-functions/pam-grant-revoke \
               --set-env-vars DB_USER=${DB_USER},DB_NAME=${DB_NAME},DB_INSTANCE_CONNECTION_NAME=${DB_INSTANCE_CONNECTION_NAME},PROJECT_NUMBER=${PROJECT_NUMBER},SECRET_ID=${SECRET_ID} \
               --region  $REGION \
               --retry
+
+            gcloud functions deploy pam-request-grant-create \
+            --runtime python312 \
+            --trigger-http \
+            --entry-point create_pam_grant_request \
+            --source cloud-functions/pam-request-grant-create \
+            --set-env-vars DB_USER=${DB_USER},DB_NAME=${DB_NAME},DB_INSTANCE_CONNECTION_NAME=${DB_INSTANCE_CONNECTION_NAME},PROJECT_NUMBER=${PROJECT_NUMBER},PROJECT_ID=${PROJECT_ID},SECRET_ID=${SECRET_ID} \
+            --region $REGION
 
           fi
       done

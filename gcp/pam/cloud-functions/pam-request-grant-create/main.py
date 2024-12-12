@@ -207,8 +207,9 @@ def create_pam_grant_request(request):
                 }
             )
 
-
+            logging.warning('Role assigned to user')
             create_iam_user(project_number, instance_connection_name, assignee)
+            logging.warning('IAM user created')
             create_one_time_scheduler_job(project_id, 'pam-revoke-topic', entitlement, assignee, duration)
 
             global db
