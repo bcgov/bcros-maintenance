@@ -41,7 +41,7 @@ for ev in "${environments[@]}"
 
             gcloud logging sinks create pam-grant-logs-sink \
             pubsub.googleapis.com/projects/${PROJECT_ID}/topics/pam-grant-topic \
-            --log-filter='resource.type="audited_resource" AND protoPayload.methodName="PAMActivateGrant"'
+            --log-filter='protoPayload.methodName="SetIamPolicy" AND protoPayload.serviceData.policyDelta.bindingDeltas.condition:* AND protoPayload.serviceData.policyDelta.bindingDeltas.action="ADD" AND protoPayload.serviceData.policyDelta.bindingDeltas.role:*'
 
             gcloud logging sinks create pam-revoke-logs-sink \
             pubsub.googleapis.com/projects/${PROJECT_ID}/topics/pam-revoke-topic \
@@ -49,14 +49,19 @@ for ev in "${environments[@]}"
 
             gcloud projects add-iam-policy-binding "$PROJECT_ID" \
               --member="serviceAccount:${PROJECT_NUMBER}-compute@developer.gserviceaccount.com" \
-              --role="roles/secretmanager.secretAccessor"
+              --role="roles/cloudsql.admin"
+
+            gcloud projects add-iam-policy-binding "$PROJECT_ID" \
+              --member="serviceAccount:${PROJECT_NUMBER}-compute@developer.gserviceaccount.com" \
+              --role="roles/iam.serviceAccountAdmin"
+
 
             gcloud functions deploy pam-update-db-grants \
               --runtime python312 \
               --trigger-topic pam-grant-topic \
               --entry-point pam_event_handler \
               --source cloud-functions/pam-update-db-grants \
-              --set-env-vars DB_USER=${DB_USER},DB_NAME=${DB_NAME},DB_INSTANCE_CONNECTION_NAME=${DB_INSTANCE_CONNECTION_NAME},PROJECT_NUMBER=${PROJECT_NUMBER},SECRET_ID=${SECRET_ID} \
+              --set-env-vars DB_USER=${DB_USER},DB_NAME=${DB_NAME},DB_INSTANCE_CONNECTION_NAME=${DB_INSTANCE_CONNECTION_NAME},PROJECT_NUMBER=${PROJECT_NUMBER},PROJECT_ID=${PROJECT_ID},SECRET_ID=${SECRET_ID} \
               --region  $REGION \
               --retry
 

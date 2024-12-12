@@ -1,3 +1,9 @@
 functions-framework==3.*
-google-cloud-privilegedaccessmanager
+cloud-sql-python-connector
+google-cloud-resource-manager
+google-cloud-secret-manager
+google-api-python-client
+google-cloud-scheduler
 protobuf
+pg8000
+sqlalchemy

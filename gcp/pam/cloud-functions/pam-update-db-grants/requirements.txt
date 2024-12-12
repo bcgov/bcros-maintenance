@@ -2,3 +2,5 @@ pg8000
 cloud-sql-python-connector
 sqlalchemy
 google-cloud-secret-manager
+google-api-python-client
+google-cloud-scheduler
