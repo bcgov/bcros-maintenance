@@ -74,7 +74,7 @@ def update_project_iam_policy_with_condition(project_id, entitlement, assignee, 
             "policy": policy,
         }
     )
-    logging.warning(f'Role {entitlement} assigned to user {assignee}')
+    logging.info(f'Role {entitlement} assigned to user {assignee}')
 
 
 def check_user_in_project(user_email, project_id):
@@ -127,7 +127,7 @@ def create_one_time_scheduler_job(project_id, topic_name, role, email, duration)
         time_zone="America/Vancouver",
     )
     created_job = client.create_job(parent=parent, job=job)
-    logging.warning(f'Created job: {created_job.name}')
+    logging.info(f'Created job: {created_job.name}')
     return full_name
 
 def create_iam_user(project_id, instance_name, iam_user_email):
@@ -145,7 +145,7 @@ def create_iam_user(project_id, instance_name, iam_user_email):
     )
     response = request.execute()
 
-    logging.warning(f"IAM user {iam_user_email} created successfully!")
+    logging.info(f"IAM user {iam_user_email} created successfully!")
     return response
 
 
@@ -173,7 +173,6 @@ def connect_to_instance_with_retries(retries=5, delay=2) -> sqlalchemy.engine.ba
                 pool_recycle=1800,
             ).execution_options(isolation_level="AUTOCOMMIT")
 
-            logging.warning("Database connection successfully established!")
             return engine
 
         except Exception as e:

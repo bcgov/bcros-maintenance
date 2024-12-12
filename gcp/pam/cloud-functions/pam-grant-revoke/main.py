@@ -14,13 +14,12 @@ def remove_iam_binding(project_id, role, email):
     client = resourcemanager_v3.ProjectsClient()
     project_name = f"projects/{project_id}"
     cond_role = role + '_withcond_'
-
     def modify_policy_remove_member(policy):
         """Callback to remove a member from a specific role."""
         for binding in policy.bindings:
             if cond_role in binding.role and f"user:{email}" in binding.members:
                 binding.members.remove(f"user:{email}")
-                logging.warning(f"Removed IAM binding for {email} in role {role}")
+                logging.info(f"Removed IAM binding for {email} in role {role}")
 
                 if not binding.members:
                     policy.bindings.remove(binding)
@@ -35,7 +34,7 @@ def remove_iam_binding(project_id, role, email):
         client.set_iam_policy(
             request={"resource": project_name, "policy": updated_policy}
         )
-        logging.warning(f"IAM policy updated for project {project_id}")
+        logging.info(f"IAM policy updated for project {project_id}")
     except Exception as e:
         logging.error(f"Error removing IAM binding: {str(e)}")
         raise
@@ -46,7 +45,7 @@ def remove_scheduler_job(full_job_name):
 
     try:
         client.delete_job(name=full_job_name)
-        logging.warning(f"Scheduler job {full_job_name} deleted successfully!")
+        logging.info(f"Scheduler job {full_job_name} deleted successfully!")
     except Exception as e:
         logging.error(f"Error deleting scheduler job {full_job_name}: {str(e)}")
         raise
@@ -60,14 +59,14 @@ def remove_iam_user(project_id, instance_name, iam_user_email):
         name=iam_user_email
     )
     response = request.execute()
-    logging.warning(f"IAM user {iam_user_email} removed successfully!")
+    logging.info(f"IAM user {iam_user_email} removed successfully!")
     return response
 
 def pam_event_handler(event, context):
     try:
-        logging.warning(f"Received event: {event}")
+        logging.info(f"Received event: {event}")
         pubsub_message = base64.b64decode(event['data']).decode('utf-8')
-        logging.warning(f"Decoded message: {pubsub_message}")
+        logging.info(f"Decoded message: {pubsub_message}")
 
         request_json = json.loads(pubsub_message)
 
