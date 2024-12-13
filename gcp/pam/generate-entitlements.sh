@@ -12,6 +12,7 @@ if [[ ! -d "$ENTITLEMENTS_FOLDER" ]]; then
 fi
 
 OUTPUT_FILE="output.yaml"
+REGION="global"
 
 for ev in "${environments[@]}"
   do
@@ -58,7 +59,7 @@ for ev in "${environments[@]}"
                           gcloud beta pam entitlements create \
                               "$ENTITLEMENT" \
                               --entitlement-file="$OUTPUT_FILE" \
-                              --location=global
+                              --location="$REGION"
                       else
                           echo "Error: Output file $OUTPUT_FILE not generated for $INPUT_TEMPLATE_FILE."
                       fi

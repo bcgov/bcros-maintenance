@@ -8,6 +8,7 @@ from zoneinfo import ZoneInfo
 
 from google.cloud import secretmanager, resourcemanager_v3, scheduler_v1
 from google.cloud.sql.connector import Connector, IPTypes
+from google.cloud import privilegedaccessmanager_v1
 from google.iam.v1 import policy_pb2
 from google.type import expr_pb2
 from googleapiclient.discovery import build
@@ -23,6 +24,8 @@ project_number = os.environ['PROJECT_NUMBER']
 project_id = os.environ['PROJECT_ID']
 secret_id = os.environ['SECRET_ID']
 secret_name = f"projects/{project_number}/secrets/{secret_id}/versions/latest"
+region = 'northamerica-northeast1'
+parent = f'projects/{project_id}/locations'
 
 # Fetch the database password from Secret Manager
 client = secretmanager.SecretManagerServiceClient()
@@ -74,32 +77,30 @@ def update_project_iam_policy_with_condition(project_id, entitlement, assignee, 
             "policy": policy,
         }
     )
-    logging.info(f'Role {entitlement} assigned to user {assignee}')
+    logging.warning(f'Role {entitlement} assigned to user {assignee}')
 
 
-def check_user_in_project(user_email, project_id):
-    client = resourcemanager_v3.ProjectsClient()
-    project_name = f"projects/{project_id}"
+def check_pam(user_email, role, project_id):
+    client = privilegedaccessmanager_v1.PrivilegedAccessManagerClient()
 
     try:
-        policy = client.get_iam_policy(request={"resource": project_name})
-
-        for binding in policy.bindings:
-            if f"user:{user_email}" in binding.members:
-                return True
+        response = client.list_entitlements(parent=f'{parent}/global')
+        for entitlement in response:
+            for eligible_user in entitlement.eligible_users:
+                if f'user:{user_email}' in eligible_user.principals:
+                    for binding in entitlement.privileged_access.gcp_iam_access.role_bindings:
+                        if binding.role == f'projects/{project_id}/roles/{role}':
+                            return True
         return False
     except Exception as e:
-        logging.error(f"Error checking user in project: {e}")
         return False
 
 def create_one_time_scheduler_job(project_id, topic_name, role, email, duration):
     client = scheduler_v1.CloudSchedulerClient()
 
-    parent = f"projects/{project_id}/locations/northamerica-northeast1"
-
     unique_id = uuid.uuid4().hex
     job_name = f"pam-update-grant-job-{unique_id}"
-    full_name = f"projects/{project_id}/locations/northamerica-northeast1/jobs/{job_name}"
+    full_name = f"{parent}/{region}/jobs/{job_name}"
 
     message_data = {
         "status": "expired",
@@ -126,8 +127,8 @@ def create_one_time_scheduler_job(project_id, topic_name, role, email, duration)
         schedule=schedule,
         time_zone="America/Vancouver",
     )
-    created_job = client.create_job(parent=parent, job=job)
-    logging.info(f'Created job: {created_job.name}')
+    created_job = client.create_job(parent=f'{parent}/{region}', job=job)
+    logging.warning(f'Created job: {created_job.name}')
     return full_name
 
 def create_iam_user(project_id, instance_name, iam_user_email):
@@ -145,7 +146,7 @@ def create_iam_user(project_id, instance_name, iam_user_email):
     )
     response = request.execute()
 
-    logging.info(f"IAM user {iam_user_email} created successfully!")
+    logging.warning(f"IAM user {iam_user_email} created successfully!")
     return response
 
 
@@ -173,6 +174,7 @@ def connect_to_instance_with_retries(retries=5, delay=2) -> sqlalchemy.engine.ba
                 pool_recycle=1800,
             ).execution_options(isolation_level="AUTOCOMMIT")
 
+            logging.warning("Database connection successfully established!")
             return engine
 
         except Exception as e:
@@ -196,7 +198,7 @@ def create_pam_grant_request(request):
         entitlement = request_json['entitlement']
         duration = request_json['duration']
 
-        if not check_user_in_project(assignee, project_id):
+        if not check_pam(assignee, entitlement, project_id):
             return json.dumps({'status': 'error', 'message': 'Unauthorized: User is not part of the project'}), 401
 
         update_project_iam_policy_with_condition(project_id, entitlement, assignee, duration)

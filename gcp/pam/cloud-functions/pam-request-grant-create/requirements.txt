@@ -2,6 +2,7 @@ functions-framework==3.*
 cloud-sql-python-connector
 google-cloud-resource-manager
 google-cloud-secret-manager
+google-cloud-privilegedaccessmanager
 google-api-python-client
 google-cloud-scheduler
 protobuf
