@@ -197,6 +197,7 @@ def create_pam_grant_request(request):
         assignee = request_json['assignee']
         entitlement = request_json['entitlement']
         duration = request_json['duration']
+        robot = request_json['robot']
 
         pam = check_pam(assignee, entitlement, project_id)
         duration = min(pam[1] / 60, duration)
@@ -204,7 +205,8 @@ def create_pam_grant_request(request):
         if not pam[0]:
             return json.dumps({'status': 'error', 'message': 'Unauthorized: User is not part of the project'}), 401
 
-        update_project_iam_policy_with_condition(project_id, entitlement, assignee, duration)
+        if robot:
+            update_project_iam_policy_with_condition(project_id, entitlement, assignee, duration)
         create_iam_user(project_number, instance_connection_name, assignee)
         create_one_time_scheduler_job(project_id, 'pam-revoke-topic', entitlement, assignee, duration)
 
