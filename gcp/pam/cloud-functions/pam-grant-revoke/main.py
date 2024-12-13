@@ -80,7 +80,14 @@ def pam_event_handler(event, context):
 
         grant = request_json.get('grant', {})
 
-        remove_iam_binding(project_number, grant, email)
+        if not grant:
+            logging.warning("Role grant not found in the event")
+            return "Role not found in the Pub/Sub message payload", 400
+
+        robot = request_json.get('robot', {})
+
+        if robot:
+            remove_iam_binding(project_number, grant, email)
 
         job_name = request_json.get('job_name', {})
 
