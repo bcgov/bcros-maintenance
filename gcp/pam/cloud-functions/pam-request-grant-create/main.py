@@ -90,10 +90,10 @@ def check_pam(user_email, role, project_id):
                 if f'user:{user_email}' in eligible_user.principals:
                     for binding in entitlement.privileged_access.gcp_iam_access.role_bindings:
                         if binding.role == f'projects/{project_id}/roles/{role}':
-                            return True
-        return False
+                            return True, entitlement.max_request_duration.seconds
+        return False, 0
     except Exception as e:
-        return False
+        return False, 0
 
 def create_one_time_scheduler_job(project_id, topic_name, role, email, duration):
     client = scheduler_v1.CloudSchedulerClient()
@@ -198,7 +198,10 @@ def create_pam_grant_request(request):
         entitlement = request_json['entitlement']
         duration = request_json['duration']
 
-        if not check_pam(assignee, entitlement, project_id):
+        pam = check_pam(assignee, entitlement, project_id)
+        duration = min(pam[1] / 60, duration)
+
+        if not pam[0]:
             return json.dumps({'status': 'error', 'message': 'Unauthorized: User is not part of the project'}), 401
 
         update_project_iam_policy_with_condition(project_id, entitlement, assignee, duration)
