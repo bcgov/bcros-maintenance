@@ -87,7 +87,7 @@ def check_pam(user_email, role, project_id):
         response = client.list_entitlements(parent=f'{parent}/global')
         for entitlement in response:
             for eligible_user in entitlement.eligible_users:
-                if f'user:{user_email}' in eligible_user.principals:
+                if any(f'{prefix}:{user_email}' in eligible_user.principals for prefix in ['user', 'serviceAccount']):
                     for binding in entitlement.privileged_access.gcp_iam_access.role_bindings:
                         if binding.role == f'projects/{project_id}/roles/{role}':
                             return True, entitlement.max_request_duration.seconds
@@ -132,23 +132,37 @@ def create_one_time_scheduler_job(project_id, topic_name, role, email, duration,
     logging.warning(f'Created job: {created_job.name}')
     return full_name
 
+
 def create_iam_user(project_id, instance_name, iam_user_email):
     service = build("sqladmin", "v1beta4")
 
+    if iam_user_email.endswith(f"gserviceaccount.com"):
+        user_name = iam_user_email.replace(".gserviceaccount.com", "")
+        user_type = "CLOUD_IAM_SERVICE_ACCOUNT"
+    else:
+        user_name = iam_user_email
+        user_type = "CLOUD_IAM_USER"
+
     user_body = {
-        "name": iam_user_email,
-        "type": "CLOUD_IAM_USER"
+        "name": user_name,
+        "type": user_type
     }
 
-    request = service.users().insert(
-        project=project_id,
-        instance=instance_name.split(":")[-1],
-        body=user_body
-    )
-    response = request.execute()
+    try:
+        request = service.users().insert(
+            project=project_id,
+            instance=instance_name.split(":")[-1],
+            body=user_body
+        )
+        response = request.execute()
 
-    logging.warning(f"IAM user {iam_user_email} created successfully!")
-    return response
+        logging.warning(f"IAM user {iam_user_email} created successfully!")
+        return response
+
+    except Exception as e:
+        logging.error(f"Error creating IAM user: {str(e)}")
+        raise
+
 
 
 def connect_to_instance_with_retries(retries=5, delay=2) -> sqlalchemy.engine.base.Engine:
@@ -216,6 +230,8 @@ def create_pam_grant_request(request):
             db = connect_to_instance_with_retries()
 
         with db.connect() as conn:
+            if assignee.endswith(f"gserviceaccount.com"):
+                assignee = assignee.replace(".gserviceaccount.com", "")
             grant_readonly_statement = f"GRANT readonly TO \"{assignee}\";"
             conn.execute(sqlalchemy.text(grant_readonly_statement))
 
