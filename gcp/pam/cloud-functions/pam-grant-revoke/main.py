@@ -27,9 +27,12 @@ def remove_iam_binding(project_id, role, email):
         return policy
 
     try:
-        policy = client.get_iam_policy(request={"resource": project_name})
-        if policy.version < 3:
-            policy.version = 3
+        policy_request = {
+                "resource": project_name,
+                "options": {"requested_policy_version": 3},
+        }
+
+        policy = client.get_iam_policy(request=policy_request)
         updated_policy = modify_policy_remove_member(policy)
         client.set_iam_policy(
             request={"resource": project_name, "policy": updated_policy}

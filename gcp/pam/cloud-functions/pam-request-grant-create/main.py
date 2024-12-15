@@ -50,10 +50,12 @@ def update_project_iam_policy_with_condition(project_id, entitlement, assignee, 
         expression=f"request.time < timestamp('{expiration_time}')"
     )
 
-    policy = client.get_iam_policy(request={"resource": project_name})
+    policy_request = {
+        "resource": project_name,
+        "options": {"requested_policy_version": 3},
+    }
 
-    if policy.version < 3:
-        policy.version = 3
+    policy = client.get_iam_policy(request=policy_request)
 
     for binding in policy.bindings:
         if entitlement in binding.role and f"user:{assignee}" in binding.members:
@@ -101,6 +103,9 @@ def create_one_time_scheduler_job(project_id, topic_name, role, email, duration,
     unique_id = uuid.uuid4().hex
     job_name = f"pam-update-grant-job-{unique_id}"
     full_name = f"{parent}/{region}/jobs/{job_name}"
+
+    if email.endswith(f"gserviceaccount.com"):
+        email = email.replace(".gserviceaccount.com", "")
 
     message_data = {
         "status": "expired",
