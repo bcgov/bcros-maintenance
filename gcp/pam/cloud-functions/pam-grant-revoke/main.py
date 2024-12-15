@@ -13,14 +13,11 @@ project_number = os.environ['PROJECT_NUMBER']
 def remove_iam_binding(project_id, role, email):
     client = resourcemanager_v3.ProjectsClient()
     project_name = f"projects/{project_id}"
-    cond_role = role + '_withcond_'
     def modify_policy_remove_member(policy):
         """Callback to remove a member from a specific role."""
         for binding in policy.bindings:
-            if cond_role in binding.role and f"user:{email}" in binding.members:
+            if role in binding.role and f"user:{email}" in binding.members and binding.condition:
                 binding.members.remove(f"user:{email}")
-                logging.info(f"Removed IAM binding for {email} in role {role}")
-
                 if not binding.members:
                     policy.bindings.remove(binding)
 

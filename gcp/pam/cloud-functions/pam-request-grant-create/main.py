@@ -57,6 +57,9 @@ def update_project_iam_policy_with_condition(project_id, entitlement, assignee, 
 
     policy = client.get_iam_policy(request=policy_request)
 
+    if policy.version < 3:
+        policy.version = 3
+
     for binding in policy.bindings:
         if entitlement in binding.role and f"user:{assignee}" in binding.members:
             if len(binding.members) > 1:
