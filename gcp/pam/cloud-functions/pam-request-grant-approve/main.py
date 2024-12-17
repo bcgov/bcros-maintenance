@@ -3,32 +3,14 @@ import json
 import logging
 import requests
 import os
-from flask import Request
 
 processor_url = os.environ['CREATE_URL']
 
-def pam_event_handler(request: Request):
+def pam_event_handler(event, context):
     try:
-        logging.warning(f"Raw request data: {request.data}")
-
-        envelope = request.get_json(silent=True)
-        if not envelope:
-            logging.error("Invalid Pub/Sub message format")
-            return "Invalid Pub/Sub message format", 400
-
-        if 'message' not in envelope:
-            logging.error("Missing 'message' field in the Pub/Sub payload")
-            return "Missing 'message' field in Pub/Sub payload", 400
-
-        pubsub_message = envelope['message']
-        data = pubsub_message.get('data')
-
-        if not data:
-            logging.error("Missing 'data' field in the Pub/Sub message")
-            return "Missing 'data' field in Pub/Sub message", 400
-
-        decoded_message = base64.b64decode(data).decode('utf-8')
-        logging.warning(f"Decoded message: {decoded_message}")
+        logging.info(f"Received event: {event}")
+        pubsub_message = base64.b64decode(event['data']).decode('utf-8')
+        logging.info(f"Decoded message: {pubsub_message}")
 
         request_json = json.loads(decoded_message)
 
