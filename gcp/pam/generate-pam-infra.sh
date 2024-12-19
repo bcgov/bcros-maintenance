@@ -71,7 +71,8 @@ for ev in "${environments[@]}"
             --entry-point create_pam_grant_request \
             --source cloud-functions/pam-request-grant-create \
             --set-env-vars DB_USER=${DB_USER},DB_NAME=${DB_NAME},DB_INSTANCE_CONNECTION_NAME=${DB_INSTANCE_CONNECTION_NAME},PROJECT_NUMBER=${PROJECT_NUMBER},PROJECT_ID=${PROJECT_ID},SECRET_ID=${DB_PASSWORD_SECRET_ID} \
-            --region $REGION
+            --region $REGION \
+            --no-allow-unauthenticated
 
             gcloud functions deploy pam-request-grant-approve \
             --runtime python312 \

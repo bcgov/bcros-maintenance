@@ -212,6 +212,7 @@ def connect_to_instance_with_retries(retries=5, delay=2) -> sqlalchemy.engine.ba
 @functions_framework.http
 def create_pam_grant_request(request):
     try:
+        logging.warning(f"Request body: {request.get_data(as_text=True)}")
         request_json = request.get_json()
 
         if not request_json or 'assignee' not in request_json or 'entitlement' not in request_json or 'duration' not in request_json:
