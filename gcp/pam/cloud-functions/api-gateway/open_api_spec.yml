@@ -1,0 +1,93 @@
+swagger: "2.0"
+info:
+  title: PAM Grant Request API
+  description: API for creating Privileged Access Manager (PAM) grant requests.
+  version: 1.0.0
+host: northamerica-northeast1-mvnjri-prod.cloudfunctions.net
+basePath: /
+schemes:
+  - https
+paths:
+  /pam-request-grant-create:
+    post:
+      operationId: createPamGrantRequest
+      summary: Create a PAM Grant Request
+      description: Processes a PAM grant request with specific entitlement, assignee, and duration.
+      parameters:
+        - in: body
+          name: body
+          description: Request payload containing assignee, entitlement, duration, and robot flag.
+          required: true
+          schema:
+            type: object
+            properties:
+              assignee:
+                type: string
+                description: Email of the assignee.
+                example: user@gov.bc.ca
+              entitlement:
+                type: string
+                description: Role entitlement for the project.
+                example: roleitops
+              duration:
+                type: integer
+                description: Duration of the grant in minutes.
+                example: 60
+              robot:
+                type: boolean
+                description: Indicates if the request is from a service account.
+                example: false
+      responses:
+        200:
+          description: Successful processing of the PAM grant request.
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                example: success
+              message:
+                type: string
+                example: PAM grant request processed successfully
+        400:
+          description: Missing or invalid request payload.
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                example: error
+              message:
+                type: string
+                example: Missing required fields
+        401:
+          description: Unauthorized request.
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                example: error
+              message:
+                type: string
+                example: "Unauthorized: User is not part of the project"
+        500:
+          description: Internal server error.
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                example: error
+              message:
+                type: string
+                example: An error occurred while processing the request
+      x-google-backend:
+        address: https://northamerica-northeast1-mvnjri-prod.cloudfunctions.net/pam-request-grant-create
+securityDefinitions:
+  api_key:
+    type: apiKey
+    name: key
+    in: query
+security:
+  - api_key: []
