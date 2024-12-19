@@ -6,9 +6,10 @@ declare -a projects=("mvnjri")
 declare -a environments=("prod")
 DB_USER="pay"
 DB_NAME="fin_warehouse"
-SECRET_ID="DATA_WAREHOUSE_PAY_PASSWORD"
+DB_PASSWORD_SECRET_ID="DATA_WAREHOUSE_PAY_PASSWORD"
+PAM_API_KEY_SECRET_ID="PAM_API_KEY"
+PAM_API_URL_SECRET_ID="PAM_API_URL"
 DB_INSTANCE_CONNECTION_NAME="mvnjri-prod:northamerica-northeast1:fin-warehouse-prod"
-CREATE_URL="https://northamerica-northeast1-mvnjri-prod.cloudfunctions.net/pam-request-grant-create"
 
 for ev in "${environments[@]}"
   do
@@ -60,7 +61,7 @@ for ev in "${environments[@]}"
               --trigger-topic pam-revoke-topic \
               --entry-point pam_event_handler \
               --source cloud-functions/pam-grant-revoke \
-              --set-env-vars DB_USER=${DB_USER},DB_NAME=${DB_NAME},DB_INSTANCE_CONNECTION_NAME=${DB_INSTANCE_CONNECTION_NAME},PROJECT_NUMBER=${PROJECT_NUMBER},SECRET_ID=${SECRET_ID} \
+              --set-env-vars DB_INSTANCE_CONNECTION_NAME=${DB_INSTANCE_CONNECTION_NAME},PROJECT_NUMBER=${PROJECT_NUMBER} \
               --region  $REGION \
               --retry
 
@@ -69,7 +70,7 @@ for ev in "${environments[@]}"
             --trigger-http \
             --entry-point create_pam_grant_request \
             --source cloud-functions/pam-request-grant-create \
-            --set-env-vars DB_USER=${DB_USER},DB_NAME=${DB_NAME},DB_INSTANCE_CONNECTION_NAME=${DB_INSTANCE_CONNECTION_NAME},PROJECT_NUMBER=${PROJECT_NUMBER},PROJECT_ID=${PROJECT_ID},SECRET_ID=${SECRET_ID} \
+            --set-env-vars DB_USER=${DB_USER},DB_NAME=${DB_NAME},DB_INSTANCE_CONNECTION_NAME=${DB_INSTANCE_CONNECTION_NAME},PROJECT_NUMBER=${PROJECT_NUMBER},PROJECT_ID=${PROJECT_ID},SECRET_ID=${DB_PASSWORD_SECRET_ID} \
             --region $REGION
 
             gcloud functions deploy pam-request-grant-approve \
@@ -77,7 +78,7 @@ for ev in "${environments[@]}"
             --trigger-topic pam-approve-topic \
             --entry-point pam_event_handler \
             --source cloud-functions/pam-request-grant-approve \
-            --set-env-vars CREATE_URL=$CREATE_URL \
+            --set-env-vars PROJECT_NUMBER=${PROJECT_NUMBER},PAM_API_URL_SECRET_ID=${PAM_API_URL_SECRET_ID},PAM_API_KEY_SECRET_ID=${PAM_API_KEY_SECRET_ID} \
             --region $REGION
 
             # gcloud functions deploy pam-grant-test \
