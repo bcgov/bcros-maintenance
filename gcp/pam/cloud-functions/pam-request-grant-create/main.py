@@ -215,13 +215,14 @@ def create_pam_grant_request(request):
         logging.warning(f"Request body: {request.get_data(as_text=True)}")
         request_json = request.get_json()
 
-        if not request_json or 'assignee' not in request_json or 'entitlement' not in request_json or 'duration' not in request_json:
+        if not request_json or 'assignee' not in request_json or 'entitlement' not in request_json or 'duration' not in request_json or 'permissions' not in request_json:
             return json.dumps({'status': 'error', 'message': 'Missing required fields'}), 400
 
         assignee = request_json['assignee']
         entitlement = request_json['entitlement']
         duration = request_json['duration']
         robot = request_json['robot']
+        permissions = request_json['permissions']
 
         pam = check_pam(assignee, entitlement, project_id)
         duration = min(pam[1] / 60, duration)
@@ -241,7 +242,7 @@ def create_pam_grant_request(request):
         with db.connect() as conn:
             if assignee.endswith(f"gserviceaccount.com"):
                 assignee = assignee.replace(".gserviceaccount.com", "")
-            grant_readonly_statement = f"GRANT readonly TO \"{assignee}\";"
+            grant_readonly_statement = f"GRANT {permissions} TO \"{assignee}\";"
             conn.execute(sqlalchemy.text(grant_readonly_statement))
 
         return json.dumps({'status': 'success', 'message': 'PAM grant request processed successfully'}), 200
