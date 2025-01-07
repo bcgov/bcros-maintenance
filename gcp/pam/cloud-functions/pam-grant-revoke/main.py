@@ -72,6 +72,7 @@ def remove_iam_user(project_id, instance_name, iam_user_email):
     logging.info(f"IAM user {iam_user_email} removed successfully!")
     return response
 
+
 def pam_event_handler(event, context):
     try:
         logging.info(f"Received event: {event}")
@@ -81,29 +82,38 @@ def pam_event_handler(event, context):
         request_json = json.loads(pubsub_message)
 
         email = request_json.get('user', {})
-
         if not email:
             logging.warning("Email not found in the event")
             return "Email not found in the Pub/Sub message payload", 400
 
-        remove_iam_user(project_number, instance_connection_name, email)
+        try:
+            remove_iam_user(project_number, instance_connection_name, email)
+            logging.info(f"Successfully removed IAM user: {email}")
+        except Exception as e:
+            logging.error(f"Failed to remove IAM user {email}: {str(e)}")
 
         grant = request_json.get('grant', {})
-
         if not grant:
             logging.warning("Role grant not found in the event")
             return "Role not found in the Pub/Sub message payload", 400
 
         robot = request_json.get('robot', {})
-
         if robot:
-            remove_iam_binding(project_number, grant, email)
+            try:
+                remove_iam_binding(project_number, grant, email)
+                logging.info(f"Successfully removed IAM binding for {email} with role {grant}")
+            except Exception as e:
+                logging.error(f"Failed to remove IAM binding for {email} with role {grant}: {str(e)}")
 
         job_name = request_json.get('job_name', {})
+        if job_name:
+            try:
+                remove_scheduler_job(job_name)
+                logging.info(f"Successfully removed scheduler job: {job_name}")
+            except Exception as e:
+                logging.error(f"Failed to remove scheduler job {job_name}: {str(e)}")
 
-        remove_scheduler_job(job_name)
-
-        return f"Successfully processed the event for {email}", 200
+        return f"Processed the event for {email} with possible errors; check logs for details.", 200
 
     except KeyError as e:
         logging.error(f"Missing payload key: {str(e)}")
