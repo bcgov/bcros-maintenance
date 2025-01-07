@@ -13,20 +13,29 @@ project_number = os.environ['PROJECT_NUMBER']
 def remove_iam_binding(project_id, role, email):
     client = resourcemanager_v3.ProjectsClient()
     project_name = f"projects/{project_id}"
+
     def modify_policy_remove_member(policy):
         """Callback to remove a member from a specific role."""
         for binding in policy.bindings:
-            if role in binding.role and f"user:{email}" in binding.members and binding.condition:
-                binding.members.remove(f"user:{email}")
-                if not binding.members:
-                    policy.bindings.remove(binding)
+            if role in binding.role:
+                # Find the exact member using a case-insensitive comparison
+                members_lower_map = {member.lower(): member for member in binding.members}
+                email_lower = email.lower()
 
+                if f"user:{email_lower}" in members_lower_map and binding.condition:
+                    # Remove the exact matching member
+                    exact_member = members_lower_map[f"user:{email_lower}"]
+                    binding.members.remove(exact_member)
+
+                    # If no members remain, remove the entire binding
+                    if not binding.members:
+                        policy.bindings.remove(binding)
         return policy
 
     try:
         policy_request = {
-                "resource": project_name,
-                "options": {"requested_policy_version": 3},
+            "resource": project_name,
+            "options": {"requested_policy_version": 3},
         }
 
         policy = client.get_iam_policy(request=policy_request)
@@ -38,6 +47,7 @@ def remove_iam_binding(project_id, role, email):
     except Exception as e:
         logging.error(f"Error removing IAM binding: {str(e)}")
         raise
+
 
 
 def remove_scheduler_job(full_job_name):
