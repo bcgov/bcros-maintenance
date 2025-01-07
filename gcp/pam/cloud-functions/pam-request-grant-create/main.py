@@ -86,19 +86,23 @@ def update_project_iam_policy_with_condition(project_id, entitlement, assignee, 
 
 
 def check_pam(user_email, role, project_id):
+
     client = privilegedaccessmanager_v1.PrivilegedAccessManagerClient()
 
     try:
         response = client.list_entitlements(parent=f'{parent}/global')
+        user_email_lower = user_email.lower()  # Convert user_email to lowercase
         for entitlement in response:
             for eligible_user in entitlement.eligible_users:
-                if any(f'{prefix}:{user_email}' in eligible_user.principals for prefix in ['user', 'serviceAccount']):
+                # Check if user_email exists in eligible_user.principals (case-insensitive)
+                if any(f'{prefix}:{user_email_lower}' in principal.lower() for principal in eligible_user.principals for prefix in ['user', 'serviceAccount']):
                     for binding in entitlement.privileged_access.gcp_iam_access.role_bindings:
                         if binding.role == f'projects/{project_id}/roles/{role}':
                             return True, entitlement.max_request_duration.seconds
         return False, 0
     except Exception as e:
         return False, 0
+
 
 def create_one_time_scheduler_job(project_id, topic_name, role, email, duration, robot):
     client = scheduler_v1.CloudSchedulerClient()
