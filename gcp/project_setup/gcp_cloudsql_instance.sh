@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Variables
-TARGET_PROJECT_ID="mvnjri"
+TARGET_PROJECT_ID=""
 INSTANCE_NAME=""
 ENV="prod"
 TAG="prod" # this might be different from env, e.g. sandbox vs tools
