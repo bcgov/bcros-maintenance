@@ -14,6 +14,14 @@ gcloud config set project "${TARGET_PROJECT_ID}-${ENV}"
 
 gcloud services enable servicenetworking.googleapis.com --project="${TARGET_PROJECT_ID}-${ENV}"
 
+# create the dataset only once
+# bq mk --location=$REGION --dataset ${HOST_PROJECT_ID}-${ENV}:cloudsql_audit_logs_${TAG}
+
+gcloud logging sinks create cloudsql_audit_logs_${TAG} \
+bigquery.googleapis.com/projects/${HOST_PROJECT_ID}-${ENV}/datasets/cloudsql_audit_logs_${TAG} \
+--log-filter="logName=\"projects/${TARGET_PROJECT_ID}-${ENV}/logs/cloudaudit.googleapis.com%2Fdata_access\" AND resource.type=\"cloudsql_database\" AND protoPayload.serviceName=\"cloudsql.googleapis.com\" AND protoPayload.methodName=\"cloudsql.instances.query\"" \
+--use-partitioned-tables
+
 gcloud sql instances create "${INSTANCE_NAME}-${TAG}" \
     --database-version=$POSTGRES_VERSION \
     --region=$REGION \
