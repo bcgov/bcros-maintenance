@@ -95,7 +95,7 @@ def check_pam(user_email, role, project_id):
         for entitlement in response:
             for eligible_user in entitlement.eligible_users:
                 # Check if user_email exists in eligible_user.principals (case-insensitive)
-                if any(f'{prefix}:{user_email_lower}' in principal.lower() for principal in eligible_user.principals for prefix in ['user', 'serviceAccount']):
+                if any(f'{prefix}:{user_email_lower}' in principal.lower() for principal in eligible_user.principals for prefix in ['user', 'serviceaccount']):
                     for binding in entitlement.privileged_access.gcp_iam_access.role_bindings:
                         if binding.role == f'projects/{project_id}/roles/{role}':
                             return True, entitlement.max_request_duration.seconds

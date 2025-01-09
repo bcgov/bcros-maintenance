@@ -6,6 +6,9 @@ import os
 from google.cloud import secretmanager
 
 project_number = os.environ['PROJECT_NUMBER']
+permissions = os.environ['DB_PERMISSIONS']
+entitlement = os.environ['GCP_ENTITLEMENT']
+database = os.environ['DB_NAME']
 pam_api_secret_id = os.environ['PAM_API_KEY_SECRET_ID']
 pam_api_secret_name = f"projects/{project_number}/secrets/{pam_api_secret_id}/versions/latest"
 client = secretmanager.SecretManagerServiceClient()
@@ -72,6 +75,9 @@ def pam_event_handler(event, context):
             "assignee": email,
             "entitlement": role_name,
             "duration": minutes,
+            "entitlement": entitlement,
+            "permissions": permissions,
+            "database": database,
             "robot": False
         }
 
