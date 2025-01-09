@@ -10,7 +10,7 @@
   "dependencies": {
     "@google-cloud/functions-framework": "^3.1.2",
     "@google-cloud/synthetics-sdk-mocha": "^0.1.1",
-    "chai": "^4.3.0",
+    "chai": "^5.0.0",
     "dotenv": "^16.4.5",
     "mocha-url-ok": "file:",
     "node-fetch": "^2.6.0",
