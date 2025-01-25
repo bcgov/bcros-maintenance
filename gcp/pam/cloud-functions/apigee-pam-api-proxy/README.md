@@ -65,7 +65,7 @@ SA_ID_TOKEN=$(curl -X POST -H "Authorization: Bearer $(gcloud auth print-access-
 Make sure `apigee-prod-sa@okagqp-prod.iam.gserviceaccount.com` has the `Cloud Functions Invoker` role.
 
 ```bash
-gcloud functions add-invoker-policy-binding "pam-request-grant-create" --member="serviceAccount:apigee-prod-sa@okagqp-prod.iam.gserviceaccount.com" --region="northamerica-northeast1" --project="mvnjri-prod"
+gcloud functions add-invoker-policy-binding "pam-request-grant-create" --member="serviceAccount:apigee-prod-sa@okagqp-prod.iam.gserviceaccount.com" --region="northamerica-northeast1" --project="<TARGET_PROJECT_ID>"
 ```
 
 Now, call the Cloud Function:
