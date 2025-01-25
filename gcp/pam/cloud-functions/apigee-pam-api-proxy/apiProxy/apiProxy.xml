@@ -1,0 +1,3 @@
+<APIProxy name="pam-create-proxy">
+  <Description>Proxy for database PAM routing</Description>
+</APIProxy>

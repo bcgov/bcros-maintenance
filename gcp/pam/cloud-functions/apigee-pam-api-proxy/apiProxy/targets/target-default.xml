@@ -1,0 +1,15 @@
+<TargetEndpoint name="target-default">
+  <HTTPTargetConnection>
+    <Authentication>
+      <GoogleIDToken>
+        <Audience useTargetUrl='true'></Audience>
+        <IncludeEmail>true</IncludeEmail>
+      </GoogleIDToken>
+    </Authentication>
+    <SSLInfo>
+      <Enabled>true</Enabled>
+      <Enforce>true</Enforce>
+    </SSLInfo>
+    <URL>{pam.api.url}</URL>
+  </HTTPTargetConnection>
+</TargetEndpoint>

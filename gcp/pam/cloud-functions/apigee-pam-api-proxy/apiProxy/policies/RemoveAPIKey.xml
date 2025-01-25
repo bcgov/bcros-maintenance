@@ -1,0 +1,7 @@
+<AssignMessage name="RemoveAPIKey">
+  <Remove>
+       <Headers>
+         <Header name="X-API-Key"/>
+       </Headers>
+  </Remove>
+</AssignMessage>

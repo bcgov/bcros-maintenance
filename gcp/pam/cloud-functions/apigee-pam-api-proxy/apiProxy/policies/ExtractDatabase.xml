@@ -1,0 +1,7 @@
+<Javascript name="ExtractDatabase">
+  <Source>
+    var payload = JSON.parse(request.content);
+    var database = payload.database;
+    context.setVariable("target.database", database);
+  </Source>
+</Javascript>

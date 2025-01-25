@@ -1,0 +1,10 @@
+<Javascript name="RouteToBackend">
+  <Source>
+    var database = context.getVariable("target.database");
+    if (database === "warehouse") {
+      context.setVariable("pam.api.url", "https://northamerica-northeast1-mvnjri-prod.cloudfunctions.net/pam-request-grant-create");
+    } else {
+      throw new Error("Invalid database");
+    }
+  </Source>
+</Javascript>

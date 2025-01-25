@@ -1,0 +1,30 @@
+<ProxyEndpoint name="default">
+  <HTTPProxyConnection>
+    <BasePath>/registries/pam/create</BasePath> <!-- Define the API base path -->
+    <VirtualHosts>
+      <VirtualHost>default</VirtualHost> <!-- Reference the default virtual host -->
+    </VirtualHosts>
+  </HTTPProxyConnection>
+
+  <PreFlow>
+    <Request>
+      <Step>
+        <Name>VerifyAPIKey</Name>
+      </Step>
+      <Step>
+        <Name>RemoveAPIKey</Name>
+      </Step>
+      <Step>
+        <Name>ExtractDatabase</Name> <!-- Extract 'database' from the payload -->
+      </Step>
+      <Step>
+        <Name>RouteToBackend</Name> <!-- Set the target URL based on 'database' -->
+      </Step>
+    </Request>
+    <Response/>
+  </PreFlow>
+
+  <RouteRule name="default">
+    <TargetEndpoint>target-default</TargetEndpoint>
+  </RouteRule>
+</ProxyEndpoint>
