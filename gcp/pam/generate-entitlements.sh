@@ -1,6 +1,8 @@
 #!/bin/bash
 
-declare -a projects=("mvnjri")
+# declare -a projects=("mvnjri")
+
+projects=("$@")
 
 declare -a environments=("prod")
 

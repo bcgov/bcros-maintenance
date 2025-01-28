@@ -20,6 +20,7 @@ import functions_framework
 instance_connection_name = os.environ['DB_INSTANCE_CONNECTION_NAME']
 username = os.environ['DB_USER']
 dbname = os.environ['DB_NAME']
+pubsub_topic = os.environ['PUBSUB_TOPIC']
 project_number = os.environ['PROJECT_NUMBER']
 project_id = os.environ['PROJECT_ID']
 secret_id = os.environ['SECRET_ID']
@@ -237,7 +238,7 @@ def create_pam_grant_request(request):
         if robot:
             update_project_iam_policy_with_condition(project_id, entitlement, assignee, duration)
         create_iam_user(project_number, instance_connection_name, assignee)
-        create_one_time_scheduler_job(project_id, 'pam-revoke-topic', entitlement, assignee, duration, robot)
+        create_one_time_scheduler_job(project_id, pubsub_topic, entitlement, assignee, duration, robot)
 
         global db
         if not db:

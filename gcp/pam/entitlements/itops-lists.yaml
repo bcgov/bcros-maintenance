@@ -1,6 +1,5 @@
 emailLists:
   requesters:
     - andriy.bolyachevets@gov.bc.ca
-    - 560428767344-compute@developer.gserviceaccount.com
   approvers:
     - andriy.bolyachevets@gov.bc.ca
