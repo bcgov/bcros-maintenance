@@ -2,16 +2,19 @@
 
 # 1. Create secret with db user password
 # 2. Update projects array - only add a single project id for the db if adding a single new db
+# 3. Enable PAM in the console
 # 3. Update list of users in PAM entitlement
 # 4. Update apigee endpoint - need to include new URLs to the policy
-# 5. Need to update audit flags
+# 5. Update audit flags
 
 REGION="northamerica-northeast1"
 APIGEE_SA="apigee-prod-sa@okagqp-prod.iam.gserviceaccount.com"
+BUCKET="gs://fin-warehouse"
+DB_ROLES_BUCKET="${BUCKET}/users"
 
-# declare -a projects=("mvnjri" "c4hnrd")
+# declare -a projects=("mvnjri" "c4hnrd" "gtksf3")
 
-declare -a projects=("c4hnrd")
+declare -a projects=("gtksf3")
 declare -a environments=("prod")
 
 declare -A DB_USERS
@@ -29,6 +32,11 @@ DB_USERS["c4hnrd-prod"]="notifyuser,user4ca"
 DB_NAMES["c4hnrd-prod"]="notify,docs"
 DB_INSTANCE_CONNECTION_NAMES["c4hnrd-prod"]="c4hnrd-prod:northamerica-northeast1:notify-db-prod,c4hnrd-prod:northamerica-northeast1:common-db-prod"
 DB_PASSWORD_SECRET_IDS["c4hnrd-prod"]="NOTIFY_USER_PASSWORD,USER4CA_PASSWORD"
+
+DB_USERS["gtksf3-prod"]="postgres"
+DB_NAMES["gtksf3-prod"]="auth-db"
+DB_INSTANCE_CONNECTION_NAMES["gtksf3-prod"]="gtksf3-prod:northamerica-northeast1:auth-db-prod"
+DB_PASSWORD_SECRET_IDS["gtksf3-prod"]="AUTH_USER_PASSWORD"
 
 for ev in "${environments[@]}"
 do
@@ -71,10 +79,24 @@ do
                 DB_NAME="${DB_NAME_ARRAY[i]}"
                 DB_INSTANCE_CONNECTION_NAME="${DB_INSTANCE_ARRAY[i]}"
                 DB_PASSWORD_SECRET_ID="${DB_PASSWORD_ID_ARRAY[i]}"
+                DB_INSTANCE_NAME="${DB_INSTANCE_CONNECTION_NAME##*:}"
 
                 FUNCTION_SUFFIX="${DB_NAME//_/-}"
 
-                gcloud secrets add-iam-policy-binding $DB_SA_TOKEN \
+                SERVICE_ACCOUNT=$(gcloud sql instances describe "${DB_INSTANCE_NAME}" --format="value(serviceAccountEmailAddress)")
+
+                gsutil iam ch "serviceAccount:${SERVICE_ACCOUNT}:roles/storage.objectViewer" "${BUCKET}"
+
+                for file in $(gsutil ls "${DB_ROLES_BUCKET}" | grep -v "/$"); do
+                    echo "Importing ${file} into database ${DB_NAME}..."
+                    gcloud --quiet sql import sql "${DB_INSTANCE_NAME}" "${file}" --database="${DB_NAME}" --user="${DB_USER}"
+                    if [[ $? -ne 0 ]]; then
+                        echo "Failed to import ${file}. Exiting."
+                        exit 1
+                    fi
+                done
+
+                gcloud secrets add-iam-policy-binding $DB_PASSWORD_SECRET_ID \
                 --member="serviceAccount:${PROJECT_NUMBER}-compute@developer.gserviceaccount.com" \
                 --role="roles/secretmanager.secretAccessor"
 

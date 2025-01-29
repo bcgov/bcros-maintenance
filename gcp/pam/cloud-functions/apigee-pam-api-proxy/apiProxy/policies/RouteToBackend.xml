@@ -7,6 +7,8 @@
          context.setVariable("pam.api.url", "https://northamerica-northeast1-c4hnrd-prod.cloudfunctions.net/pam-request-grant-create-notify");
     } else if (database === "docs") {
          context.setVariable("pam.api.url", "https://northamerica-northeast1-c4hnrd-prod.cloudfunctions.net/pam-request-grant-create-docs");
+    } else if (database === "auth") {
+         context.setVariable("pam.api.url", "https://northamerica-northeast1-gtksf3-prod.cloudfunctions.net/pam-request-grant-create-auth-db");
     } else {
       throw new Error("Invalid database");
     }
