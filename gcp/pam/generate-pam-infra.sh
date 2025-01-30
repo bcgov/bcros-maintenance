@@ -2,19 +2,21 @@
 
 # 1. Create secret with db user password
 # 2. Update projects array - only add a single project id for the db if adding a single new db
-# 3. Enable PAM in the console
-# 3. Update list of users in PAM entitlement
-# 4. Update apigee endpoint - need to include new URLs to the policy
-# 5. Update audit flags
+# 3. Set up PAM for the project via console
+# 4. Update list of users in PAM entitlement
+# 5. Enable IAM authentication in db
+# 6. Update apigee endpoint - need to include new URLs to the policy
+# 7. Update audit flags - will cause database restart
+
 
 REGION="northamerica-northeast1"
 APIGEE_SA="apigee-prod-sa@okagqp-prod.iam.gserviceaccount.com"
 BUCKET="gs://fin-warehouse"
 DB_ROLES_BUCKET="${BUCKET}/users"
 
-# declare -a projects=("mvnjri" "c4hnrd" "gtksf3")
+# declare -a projects=("mvnjri" "c4hnrd" "gtksf3" "yfjq17" "a083gt" "keee67")
 
-declare -a projects=("gtksf3")
+declare -a projects=("keee67")
 declare -a environments=("prod")
 
 declare -A DB_USERS
@@ -38,6 +40,21 @@ DB_NAMES["gtksf3-prod"]="auth-db"
 DB_INSTANCE_CONNECTION_NAMES["gtksf3-prod"]="gtksf3-prod:northamerica-northeast1:auth-db-prod"
 DB_PASSWORD_SECRET_IDS["gtksf3-prod"]="AUTH_USER_PASSWORD"
 
+DB_USERS["yfjq17-prod"]="prodUser"
+DB_NAMES["yfjq17-prod"]="bor"
+DB_INSTANCE_CONNECTION_NAMES["yfjq17-prod"]="yfjq17-prod:northamerica-northeast1:bor-db-prod"
+DB_PASSWORD_SECRET_IDS["yfjq17-prod"]="BOR_USER_PASSWORD"
+
+DB_USERS["a083gt-prod"]="business-ar-api,business-api"
+DB_NAMES["a083gt-prod"]="business-ar,legal-entities"
+DB_INSTANCE_CONNECTION_NAMES["a083gt-prod"]="a083gt-prod:northamerica-northeast1:businesses-db-prod,a083gt-prod:northamerica-northeast1:businesses-db-prod"
+DB_PASSWORD_SECRET_IDS["a083gt-prod"]="BUSINESS_AR_USER_PASSWORD,BUSINESS_USER_PASSWORD"
+
+DB_USERS["keee67-prod"]="bni-hub,vans-prod"
+DB_NAMES["keee67-prod"]="bni-hub,vans-db-prod"
+DB_INSTANCE_CONNECTION_NAMES["keee67-prod"]="keee67-prod:northamerica-northeast1:bn-hub-prod,keee67-prod:northamerica-northeast1:bn-hub-prod"
+DB_PASSWORD_SECRET_IDS["keee67-prod"]="BNI_USER_PASSWORD,VANS_USER_PASSWORD"
+
 for ev in "${environments[@]}"
 do
     for ns in "${projects[@]}"
@@ -51,11 +68,45 @@ do
             PROJECT_NUMBER=$(gcloud projects describe "${PROJECT_ID}" --format="get(projectNumber)")
 
 
+            SERVICES=(
+                "cloudfunctions.googleapis.com"
+                "cloudscheduler.googleapis.com"
+                "cloudbuild.googleapis.com"
+                "privilegedaccessmanager.googleapis.com"
+                "eventarc.googleapis.com"
+                "cloudresourcemanager.googleapis.com"
+            )
+
+            gcloud services enable "${SERVICES[@]}" --project="${PROJECT_ID}"
+
+            for SERVICE in "${SERVICES[@]}"; do
+                while true; do
+                    STATUS=$(gcloud services list --project="${PROJECT_ID}" --filter="config.name=${SERVICE}" --format="value(config.name)")
+
+                    if [[ "${STATUS}" == "${SERVICE}" ]]; then
+                        echo "Service ${SERVICE} is enabled."
+                        break
+                    else
+                        echo "Waiting for service ${SERVICE} to be enabled..."
+                        sleep 5
+                    fi
+                done
+            done
+
+            echo "All necesary APIs are enabled."
+
+
+            # TODO patch cloudsql instance flags - careful as this will override existing flags, pgaudit flags will also cause db to restart, most likely need to do afterhours
+            ## cloudsql.enable_anon=on,cloudsql.enable_pgaudit=on,pgaudit.log=read,write
+            # gcloud sql instances patch INSTANCE_NAME \
+            #   --database-flags=cloudsql_iam_authentication=on
+
             roles=(
             "roles/cloudsql.admin"
             "roles/iam.serviceAccountAdmin"
             "roles/cloudfunctions.invoker"
             "roles/resourcemanager.projectIamAdmin"
+            "roles/cloudbuild.builds.builder"
             )
 
             for role in "${roles[@]}"; do

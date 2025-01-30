@@ -1,16 +1,30 @@
 <Javascript name="RouteToBackend">
   <Source>
     var database = context.getVariable("target.database");
-    if (database === "warehouse") {
-      context.setVariable("pam.api.url", "https://northamerica-northeast1-mvnjri-prod.cloudfunctions.net/pam-request-grant-create");
-    } else if (database === "notify") {
-         context.setVariable("pam.api.url", "https://northamerica-northeast1-c4hnrd-prod.cloudfunctions.net/pam-request-grant-create-notify");
-    } else if (database === "docs") {
-         context.setVariable("pam.api.url", "https://northamerica-northeast1-c4hnrd-prod.cloudfunctions.net/pam-request-grant-create-docs");
-    } else if (database === "auth") {
-         context.setVariable("pam.api.url", "https://northamerica-northeast1-gtksf3-prod.cloudfunctions.net/pam-request-grant-create-auth-db");
-    } else {
-      throw new Error("Invalid database");
+
+    if (!database) {
+        throw new Error("Database variable is not set");
     }
+
+    database = database.trim();
+
+    var apiUrls = {
+        "warehouse": "https://northamerica-northeast1-mvnjri-prod.cloudfunctions.net/pam-request-grant-create",
+        "notify": "https://northamerica-northeast1-c4hnrd-prod.cloudfunctions.net/pam-request-grant-create-notify",
+        "docs": "https://northamerica-northeast1-c4hnrd-prod.cloudfunctions.net/pam-request-grant-create-docs",
+        "auth": "https://northamerica-northeast1-gtksf3-prod.cloudfunctions.net/pam-request-grant-create-auth-db",
+        "bor": "https://northamerica-northeast1-yfjq17-prod.cloudfunctions.net/pam-request-grant-create-bor",
+        "business-ar": "https://northamerica-northeast1-a083gt-prod.cloudfunctions.net/pam-request-grant-create-business-ar",
+        "legal-entities": "https://northamerica-northeast1-a083gt-prod.cloudfunctions.net/pam-request-grant-create-legal-entities",
+        "bni-hub": "https://northamerica-northeast1-keee67-prod.cloudfunctions.net/pam-request-grant-create-bni-hub",
+        "vans-prod": "https://northamerica-northeast1-keee67-prod.cloudfunctions.net/pam-request-grant-create-vans-db-prod"
+    };
+
+    if (apiUrls[database]) {
+        context.setVariable("pam.api.url", apiUrls[database]);
+    } else {
+        throw new Error("Invalid database: " + database);
+    }
+
   </Source>
 </Javascript>
