@@ -4,6 +4,9 @@ DECLARE
     sequence_name text;
     type_name text;
 BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'readwrite') THEN
+        CREATE ROLE readwrite;
+    END IF;
     -- Loop through all schemas except system schemas
     FOR schema_name IN
         SELECT s.schema_name

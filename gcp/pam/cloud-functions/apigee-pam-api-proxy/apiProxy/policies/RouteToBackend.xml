@@ -17,7 +17,9 @@
         "business-ar": "https://northamerica-northeast1-a083gt-prod.cloudfunctions.net/pam-request-grant-create-business-ar",
         "legal-entities": "https://northamerica-northeast1-a083gt-prod.cloudfunctions.net/pam-request-grant-create-legal-entities",
         "bni-hub": "https://northamerica-northeast1-keee67-prod.cloudfunctions.net/pam-request-grant-create-bni-hub",
-        "vans-prod": "https://northamerica-northeast1-keee67-prod.cloudfunctions.net/pam-request-grant-create-vans-db-prod"
+        "vans-prod": "https://northamerica-northeast1-keee67-prod.cloudfunctions.net/pam-request-grant-create-vans-db-prod",
+        "ppr": "https://northamerica-northeast1-eogruh-prod.cloudfunctions.net/pam-request-grant-create-ppr",
+        "search": "https://northamerica-northeast1-k973yf-prod.cloudfunctions.net/pam-request-grant-create-search"
     };
 
     if (apiUrls[database]) {

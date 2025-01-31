@@ -14,9 +14,9 @@ APIGEE_SA="apigee-prod-sa@okagqp-prod.iam.gserviceaccount.com"
 BUCKET="gs://fin-warehouse"
 DB_ROLES_BUCKET="${BUCKET}/users"
 
-# declare -a projects=("mvnjri" "c4hnrd" "gtksf3" "yfjq17" "a083gt" "keee67")
+# declare -a projects=("mvnjri" "c4hnrd" "gtksf3" "yfjq17" "a083gt" "keee67" "eogruh" "k973yf")
 
-declare -a projects=("keee67")
+declare -a projects=("k973yf")
 declare -a environments=("prod")
 
 declare -A DB_USERS
@@ -50,10 +50,21 @@ DB_NAMES["a083gt-prod"]="business-ar,legal-entities"
 DB_INSTANCE_CONNECTION_NAMES["a083gt-prod"]="a083gt-prod:northamerica-northeast1:businesses-db-prod,a083gt-prod:northamerica-northeast1:businesses-db-prod"
 DB_PASSWORD_SECRET_IDS["a083gt-prod"]="BUSINESS_AR_USER_PASSWORD,BUSINESS_USER_PASSWORD"
 
-DB_USERS["keee67-prod"]="bni-hub,vans-prod"
-DB_NAMES["keee67-prod"]="bni-hub,vans-db-prod"
+DB_USERS["eogruh-prod"]="bni-hub,vans-prod"
+DB_NAMES["eogruh-prod"]="bni-hub,vans-db-prod"
 DB_INSTANCE_CONNECTION_NAMES["keee67-prod"]="keee67-prod:northamerica-northeast1:bn-hub-prod,keee67-prod:northamerica-northeast1:bn-hub-prod"
 DB_PASSWORD_SECRET_IDS["keee67-prod"]="BNI_USER_PASSWORD,VANS_USER_PASSWORD"
+
+DB_USERS["eogruh-prod"]="user4ca"
+DB_NAMES["eogruh-prod"]="ppr"
+DB_INSTANCE_CONNECTION_NAMES["eogruh-prod"]="eogruh-prod:northamerica-northeast1:ppr-prod"
+DB_PASSWORD_SECRET_IDS["keee67-prod"]="PPR_USER_PASSWORD"
+
+DB_USERS["k973yf-prod"]="search_service"
+DB_NAMES["k973yf-prod"]="search"
+DB_INSTANCE_CONNECTION_NAMES["k973yf-prod"]="k973yf-prod:northamerica-northeast1:search-db-prod"
+DB_PASSWORD_SECRET_IDS["k973yf-prod"]="SEARCH_USER_PASSWORD"
+
 
 for ev in "${environments[@]}"
 do
