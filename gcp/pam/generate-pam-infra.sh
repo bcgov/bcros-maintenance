@@ -14,6 +14,7 @@ APIGEE_SA="apigee-prod-sa@okagqp-prod.iam.gserviceaccount.com"
 BUCKET="gs://fin-warehouse"
 DB_ROLES_BUCKET="${BUCKET}/users"
 
+HOST_PROJECT_ID="c4hnrd"
 # declare -a projects=("mvnjri" "c4hnrd" "gtksf3" "yfjq17" "a083gt" "keee67" "eogruh" "k973yf")
 
 declare -a projects=("k973yf")
@@ -128,6 +129,11 @@ do
 
             ./generate-entitlements.sh "${projects[@]}"
 
+
+            gcloud logging sinks create cloudsql_audit_logs_${ev} \
+              bigquery.googleapis.com/projects/${HOST_PROJECT_ID}-${ev}/datasets/cloudsql_audit_logs_${ev} \
+              --log-filter="logName=\"projects/${PROJECT_ID}/logs/cloudaudit.googleapis.com%2Fdata_access\" AND resource.type=\"cloudsql_database\" AND protoPayload.serviceName=\"cloudsql.googleapis.com\" AND protoPayload.methodName=\"cloudsql.instances.query\"" \
+              --use-partitioned-tables
 
             IFS=',' read -r -a DB_USER_ARRAY <<< ${DB_USERS[$PROJECT_ID]}
             IFS=',' read -r -a DB_NAME_ARRAY <<< ${DB_NAMES[$PROJECT_ID]}
