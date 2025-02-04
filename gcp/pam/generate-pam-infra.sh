@@ -15,6 +15,9 @@ BUCKET="gs://fin-warehouse"
 DB_ROLES_BUCKET="${BUCKET}/users"
 
 HOST_PROJECT_ID="c4hnrd"
+# create the dataset only once
+# bq mk --location=$REGION --dataset ${HOST_PROJECT_ID}-prod:pam_create_audit_log_prod
+
 # declare -a projects=("mvnjri" "c4hnrd" "gtksf3" "yfjq17" "a083gt" "keee67" "eogruh" "k973yf")
 
 declare -a projects=("k973yf")
@@ -129,6 +132,11 @@ do
 
             ./generate-entitlements.sh "${projects[@]}"
 
+
+            gcloud logging sinks create pam-request-grant-create_${ev} \
+              bigquery.googleapis.com/projects/${HOST_PROJECT_ID}-${ev}/datasets/pam_create_audit_logs_${ev} \
+              --log-filter='resource.type="cloud_function" AND resource.labels.function_name="pam-request-grant-create"' \
+              --use-partitioned-tables
 
             gcloud logging sinks create cloudsql_audit_logs_${ev} \
               bigquery.googleapis.com/projects/${HOST_PROJECT_ID}-${ev}/datasets/cloudsql_audit_logs_${ev} \
