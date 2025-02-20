@@ -129,7 +129,7 @@ jobs:
       STAFF_ADMIN_EMAIL: "test@test.com"
     services:
       postgres:
-        image: postgis/postgis:15-master
+        image: ghcr.io/bcgov/postgres15-postgis-anon
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
