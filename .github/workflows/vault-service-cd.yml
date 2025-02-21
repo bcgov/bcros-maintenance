@@ -24,7 +24,7 @@ env:
 
 jobs:
   vault-service-cd-by-push:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
 
     if: github.event_name == 'push' && github.repository == 'bcgov/bcregistry-sre'
     environment:
@@ -38,7 +38,7 @@ jobs:
           echo "::set-output name=ENV_NAME::$TAG_NAME"
 
   vault-service-cd-by-dispatch:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
 
     if: github.event_name == 'workflow_dispatch' && github.repository == 'bcgov/bcregistry-sre'
     environment:
@@ -52,7 +52,7 @@ jobs:
           echo "::set-output name=ENV_NAME::$TAG_NAME"
 
   vault-service-cd-flow:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     needs: [vault-service-cd-by-push, vault-service-cd-by-dispatch]
     if: ${{ always() && contains(needs.*.result, 'success') && !(contains(needs.*.result, 'failure')) }}
     steps:
