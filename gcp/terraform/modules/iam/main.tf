@@ -19,7 +19,7 @@ resource "google_service_account" "sa" {
   description  = each.value.description
 }
 
-resource "google_project_iam_binding" "iam_roles" {
+resource "google_project_iam_member" "iam_members" {
   for_each = {
     for idx, combo in flatten([
       for sa_name, sa_attrs in local.merged_service_accounts : [
@@ -33,10 +33,7 @@ resource "google_project_iam_binding" "iam_roles" {
 
   project = var.project_id
   role    = each.value.role
-
-  members = [
-    "serviceAccount:${google_service_account.sa[each.value.sa_name].email}"
-  ]
+  member  = "serviceAccount:${google_service_account.sa[each.value.sa_name].email}"
 }
 
 resource "google_project_iam_custom_role" "custom_roles" {
