@@ -15,7 +15,7 @@ resource "google_service_account" "sa" {
   for_each     = local.merged_service_accounts
   project      = var.project_id
   account_id   = each.key
-  display_name = "${each.key}"
+  display_name = each.key
   description  = each.value.description
 }
 
