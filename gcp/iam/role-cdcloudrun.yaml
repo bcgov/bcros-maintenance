@@ -20,6 +20,7 @@ includedPermissions:
 - run.jobs.update
 - run.jobs.run
 - run.revisions.list
+- run.revisions.get
 - run.services.get
 - run.services.list
 - run.services.create

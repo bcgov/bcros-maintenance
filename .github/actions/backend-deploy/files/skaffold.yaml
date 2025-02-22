@@ -25,6 +25,10 @@ profiles:
   manifests:
     rawYaml:
     - k8s/service.test.yaml
+- name: uat
+  manifests:
+    rawYaml:
+    - k8s/service.uat.yaml
 - name: sandbox
   manifests:
     rawYaml:

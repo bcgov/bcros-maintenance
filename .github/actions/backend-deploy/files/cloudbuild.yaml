@@ -1,5 +1,61 @@
 steps:
 
+# Step 0: Redeploy the service with the updated environment variables.
+- name: 'northamerica-northeast1-docker.pkg.dev/c4hnrd-tools/cicd-repo/gcp-sre'
+  secretEnv: ['OP_CONNECT_HOST', 'OP_CONNECT_TOKEN']
+  script: |
+    #!/usr/bin/env bash
+    set -euo pipefail
+
+    # Redeploy service if flag is set
+    if [[ "${_REDEPLOY:-false}" == "true" ]]; then
+        echo "🔄 Step 0: Redeploying service with updated environment variables..."
+
+        # Fetch project ID from 1Password
+        PROJECT_ID=$(op read -n "op://CD/${_DEPLOYMENT_ENV}/${_APP_NAME}/DEPLOY_PROJECT_ID") || {
+            echo "❌ Error: Failed to retrieve project ID." >&2
+            exit 1
+        }
+
+        # Set environment variable
+        export APP_ENV="${_DEPLOYMENT_ENV}"
+
+        # Generate secrets file
+        if ! op inject -f -i ./devops/vaults.gcp.env -o ./devops/vaults."${_DEPLOYMENT_ENV}"; then
+            echo "❌ Error: Failed to generate secrets via 1Password vault." >&2
+            exit 1
+        fi
+
+        # Convert .env file to comma-separated key-value pairs
+        VAL=$(awk -F= '{
+            key=$1;
+            value=substr($0, index($0, "=") + 1);
+            gsub(/"/, "", value);
+            printf "%s=%s,", key, value
+        }' "./devops/vaults.${_DEPLOYMENT_ENV}" | sed 's/,$//')
+
+        if [[ -z "$VAL" ]]; then
+            echo "⚠️ Warning: Environment variables are empty. Skipping deployment." >&2
+            exit 1
+        fi
+
+        # Update environment variables on Cloud Run
+        echo "🚀 Updating environment variables for ${_APP_NAME}-${_DEPLOYMENT_ENV} in project ${PROJECT_ID}."
+        gcloud run services update "${_APP_NAME}-${_DEPLOYMENT_ENV}" \
+            --region="${_REGION}" \
+            --project="${PROJECT_ID}" \
+            --update-env-vars="${VAL}"
+
+        gcloud run services update-traffic "${_APP_NAME}-${_DEPLOYMENT_ENV}" \
+          --region="${_REGION}" \
+          --project="${PROJECT_ID}" \
+          --to-latest
+
+        echo "🏁 ${_DEPLOYMENT_ENV} redeployment finalized successfully."
+
+        exit 0
+    fi
+
 # Step 1: Prepare and setup service and cloud deploy manifest files
 - name: 'northamerica-northeast1-docker.pkg.dev/c4hnrd-tools/cicd-repo/gcp-sre'
   secretEnv: ['OP_CONNECT_HOST', 'OP_CONNECT_TOKEN']
@@ -7,72 +63,86 @@ steps:
     #!/usr/bin/env bash
     set -euo pipefail
 
-    echo "Step 1: Prepare and setup service and cloud deploy manifest files"
+    if [[ "${_REDEPLOY:-false}" != "true" ]]; then
+      echo "🔄 Step 1: Preparing and setting up service and Cloud Deploy manifest files..."
 
-    # Fetch project ID from 1Password and set up project variables
-    PROJECT_ID=$(op read -n "op://CD/${_DEPLOYMENT_ENV}/${_APP_NAME}/DEPLOY_PROJECT_ID")
-    echo "$PROJECT_ID" > /workspace/project_id.txt
-    PROJECT_NAME=$(echo "$PROJECT_ID" | cut -d'-' -f 1)
+      # Fetch project ID and set up project variables
+      PROJECT_ID=$(op read -n "op://CD/${_DEPLOYMENT_ENV}/${_APP_NAME}/DEPLOY_PROJECT_ID") || {
+          echo "❌ Error: Failed to retrieve project ID." >&2
+          exit 1
+      }
+      echo "$PROJECT_ID" > /workspace/project_id.txt
+      PROJECT_NAME="${PROJECT_ID%%-*}"
 
-    # Function to generate service manifest for each environment
-    generate_service_manifest() {
-      local env_name=$1
-      export APP_ENV=${env_name}
-      # Inject environment-specific variables
+      # Generate service manifest for each environment
+      generate_service_manifest() {
+          local env_name=$1
+          export APP_ENV="${env_name}"
 
-      if [[ -z "$(op inject -f -i ./devops/vaults.gcp.env -o ./devops/vaults.${env_name})" ]]; then
-         echo "Error: failed to generate secrets via 1password vault." >&2
-         exit 1
+          echo "🛠️ Generating service manifest for environment: ${env_name}..."
+
+          # Generate secrets from 1Password
+          if ! op inject -f -i ./devops/vaults.gcp.env -o "./devops/vaults.${env_name}"; then
+              echo "❌ Error: Failed to generate secrets for ${env_name}." >&2
+              exit 1
+          fi
+
+          # Extract VPC connector and environment variables
+          export VPC_CONNECTOR=$(awk -F= '/^VPC_CONNECTOR/ {print $2}' "./devops/vaults.${env_name}")
+          export VAL=$(awk '{f1=f2=$0; sub(/=.*/,"",f1); sub(/[^=]+=/,"",f2); printf "- name: %s\n  value: %s\n",f1,f2}' "./devops/vaults.${env_name}" | sed 's/"/"/g')
+
+
+          # Generate manifest with or without VPC connector
+          local template_file="./devops/gcp/k8s/service.template.yaml"
+          local temp_file="./devops/gcp/k8s/temp-service.${env_name}.yaml"
+          local output_file="./devops/gcp/k8s/service.${env_name}.yaml"
+
+          cp "$template_file" "$temp_file"
+
+          if [[ -n "$VPC_CONNECTOR" ]]; then
+              echo "🌐 Adding VPC connector configuration..."
+              yq e '.spec.template.metadata.annotations += {"run.googleapis.com/vpc-access-egress": "private-ranges-only", "run.googleapis.com/vpc-access-connector": env(VPC_CONNECTOR)}' -i "$temp_file"
+          fi
+
+          yq e '.spec.template.spec.containers[0].env += env(VAL)' -i "$temp_file"
+          mv "$temp_file" "$output_file"
+      }
+
+      # Remove unused targets from Cloud Deploy manifest
+      remove_unused_deployments() {
+          local -a targets_full=(${_DEPLOY_FULL_DEPLOYMENT_ENVS})
+          local -a targets_current=(${_DEPLOYMENT_ENVS})
+
+          # Calculate environments to remove
+          local -a to_remove
+          mapfile -t to_remove < <(comm -23 <(printf "%s\n" "${targets_full[@]}" | sort) <(printf "%s\n" "${targets_current[@]}" | sort))
+
+          for env_name in "${to_remove[@]}"; do
+              export TARGET="${PROJECT_NAME}-${env_name}"
+              echo "🧹 Removing unused deployment target: ${TARGET}"
+              yq e 'del(.serialPipeline.stages[] | select(.targetId == env(TARGET)))' -i "./devops/gcp/clouddeploy.yaml"
+          done
+      }
+
+      # Update Cloud Deploy manifest and generate manifests if needed
+      targets=(${_DEPLOYMENT_ENVS})
+      if [[ -z "${_DEPLOYMENT_ENV_FROM:-}" || "${_DEPLOYMENT_ENV}" == "${targets[0]}" ]]; then
+          echo "🛠️ Updating Cloud Deploy manifest for pipeline: ${_DEPLOYMENT_PIPELINE}"
+          yq e '.metadata.name = env(_DEPLOYMENT_PIPELINE)' -i "./devops/gcp/clouddeploy.yaml"
+
+          for env_name in "${targets[@]}"; do
+              generate_service_manifest "$env_name"
+          done
+
+          remove_unused_deployments
       fi
 
-
-      # Extract VPC connector and environment variables
-      export VPC_CONNECTOR=$(awk -F '=' '/^VPC_CONNECTOR/ {print $2}' "./devops/vaults.${env_name}")
-      export VAL=$(awk '{f1=f2=$0; sub(/=.*/,"",f1); sub(/[^=]+=/,"",f2); printf "- name: %s\n  value: %s\n",f1,f2}' "./devops/vaults.${env_name}" | sed 's/"/"/g')
-
-      # Generate service manifest with or without VPC connector
-      if [ -n "$VPC_CONNECTOR" ]; then
-        # Add VPC connector annotations and generate manifest
-        yq e '.spec.template.metadata.annotations["run.googleapis.com/vpc-access-egress"] = "private-ranges-only" |
-              .spec.template.metadata.annotations["run.googleapis.com/vpc-access-connector"] = env(VPC_CONNECTOR)' \
-              ./devops/gcp/k8s/service.template.yaml > "./devops/gcp/k8s/temp-service.${env_name}.yaml"
-
-        yq e '.spec.template.spec.containers[0].env += env(VAL)' "./devops/gcp/k8s/temp-service.${env_name}.yaml" > "./devops/gcp/k8s/service.${env_name}.yaml"
-      else
-        # Generate manifest without VPC connector
-        yq e '.spec.template.spec.containers[0].env += env(VAL)' ./devops/gcp/k8s/service.template.yaml > "./devops/gcp/k8s/service.${env_name}.yaml"
-      fi
-    }
-
-    # Function to remove unused targets from Cloud Deploy manifest
-    remove_unused_deployment() {
-      targets_full=(${_DEPLOY_FULL_DEPLOYMENT_ENVS})
-
-      # Find difference between full targets and current targets
-      envs_diff=($(echo ${targets_full[@]} ${targets[@]} | tr ' ' '\n' | sort | uniq -u))
-      for env_name in "${envs_diff[@]}"; do
-        export TARGET=${PROJECT_NAME}-${env_name}
-        yq -i 'del(.serialPipeline.stages[] | select(.targetId == env(TARGET)))' "./devops/gcp/clouddeploy.yaml"
-      done
-    }
-
-    targets=(${_DEPLOYMENT_ENVS})
-    # If the deployment environment is the first in the list, update the Cloud Deploy manifest and generate service manifests
-    if [[ -z "${_DEPLOYMENT_ENV_FROM}" || "${_DEPLOYMENT_ENV}" == "${targets[0]}" ]]; then
-      # Update Cloud Deploy manifest and generate service manifests
-      yq e -i '.metadata.name = env(_DEPLOYMENT_PIPELINE)' "./devops/gcp/clouddeploy.yaml"
-
-      for env_name in "${targets[@]}"; do
-        generate_service_manifest "$env_name"
-      done
-
-      remove_unused_deployment
+      # Apply Cloud Deploy configuration
+      echo "🚀 Applying Cloud Deploy configuration..."
+      gcloud deploy apply --file=./devops/gcp/clouddeploy.yaml \
+          --region="${_REGION}" \
+          --project="${_BUILD_PROJECT}"
     fi
-
-    # Apply Cloud Deploy configuration
-    gcloud deploy apply --file=./devops/gcp/clouddeploy.yaml  \
-      --region="${_REGION}" \
-      --project="${_BUILD_PROJECT}"
 
 # Step 2: Build and deploy the application
 - name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
@@ -80,181 +150,147 @@ steps:
     #!/usr/bin/env bash
     set -euo pipefail
 
-    echo "Step 2: Build and deploy the application"
+    if [[ "${_REDEPLOY:-false}" != "true" ]]; then
+      echo "🚀 Step 2: Build and deploy the application"
 
-    # Set up environment variables
-    PROJECT_ID=$(cat /workspace/project_id.txt)
-    PROJECT_NAME=$(echo "$PROJECT_ID" | cut -d'-' -f 1)
-    TARGET="${PROJECT_NAME}-${_DEPLOYMENT_ENV}"
-    TARGET_FROM="${PROJECT_NAME}-${_DEPLOYMENT_ENV_FROM}"
-    IMAGE_PATH="${_REGION}-docker.pkg.dev/${_BUILD_PROJECT}/cloud-run-repo/${_APP_NAME}"
+      # 🛠️ Set up environment variables
+      PROJECT_ID=$(< /workspace/project_id.txt)
+      PROJECT_NAME="${PROJECT_ID%%-*}"
+      TARGET="${PROJECT_NAME}-${_DEPLOYMENT_ENV}"
+      TARGET_FROM="${PROJECT_NAME}-${_DEPLOYMENT_ENV_FROM:-}"
+      IMAGE_PATH="${_REGION}-docker.pkg.dev/${_BUILD_PROJECT}/cloud-run-repo/${_APP_NAME}"
 
-    # Function to check if tag exists in Google Artifact Registry
-    tag_exists() {
-      local tag="$1"
-      res=$(gcloud artifacts docker tags list "${IMAGE_PATH}" --filter="tag:${tag}" --format="value(tag)" 2> /dev/null)
-      if [ -n "$res" ]; then
-        return 0  # Tag exists
-      else
-        return 1  # Tag does not exist
-      fi
-    }
+      # 🧩 Function to check if a Docker tag exists
+      tag_exists() {
+        local tag="$1"
+        gcloud artifacts docker tags list "${IMAGE_PATH}" --filter="tag:${tag}" --format="value(tag)" 2>/dev/null | grep -q "^${tag}$"
+      }
 
-    # Function to tag Docker image
-    tag_image() {
-      local source_tag="$1"
-      local target_tag="$2"
+      # 🔖 Function to tag a Docker image
+      tag_image() {
+        local source_tag="$1" target_tag="$2"
+        echo "🏷️ Tagging image: ${source_tag} → ${target_tag}"
+        gcloud artifacts docker tags add "${IMAGE_PATH}:${source_tag}" "${IMAGE_PATH}:${target_tag}"
+      }
 
-      echo "Tagging: ${source_tag} -> ${target_tag}"
+      # 🛠️ Function to build and push Docker image
+      build_and_push_image() {
+        local target_tag="$1"
+        if ! tag_exists "${_SHORT_SHA}"; then
+          echo "🔨 Building and pushing Docker image: ${_SHORT_SHA}"
+          docker build -t "${IMAGE_PATH}:${_SHORT_SHA}" --cache-from "${IMAGE_PATH}:latest" .
+          docker push "${IMAGE_PATH}:${_SHORT_SHA}"
+          tag_image "${_SHORT_SHA}" "latest"
+        else
+          echo "✅ Image ${IMAGE_PATH}:${_SHORT_SHA} already exists. Skipping build."
+        fi
+        tag_image "${_SHORT_SHA}" "${target_tag}"
+      }
 
-      gcloud artifacts docker tags add \
-        "${IMAGE_PATH}:${source_tag}" \
-        "${IMAGE_PATH}:${target_tag}"
-    }
-
-    # Function to build and push Docker image
-    build_and_push_image() {
-      local target_tag="$1"
-
-      # If the tag does not exist, build and push the image
-      if ! tag_exists "${_SHORT_SHA}"; then
-        docker build \
-          -t "${IMAGE_PATH}:${_SHORT_SHA}" \
-          --cache-from "${IMAGE_PATH}:latest" \
-          .
-
-        docker push "${IMAGE_PATH}:${_SHORT_SHA}"
-
-        tag_image "${_SHORT_SHA}" "latest"
-      else
-        echo "Image ${IMAGE_PATH}:${_SHORT_SHA} already exists. Skipping build." >&2
-      fi
-
-      tag_image "${_SHORT_SHA}" "${target_tag}"
-    }
-
-    # Handle image building and tagging based on deployment target
-    if [ "${_REDEPLOY}" == "" ] || [ "${_REDEPLOY}" == "false" ]; then
+      # 🔍 Handle image building and tagging based on environment
       case ${_DEPLOYMENT_ENV} in
-        "dev"|"test"|"sandbox"|"prod")
-          if [ "${_DEPLOYMENT_ENV}" = "prod" ]; then
-            # For production, create a dated backup tag if prod image exists
-            if tag_exists "prod"; then
-              tag_image "prod" "prod-$(date +%F)"
-            fi
-          fi
+        dev|test|uat|sandbox|prod)
+          [[ "${_DEPLOYMENT_ENV}" == "prod" && $(tag_exists "prod") ]] && tag_image "prod" "prod-$(date +%F)"
 
-          if [ -z "${_DEPLOYMENT_ENV_FROM}" ] || [ "${_DEPLOYMENT_ENV_FROM}" = "${_DEPLOYMENT_ENV}" ]; then
-            # Build new image for fresh deployment
+          if [[ -z "${_DEPLOYMENT_ENV_FROM}" || "${_DEPLOYMENT_ENV_FROM}" == "${_DEPLOYMENT_ENV}" ]]; then
             build_and_push_image "${_DEPLOYMENT_ENV}"
           else
-            # Tag existing image for promotion
             tag_image "${_DEPLOYMENT_ENV_FROM}" "${_DEPLOYMENT_ENV}"
           fi
           ;;
         *)
-          echo "Error: Invalid environment '${_DEPLOYMENT_ENV}'. Allowed values are test, sandbox, dev, or prod." >&2
+          echo "❌ Invalid environment: '${_DEPLOYMENT_ENV}'. Allowed: dev, test, uat, sandbox, prod." >&2
           exit 1
           ;;
       esac
-    else
-      echo "Redeploy: '${_DEPLOYMENT_ENV}'"
-    fi
 
-    # Change to the devops/gcp directory, create a new release need the files in this directory
-    cd ./devops/gcp
+      # 🌐 Navigate to deployment directory
+      cd ./devops/gcp
 
-    # Get the current active revision for the service
-    PREVIOUS_REVISION=$(gcloud run revisions list --service="${_APP_NAME}-${_DEPLOYMENT_ENV}" \
-        --filter="status.conditions.type:Active AND -status.conditions.status:'False'" \
-        --format='value(metadata.name)'\
+      # 🔄 Get the current active revision
+      PREVIOUS_REVISION=$(gcloud run revisions list \
+        --service="${_APP_NAME}-${_DEPLOYMENT_ENV}" \
+        --filter="status.conditions.type=Active AND -status.conditions.status=False" \
+        --format="value(metadata.name)" \
         --region="${_REGION}" \
-        --project="$PROJECT_ID")
-    echo "Previous active revision: $PREVIOUS_REVISION"
+        --project="$PROJECT_ID") || PREVIOUS_REVISION=""
 
-    RELEASE_NAME="v-${_APP_NAME}-${_SHORT_SHA}-$(date '+%Y%m%d%H%M')"
+      echo "🔎 Previous active revision: ${PREVIOUS_REVISION}"
 
-    # Create new release or promote existing release
-    if [ -z "${_DEPLOYMENT_ENV_FROM}" ] || [ "${_DEPLOYMENT_ENV_FROM}" = "${_DEPLOYMENT_ENV}" ] || [ "${_DEPLOYMENT_ENV}" = "sandbox" ]; then
-      gcloud deploy releases create "${RELEASE_NAME}" \
-        --delivery-pipeline="${_DEPLOYMENT_PIPELINE}" \
-        --region="${_REGION}" \
-        --to-target="${TARGET}" \
-        --images="image-placeholder=${IMAGE_PATH}:${_SHORT_SHA}"
-    else
-      RELEASE_NAME=$(gcloud deploy targets describe "${TARGET_FROM}" \
-            --delivery-pipeline="${_DEPLOYMENT_PIPELINE}" \
-            --region="${_REGION}" \
-            --format="value('Latest release')")
+      # 📦 Prepare new release
+      RELEASE_NAME="v-${_APP_NAME}-${_SHORT_SHA}-$(date '+%Y%m%d%H%M')"
 
-      gcloud deploy releases promote --release="${RELEASE_NAME}" \
-        --delivery-pipeline="${_DEPLOYMENT_PIPELINE}" \
-        --region="${_REGION}" \
-        --to-target="${TARGET}"
-    fi
+      # 🚀 Create or promote release
+      if [ -z "${_DEPLOYMENT_ENV_FROM}" ] || [ "${_DEPLOYMENT_ENV_FROM}" = "${_DEPLOYMENT_ENV}" ] || [ "${_DEPLOYMENT_ENV}" = "uat" ] || [ "${_DEPLOYMENT_ENV}" = "sandbox" ]; then
+        echo "🚀 Create a new release."
 
-    # Wait for the release to be deployed
-    MAX_RETRIES=10
-    RETRY_INTERVAL=30
-    RETRY_COUNT=0
-
-    # Install required packages
-    apt-get update
-    apt-get install jq -y
-
-    # This is done to ensure the release name is consistent across projects
-    RELEASE_NAME=$(echo "$RELEASE_NAME" | awk -F'/' '{print $NF}')
-    echo "Release name: $RELEASE_NAME"
-
-    # Loop until the maximum retries is reached or the release is complete
-    while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
-      # Get the status of the release
-      RELEASE_STATUS=$(gcloud run revisions list --service="${_APP_NAME}-${_DEPLOYMENT_ENV}" \
-        --region="${_REGION}" \
-        --project="$PROJECT_ID" \
-        --filter="metadata.labels.release-id:${RELEASE_NAME}" \
-        --format="json" | jq  -r '.[].status.conditions[] | select (.type == "Ready") | .status')
-
-      # Check the status of the release
-      if [ "${RELEASE_STATUS}" = "True" ]; then
-        # If the release is successful, exit the loop
-        echo "Release ${RELEASE_NAME} completed successfully."
-        break
-      elif [ "${RELEASE_STATUS}" = "False" ]; then
-        # If the release fails, exit the script
-        echo "Release ${RELEASE_NAME} failed with status: ${RELEASE_STATUS}"
-        exit 1
+        gcloud deploy releases create "${RELEASE_NAME}" \
+          --delivery-pipeline="${_DEPLOYMENT_PIPELINE}" \
+          --region="${_REGION}" \
+          --to-target="${TARGET}" \
+          --images="image-placeholder=${IMAGE_PATH}:${_SHORT_SHA}"
       else
-        # If the release is still in progress, increment the retry count and sleep
-        echo "Release ${RELEASE_NAME} is still in progress."
-        RETRY_COUNT=$((RETRY_COUNT + 1))
-        sleep $RETRY_INTERVAL
+        RELEASE_NAME=$(gcloud deploy targets describe "${TARGET_FROM}" \
+          --delivery-pipeline="${_DEPLOYMENT_PIPELINE}" \
+          --region="${_REGION}" \
+          --format="value('Latest release')")
+
+        echo "🚀 Promote existing release ${RELEASE_NAME}."
+
+        gcloud deploy releases promote --release="${RELEASE_NAME}" \
+          --delivery-pipeline="${_DEPLOYMENT_PIPELINE}" \
+          --region="${_REGION}" \
+          --to-target="${TARGET}"
       fi
-    done
 
-    # Check if the maximum retries has been reached
-    if [ $RETRY_COUNT -eq $MAX_RETRIES ]; then
-      # If the maximum retries is reached, exit the script
-      echo "Timeout waiting for release ${RELEASE_NAME} to complete."
-      exit 1
-    fi
+      # Install required packages
+      apt-get update
+      apt-get install jq -y
 
-    # Get the new revision for the service
-    DEPLOYED_REVISION=$(gcloud run revisions list --service="${_APP_NAME}-${_DEPLOYMENT_ENV}" \
-        --filter="status.conditions.type:Active AND -status.conditions.status:'False'" \
-        --format='value(metadata.name)'\
+      # ⏳ Wait for the release to be deployed
+      MAX_RETRIES=10 RETRY_INTERVAL=30
+      # This is done to ensure the release name is consistent across projects
+      RELEASE_NAME=$(echo "$RELEASE_NAME" | awk -F'/' '{print $NF}')
+      echo "⏱️ Waiting for release: ${RELEASE_NAME}"
+
+      for (( i=1; i<=MAX_RETRIES; i++ )); do
+        RELEASE_STATUS=$(gcloud run revisions list \
+          --service="${_APP_NAME}-${_DEPLOYMENT_ENV}" \
+          --region="${_REGION}" \
+          --project="$PROJECT_ID" \
+          --filter="metadata.labels.release-id:${RELEASE_NAME}" \
+          --format="json" | jq -r '.[].status.conditions[] | select(.type == "Ready") | .status')
+
+        case "$RELEASE_STATUS" in
+          True)  echo "✅ Release ${RELEASE_NAME} completed successfully."; break ;;
+          False) echo "❌ Release ${RELEASE_NAME} failed."; exit 1 ;;
+          *)     echo "🔄 Release in progress... (Attempt ${i}/${MAX_RETRIES})"; sleep "$RETRY_INTERVAL" ;;
+        esac
+      done
+
+      [[ $i -eq $((MAX_RETRIES + 1)) ]] && { echo "⚠️ Timeout waiting for release ${RELEASE_NAME}."; exit 1; }
+
+      # 🔍 Get the new deployed revision
+      DEPLOYED_REVISION=$(gcloud run revisions list \
+        --service="${_APP_NAME}-${_DEPLOYMENT_ENV}" \
+        --filter="status.conditions.type=Active AND -status.conditions.status=False" \
+        --format="value(metadata.name)" \
         --region="${_REGION}" \
         --project="$PROJECT_ID")
-    echo "$DEPLOYED_REVISION" > /workspace/deployed_revision.txt
-    echo "Deployed revision: $DEPLOYED_REVISION"
 
-    if [[ -n "$PREVIOUS_REVISION" ]]; then
-      # Update traffic to 0 for the new revision and wait for the new revision to be ready
-      gcloud run services update-traffic "${_APP_NAME}-${_DEPLOYMENT_ENV}" \
+      echo "$DEPLOYED_REVISION" > /workspace/deployed_revision.txt
+      echo "🚀 Deployed revision: ${DEPLOYED_REVISION}"
+
+      # 🔙 Rollback traffic to the previous revision if available
+      if [[ -n "$PREVIOUS_REVISION" ]]; then
+        echo "🔄 Reverting traffic to the previous revision: ${PREVIOUS_REVISION}"
+        gcloud run services update-traffic "${_APP_NAME}-${_DEPLOYMENT_ENV}" \
           --region="${_REGION}" \
           --project="$PROJECT_ID" \
           --to-revisions="$PREVIOUS_REVISION=100"
+      fi
     fi
+
 
 # Step 3: Trigger database migration job (if applicable)
 - name: 'gcr.io/cloud-builders/gcloud'
@@ -262,44 +298,55 @@ steps:
     #!/usr/bin/env bash
     set -euo pipefail
 
-    echo "Step 3: Trigger database migration job (if applicable) and update traffic to 100% for the new revision"
+    if [[ "${_REDEPLOY:-false}" != "true" ]]; then
+      echo "🚀 Step 3: Trigger database migration and update traffic"
 
-    PROJECT_ID=$(cat /workspace/project_id.txt)
-    JOB_NAME="${_APP_NAME}-db-migration-${_DEPLOYMENT_ENV}"
-    DEPLOYED_REVISION=$(cat /workspace/deployed_revision.txt)
+      # 🛠️ Set environment variables
+      PROJECT_ID=$(< /workspace/project_id.txt)
+      JOB_NAME="${_APP_NAME}-db-migration-${_DEPLOYMENT_ENV}"
+      DEPLOYED_REVISION=$(< /workspace/deployed_revision.txt)
 
-    echo "DEPLOY_PROJECT_ID: $PROJECT_ID"
-    echo "JOB_NAME: $JOB_NAME"
-    echo "DEPLOYED_REVISION: $DEPLOYED_REVISION"
+      echo "📦 Deploy Project ID: $PROJECT_ID"
+      echo "🔍 Job Name: $JOB_NAME"
+      echo "🆕 Deployed Revision: $DEPLOYED_REVISION"
 
-    # Check if migrations directory exists and execute migration job
-    if [ -d "migrations" ]; then
-      if gcloud run jobs describe $JOB_NAME --project=$PROJECT_ID --region=${_REGION} --format="value(metadata.name)" 2> /dev/null ; then
-        # Run the job and capture the output
-        JOB_OUTPUT=$(gcloud run jobs execute "$JOB_NAME" \
+      # 🔄 Function to trigger database migration job
+      trigger_migration() {
+        if gcloud run jobs describe "$JOB_NAME" --project="$PROJECT_ID" --region="${_REGION}" --format="value(metadata.name)" &>/dev/null; then
+          echo "🚧 Running database migration job: $JOB_NAME"
+          JOB_OUTPUT=$(gcloud run jobs execute "$JOB_NAME" \
             --region="${_REGION}" \
             --project="$PROJECT_ID" \
             --wait \
             --format="value(status.conditions.type,status.conditions.message)")
 
-        if echo "$JOB_OUTPUT" | grep -q "Completed"; then
-          echo "Migration job completed."
+          if grep -q "Completed" <<<"$JOB_OUTPUT"; then
+            echo "✅ Migration job completed successfully."
+          else
+            echo "❌ Migration job failed: $JOB_OUTPUT" >&2
+            exit 1
+          fi
         else
-          echo "Migration job failed: $JOB_OUTPUT"
-          exit 1
+          echo "⚠️ Migration job $JOB_NAME does not exist. Skipping."
         fi
-      else
-        echo "Migration job $JOB_NAME does not exist. Skipping migration." >&2
-      fi
-    else
-      echo "Migrations folder does not exist. Skipping migration." >&2
-    fi
+      }
 
-    # Update traffic to 100 for the new revision
-    gcloud run services update-traffic "${_APP_NAME}-${_DEPLOYMENT_ENV}" \
+      # 🚀 Run migration job if the migrations directory exists
+      if [[ -d "migrations" ]]; then
+        trigger_migration
+      else
+        echo "📂 Migrations directory not found. Skipping migration."
+      fi
+
+      # 🌐 Update traffic to 100% for the new revision
+      echo "🔄 Updating traffic to 100% for revision: $DEPLOYED_REVISION"
+      gcloud run services update-traffic "${_APP_NAME}-${_DEPLOYMENT_ENV}" \
         --region="${_REGION}" \
-        --project="$PROJECT_ID" \
+        --project="${PROJECT_ID}" \
         --to-revisions="$DEPLOYED_REVISION=100"
+
+      echo "🏁 ${_DEPLOYMENT_ENV} deployment finalized successfully."
+    fi
 
 # Secret management
 availableSecrets:
@@ -316,7 +363,7 @@ options:
 substitutions:
   _APP_NAME: ${_APP_NAME}
   _SHORT_SHA: ${_SHORT_SHA}
-  _DEPLOY_FULL_DEPLOYMENT_ENVS: "dev test sandbox prod"
+  _DEPLOY_FULL_DEPLOYMENT_ENVS: "dev test uat sandbox prod"
   _DEPLOYMENT_ENVS: "dev test prod"
   _DEPLOYMENT_ENV: "dev"
   _DEPLOYMENT_ENV_FROM: "dev"

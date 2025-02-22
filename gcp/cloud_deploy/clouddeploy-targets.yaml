@@ -39,6 +39,19 @@ executionConfigs:
 apiVersion: deploy.cloud.google.com/v1
 kind: Target
 metadata:
+ name: $PROJECT-uat
+description: Uat Environment
+requireApproval: false
+run:
+ location: projects/$PROJECT-UAT/locations/northamerica-northeast1
+executionConfigs:
+- usages: [DEPLOY, RENDER]
+  artifactStorage: 'gs://c4hnrd-tools_clouddeploy/history'
+---
+
+apiVersion: deploy.cloud.google.com/v1
+kind: Target
+metadata:
  name: $PROJECT-sandbox
 description: Sandbox Environment
 requireApproval: false

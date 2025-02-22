@@ -33,6 +33,8 @@ runs:
         echo "TAG_PREFIX=$(
           if [ '${{ env.ENVIRONMENT }}' == 'test' ]; then
             echo dev
+          elif [ '${{ env.ENVIRONMENT }}' == 'uat' ]; then
+            echo test
           elif [ '${{ env.ENVIRONMENT }}' == 'sandbox' ]; then
             echo test
           elif [ '${{ env.ENVIRONMENT }}' == 'prod' ]; then

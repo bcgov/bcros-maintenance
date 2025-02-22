@@ -2,7 +2,7 @@
 #!/bin/bash
 
 declare -a environments=("dev" "test" "tools" "prod" "integration" "sandbox")
-#declare -a projects=("")
+declare -a projects=("a083gt" "bcrbk9" "c4hnrd" "eogruh" "gtksf3" "k973yf" "keee67" "okagqp" "sbgmug" "yfjq17" "yfthig" "p0q6jr")
 declare -a service="cdcloudrun"
 
 for ev in "${environments[@]}"

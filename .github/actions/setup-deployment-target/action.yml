@@ -19,6 +19,12 @@ runs:
           echo DEPLOY_TARGETS="sandbox" >> $GITHUB_ENV
           echo DEPLOY_TARGET="sandbox" >> $GITHUB_ENV
           echo DEPLOY_TARGET_FROM="test" >> $GITHUB_ENV
+        elif [ "${{inputs.environment}}" == "uat" ]; then
+          # uat always from test environment
+          echo DEPLOY_PIPELINE=${{ inputs.app_name }}-uat-pipeline >> $GITHUB_ENV
+          echo DEPLOY_TARGETS="uat" >> $GITHUB_ENV
+          echo DEPLOY_TARGET="uat" >> $GITHUB_ENV
+          echo DEPLOY_TARGET_FROM="test" >> $GITHUB_ENV
         else
           # define pipeline name and pipeline targets
           targets="dev test prod"

@@ -60,7 +60,7 @@ steps:
     # Handle image building and tagging based on deployment target
     if [ "${_REDEPLOY}" == "" ] || [ "${_REDEPLOY}" == "false" ]; then
       case ${_DEPLOYMENT_ENV} in
-        "dev"|"test"|"sandbox"|"prod")
+        "dev"|"test"|"uat"|"sandbox"|"prod")
           if [ "${_DEPLOYMENT_ENV}" = "prod" ]; then
             # For production, create a dated backup tag if prod image exists
             if tag_exists "prod"; then
@@ -77,7 +77,7 @@ steps:
           fi
           ;;
         *)
-          echo "Error: Invalid environment '${_DEPLOYMENT_ENV}'. Allowed values are test, sandbox, dev, or prod." >&2
+          echo "Error: Invalid environment '${_DEPLOYMENT_ENV}'. Allowed values are test, uat, sandbox, dev, or prod." >&2
           exit 1
           ;;
       esac
@@ -242,7 +242,7 @@ substitutions:
   _APP_NAME: ${_APP_NAME}
   _BUILD_PROJECT: "c4hnrd-tools"
   _REDEPLOY: "false"
-  _DEPLOYMENT_ENV: ${_DEPLOYMENT_ENV} #dev/test/sandbox/prod
+  _DEPLOYMENT_ENV: ${_DEPLOYMENT_ENV} #dev/test/uat/sandbox/prod
   _DEPLOYMENT_ENV_FROM: ${_DEPLOYMENT_ENV_FROM} #dev/test/sandbox
   _REGION: "northamerica-northeast1"
 
