@@ -9,7 +9,7 @@ projects = {
       }
     }
     custom_roles = {
-      "roles/testTFRole" = {
+      "testTFRole" = {
         permissions = ["run.routes.list"]
         description  = "Custom role to test TF"
       }
