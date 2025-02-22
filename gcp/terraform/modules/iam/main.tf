@@ -21,14 +21,14 @@ resource "google_service_account" "sa" {
 
 resource "google_project_iam_member" "iam_members" {
   for_each = {
-    for idx, combo in flatten([
+    for combo in flatten([
       for sa_name, sa_attrs in local.merged_service_accounts : [
         for role in sa_attrs.roles != null ? sa_attrs.roles : [] : {
           sa_name = sa_name
           role    = role
         }
       ]
-    ]) : "${var.project_id}-${combo.sa_name}-${combo.role}-${idx}" => combo
+    ]) : "${var.project_id}-${combo.sa_name}-${combo.role}" => combo
   }
 
   project = var.project_id
