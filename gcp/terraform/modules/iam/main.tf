@@ -1,18 +1,12 @@
 locals {
-  default_environment = {
-    environment_service_accounts = {}
-    environment_custom_roles     = {}
-  }
-
   merged_service_accounts = merge(
     var.global_service_accounts,
-    lookup(var.environments, var.env, local.default_environment).environment_service_accounts,
+    var.env.environment_service_accounts,
     var.service_accounts
   )
-
   merged_custom_roles = merge(
     var.global_custom_roles,
-    lookup(var.environments, var.env, local.default_environment).environment_custom_roles,
+    var.env.environment_custom_roles,
     var.custom_roles
   )
 }
@@ -44,7 +38,6 @@ resource "google_project_iam_binding" "iam_roles" {
     "serviceAccount:${google_service_account.sa[each.value.sa_name].email}"
   ]
 }
-
 
 resource "google_project_iam_custom_role" "custom_roles" {
   for_each    = local.merged_custom_roles
