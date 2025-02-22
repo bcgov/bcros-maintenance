@@ -30,7 +30,7 @@ resource "google_project_iam_binding" "iam_roles" {
 resource "google_project_iam_custom_role" "custom_roles" {
   for_each    = var.custom_roles
   project     = var.project_id
-  role_id     = split("/", each.key)[1]
+  role_id     = each.key
   title       = each.key
   permissions = each.value.permissions
   description = each.value.description
