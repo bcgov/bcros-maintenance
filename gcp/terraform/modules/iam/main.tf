@@ -1,5 +1,24 @@
+locals {
+  default_environment = {
+    environment_service_accounts = {}
+    environment_custom_roles     = {}
+  }
+
+  merged_service_accounts = merge(
+    var.global_service_accounts,
+    lookup(var.environments, var.env, local.default_environment).environment_service_accounts,
+    var.service_accounts
+  )
+
+  merged_custom_roles = merge(
+    var.global_custom_roles,
+    lookup(var.environments, var.env, local.default_environment).environment_custom_roles,
+    var.custom_roles
+  )
+}
+
 resource "google_service_account" "sa" {
-  for_each     = var.service_accounts
+  for_each     = local.merged_service_accounts
   project      = var.project_id
   account_id   = each.key
   display_name = "${each.key}"
@@ -9,7 +28,7 @@ resource "google_service_account" "sa" {
 resource "google_project_iam_binding" "iam_roles" {
   for_each = {
     for combo in flatten([
-      for sa_name, sa_attrs in var.service_accounts : [
+      for sa_name, sa_attrs in local.merged_service_accounts : [
         for role in sa_attrs.roles : {
           sa_name = sa_name
           role    = role
@@ -28,7 +47,7 @@ resource "google_project_iam_binding" "iam_roles" {
 
 
 resource "google_project_iam_custom_role" "custom_roles" {
-  for_each    = var.custom_roles
+  for_each    = local.merged_custom_roles
   project     = var.project_id
   role_id     = each.key
   title       = each.key
