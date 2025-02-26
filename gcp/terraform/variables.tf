@@ -1,3 +1,9 @@
+variable "GOOGLE_CREDENTIALS" {
+  type        = string
+  description = "Google Cloud service account credentials JSON"
+  sensitive   = true
+}
+
 variable "region" {
     default = "northamerica-northeast1"
 }
@@ -12,6 +18,7 @@ variable "projects" {
     })), {})
 
     custom_roles = optional(map(object({
+      title = string
       permissions  = list(string)
       description  = optional(string, "Custom role managed by Terraform")
     })), {})
@@ -20,6 +27,7 @@ variable "projects" {
 
 variable "global_custom_roles" {
   type = map(object({
+    title = string
     permissions  = list(string)
     description  = optional(string, "Custom role managed by Terraform")
   }))
@@ -42,6 +50,7 @@ variable "environments" {
     })), {})
 
     environment_custom_roles = optional(map(object({
+      title = string
       permissions  = list(string)
       description  = optional(string, "Custom role managed by Terraform")
     })), {})

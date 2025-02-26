@@ -11,6 +11,7 @@ variable "service_accounts" {
 
 variable "custom_roles" {
   type = map(object({
+    title = string
     permissions  = list(string)
     description  = optional(string, "Custom role managed by Terraform")
   }))
@@ -18,6 +19,7 @@ variable "custom_roles" {
 
 variable "global_custom_roles" {
   type = map(object({
+    title = string
     permissions  = list(string)
     description  = optional(string, "Custom role managed by Terraform")
   }))
@@ -40,6 +42,7 @@ variable "env" {
     })), {})
 
     environment_custom_roles = optional(map(object({
+      title = string
       permissions  = list(string)
       description  = optional(string, "Custom role managed by Terraform")
     })), {})

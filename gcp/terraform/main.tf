@@ -10,6 +10,7 @@ terraform {
 provider "google" {
   project = null
   region  = var.region
+  credentials = var.GOOGLE_CREDENTIALS
 }
 
 locals {

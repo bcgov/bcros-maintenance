@@ -40,7 +40,7 @@ resource "google_project_iam_custom_role" "custom_roles" {
   for_each    = local.merged_custom_roles
   project     = var.project_id
   role_id     = each.key
-  title       = each.key
+  title       = each.value.title
   permissions = each.value.permissions
   description = each.value.description
 }
