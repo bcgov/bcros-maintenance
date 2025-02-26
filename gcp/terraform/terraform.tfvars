@@ -139,10 +139,6 @@ projects = {
     project_id = "okagqp-dev"
     env = "dev"
   }
-  "analytics-int-sandbox" = {
-    project_id = "mvnjri-sandbox"
-    env = "sandbox"
-  }
   "common-sandbox" = {
     project_id = "c4hnrd-sandbox"
     env = "sandbox"
