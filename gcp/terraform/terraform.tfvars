@@ -860,11 +860,11 @@ projects = {
     service_accounts = {
       sa-job = {
         roles       = ["projects/c4hnrd-tools/roles/rolejob", "projects/c4hnrd-tools/roles/cdcloudrun"]
-        description = "Service Account for running pubsub services"
+        description = "Service Account for running job services"
       },
       sa-pubsub = {
         roles       = ["roles/iam.serviceAccountTokenCreator", "roles/pubsub.publisher", "roles/pubsub.subscriber"]
-        description = "Service Account for running job services"
+        description = "Service Account for running pubsub services"
       },
       sa-api = {
         roles       = ["projects/c4hnrd-tools/roles/roleapi", "roles/cloudtrace.agent"]
