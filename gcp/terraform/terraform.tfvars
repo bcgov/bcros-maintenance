@@ -2,22 +2,112 @@ projects = {
   "analytics-int-prod" = {
     project_id = "mvnjri-prod"
     env = "prod"
+    # service_accounts = {
+    #   sa-pubsub = {
+    #     roles       = ["roles/iam.serviceAccountTokenCreator", "roles/pubsub.publisher", "roles/pubsub.subscriber"]
+    #     description = "Service Account for running pubsub services	"
+    #   },
+    #   sa-job = {
+    #     roles       = ["projects/mvnjri-prod/roles/roleapi"]
+    #     description = "Service Account for running job services"
+    #   },
+    #   sa-api = {
+    #     roles       = ["projects/mvnjri-prod/roles/rolejob"]
+    #     description = "Service Account for running api services"
+    #   },
+    #   sa-queue = {
+    #     roles       = ["projects/mvnjri-prod/roles/rolequeue"]
+    #     description = "Service Account for running queue services"
+    #   }
+    # }
   }
   "common-prod" = {
     project_id = "c4hnrd-prod"
     env = "prod"
+    # service_accounts = {
+    #   sa-pubsub = {
+    #     roles       = ["projects/c4hnrd-prod/roles/rolequeue", "roles/iam.serviceAccountTokenCreator", "roles/pubsub.publisher", "roles/pubsub.subscriber", "roles/run.invoker"]
+    #     description = "Service Account for running pubsub services"
+    #   },
+    #   sa-job = {
+    #     roles       = ["projects/c4hnrd-prod/roles/rolejob"]
+    #     description = "Service Account for running job services"
+    #   },
+    #   sa-api = {
+    #     roles       = ["projects/c4hnrd-prod/roles/roleapi", "roles/cloudsql.instanceUser", "roles/run.serviceAgent"]
+    #     description = "Service Account for running api services"
+    #   },
+    #   sa-queue = {
+    #     roles       = ["projects/c4hnrd-prod/roles/rolequeue"]
+    #     description = "Service Account for running queue services"
+    #   }
+    # }
   }
   "connect-prod" = {
     project_id = "gtksf3-prod"
     env = "prod"
+    # service_accounts = {
+    #   sa-pubsub = {
+    #     roles       = ["roles/iam.serviceAccountTokenCreator", "roles/pubsub.publisher", "roles/pubsub.subscriber", "roles/run.invoker"]
+    #     description = "Service Account for running pubsub services"
+    #   },
+    #   sa-job = {
+    #     roles       = ["projects/gtksf3-prod/roles/rolejob"]
+    #     description = "Service Account for running job services"
+    #   },
+    #   sa-api = {
+    #     roles       = ["projects/gtksf3-prod/roles/roleapi", "roles/cloudsql.client"]
+    #     description = "Service Account for running api services"
+    #   },
+    #   sa-queue = {
+    #     roles       = ["projects/gtksf3-prod/roles/rolequeue"]
+    #     description = "Service Account for running queue services"
+    #   }
+    # }
   }
   "bor-prod" = {
     project_id = "yfjq17-prod"
     env = "prod"
+    # service_accounts = {
+    #   sa-pubsub = {
+    #     roles       = ["roles/iam.serviceAccountTokenCreator", "roles/pubsub.publisher", "roles/pubsub.subscriber"]
+    #     description = "Service Account for running pubsub services"
+    #   },
+    #   sa-job = {
+    #     roles       = ["projects/yfjq17-prod/roles/rolejob"]
+    #     description = "Service Account for running job services"
+    #   },
+    #   sa-api = {
+    #     roles       = ["projects/yfjq17-prod/roles/roleapi"]
+    #     description = "Service Account for running api services"
+    #   },
+    #   sa-queue = {
+    #     roles       = ["projects/yfjq17-prod/roles/rolequeue"]
+    #     description = "Service Account for running queue services"
+    #   }
+    # }
   }
   "bcr-businesses-prod" = {
     project_id = "a083gt-prod"
     env = "prod"
+    # service_accounts = {
+    #   sa-pubsub = {
+    #     roles       = ["roles/iam.serviceAccountTokenCreator", "roles/pubsub.publisher", "roles/pubsub.subscriber", "roles/run.invoker"]
+    #     description = "Service Account for running pubsub services"
+    #   },
+    #   sa-job = {
+    #     roles       = ["projects/a083gt-prod/roles/rolejob"]
+    #     description = "Service Account for running job services"
+    #   },
+    #   sa-api = {
+    #     roles       = ["projects/a083gt-prod/roles/roleapi"]
+    #     description = "Service Account for running api services"
+    #   },
+    #   sa-queue = {
+    #     roles       = ["projects/a083gt-prod/roles/rolequeue"]
+    #     description = "Service Account for running queue services"
+    #   }
+    # }
   }
   "business-number-hub-prod" = {
     project_id = "keee67-prod"
@@ -26,18 +116,90 @@ projects = {
   "ppr-prod" = {
     project_id = "eogruh-prod"
     env = "prod"
+    # service_accounts = {
+    #   sa-pubsub = {
+    #     roles       = ["roles/iam.serviceAccountTokenCreator", "roles/pubsub.publisher", "roles/pubsub.subscriber"]
+    #     description = "Service Account for running pubsub services"
+    #   },
+    #   sa-job = {
+    #     roles       = ["projects/eogruh-prod/roles/rolejob"]
+    #     description = "Service Account for running job services"
+    #   }
+    #   sa-api = {
+    #     roles       = ["projects/eogruh-prod/roles/roleapi"]
+    #     description = "Service Account for running api services"
+    #   },
+    #   sa-queue = {
+    #     roles       = ["projects/eogruh-prod/roles/rolequeue"]
+    #     description = "Service Account for running queue services"
+    #   }
+    # }
   }
   "search-prod" = {
     project_id = "k973yf-prod"
     env = "prod"
+    # service_accounts = {
+    #   sa-pubsub = {
+    #     roles       = ["roles/iam.serviceAccountTokenCreator", "roles/pubsub.publisher", "roles/pubsub.subscriber"]
+    #     description = "Service Account for running pubsub services"
+    #   },
+    #   sa-job = {
+    #     roles       = ["projects/k973yf-prod/roles/rolejob"]
+    #     description = "Service Account for running job services"
+    #   },
+    #   sa-api = {
+    #     roles       = ["projects/k973yf-prod/roles/roleapi"]
+    #     description = "Service Account for running api services"
+    #   },
+    #   sa-queue = {
+    #     roles       = ["projects/k973yf-prod/roles/rolequeue"]
+    #     description = "Service Account for running queue services"
+    #   }
+    # }
   }
   "web-presence-prod" = {
     project_id = "yfthig-prod"
     env = "prod"
+    # service_accounts = {
+    #   sa-pubsub = {
+    #     roles       = ["roles/iam.serviceAccountTokenCreator", "roles/pubsub.publisher", "roles/pubsub.subscriber"]
+    #     description = "Service Account for running pubsub services"
+    #   },
+    #   sa-job = {
+    #     roles       = ["projects/yfthig-prod/roles/rolejob"]
+    #     description = "Service Account for running job services"
+    #   },
+    #   sa-api = {
+    #     roles       = ["projects/yfthig-prod/roles/roleapi"]
+    #     description = "Service Account for running api services"
+    #   },
+    #   sa-queue = {
+    #     roles       = ["projects/yfthig-prod/roles/rolequeue"]
+    #     description = "Service Account for running queue services"
+    #   }
+    # }
   }
   "strr-prod" = {
     project_id = "bcrbk9-prod"
     env = "prod"
+    # service_accounts = {
+    #   sa-pubsub = {
+    #     roles       = ["roles/bigquery.dataOwner", "roles/iam.serviceAccountTokenCreator", "roles/pubsub.publisher", "roles/pubsub.subscriber", "roles/run.invoker"]
+    #     description = "Service Account for running pubsub services"
+    #   },
+    #   sa-job = {
+    #     roles       = ["projects/bcrbk9-prod/roles/rolejob"]
+    #     description = "Service Account for running job services"
+    #   },
+    #   sa-api = {
+    #     roles       = ["projects/bcrbk9-prod/roles/roleapi"]
+    #     description = "Service Account for running api services"
+    #   },
+    #   sa-queue = {
+    #     roles       = ["projects/bcrbk9-prod/roles/rolequeue"]
+    #     description = "Service Account for running queue services"
+    #   }
+    # }
   }
   "analytics-ext-prod" = {
     project_id = "sbgmug-prod"
@@ -50,18 +212,90 @@ projects = {
   "common-test" = {
     project_id = "c4hnrd-test"
     env = "test"
+    service_accounts = {
+      sa-pubsub = {
+        roles       = ["projects/c4hnrd-test/roles/rolequeue", "roles/iam.serviceAccountTokenCreator", "roles/pubsub.publisher", "roles/pubsub.subscriber", "roles/run.invoker"]
+        description = "Service Account for running pubsub services"
+      },
+      sa-job = {
+        roles       = ["projects/c4hnrd-test/roles/rolejob"]
+        description = "Service Account for running job services"
+      },
+      sa-api = {
+        roles       = ["projects/c4hnrd-test/roles/roleapi", "roles/cloudsql.instanceUser", "roles/run.serviceAgent"]
+        description = "Service Account for running api services"
+      },
+      sa-queue = {
+        roles       = ["projects/c4hnrd-test/roles/rolequeue"]
+        description = "Service Account for running queue services"
+      }
+    }
   }
   "connect-test" = {
     project_id = "gtksf3-test"
     env = "test"
+    service_accounts = {
+      sa-pubsub = {
+        roles       = ["roles/iam.serviceAccountTokenCreator", "roles/pubsub.publisher", "roles/pubsub.subscriber"]
+        description = "Service Account for running pubsub services"
+      },
+      sa-job = {
+        roles       = ["projects/gtksf3-test/roles/rolejob"]
+        description = "Service Account for running job services"
+      },
+      sa-api = {
+        roles       = ["projects/gtksf3-test/roles/roleapi", "roles/cloudsql.client"]
+        description = "Service Account for running api services"
+      },
+      sa-queue = {
+        roles       = ["projects/gtksf3-test/roles/rolequeue"]
+        description = "Service Account for running queue services"
+      }
+    }
   }
   "bor-test" = {
     project_id = "yfjq17-test"
     env = "test"
+    service_accounts = {
+      sa-pubsub = {
+        roles       = ["roles/iam.serviceAccountTokenCreator", "roles/pubsub.publisher", "roles/pubsub.subscriber"]
+        description = "Service Account for running pubsub services"
+      },
+      sa-job = {
+        roles       = ["projects/yfjq17-test/roles/rolejob"]
+        description = "Service Account for running job services"
+      },
+      sa-api = {
+        roles       = ["projects/yfjq17-test/roles/roleapi"]
+        description = "Service Account for running api services"
+      },
+      sa-queue = {
+        roles       = ["projects/yfjq17-test/roles/rolequeue"]
+        description = "Service Account for running queue services"
+      }
+    }
   }
   "bcr-businesses-test" = {
     project_id = "a083gt-test"
     env = "test"
+    service_accounts = {
+      sa-pubsub = {
+        roles       = ["roles/iam.serviceAccountTokenCreator", "roles/pubsub.publisher", "roles/pubsub.subscriber", "roles/run.invoker"]
+        description = "Service Account for running pubsub services"
+      },
+      sa-job = {
+        roles       = ["projects/a083gt-test/roles/rolejob"]
+        description = "Service Account for running job services"
+      },
+      sa-api = {
+        roles       = ["projects/a083gt-test/roles/roleapi"]
+        description = "Service Account for running api services"
+      },
+      sa-queue = {
+        roles       = ["projects/a083gt-test/roles/rolequeue"]
+        description = "Service Account for running queue services"
+      }
+    }
   }
   "business-number-hub-test" = {
     project_id = "keee67-test"
@@ -70,6 +304,24 @@ projects = {
   "ppr-test" = {
     project_id = "eogruh-test"
     env = "test"
+    service_accounts = {
+      sa-pubsub = {
+        roles       = ["roles/iam.serviceAccountTokenCreator", "roles/pubsub.publisher", "roles/pubsub.subscriber"]
+        description = "Service Account for running pubsub services"
+      },
+      sa-job = {
+        roles       = ["projects/eogruh-test/roles/rolejob"]
+        description = "Service Account for running job services"
+      },
+      sa-api = {
+        roles       = ["projects/eogruh-test/roles/roleapi"]
+        description = "Service Account for running api services"
+      },
+      sa-queue = {
+        roles       = ["projects/eogruh-test/roles/rolequeue"]
+        description = "Service Account for running queue services"
+      }
+    }
   }
   "search-test" = {
     project_id = "k973yf-test"
@@ -78,10 +330,46 @@ projects = {
   "web-presence-test" = {
     project_id = "yfthig-test"
     env = "test"
+    service_accounts = {
+      sa-pubsub = {
+        roles       = ["roles/iam.serviceAccountTokenCreator", "roles/pubsub.publisher", "roles/pubsub.subscriber"]
+        description = "Service Account for running pubsub services"
+      },
+      sa-job = {
+        roles       = ["projects/yfthig-test/roles/rolejob"]
+        description = "Service Account for running job services"
+      },
+      sa-api = {
+        roles       = ["projects/yfthig-test/roles/roleapi"]
+        description = "Service Account for running api services"
+      },
+      sa-queue = {
+        roles       = ["projects/yfthig-test/roles/rolequeue"]
+        description = "Service Account for running queue services"
+      }
+    }
   }
   "strr-test" = {
     project_id = "bcrbk9-test"
     env = "test"
+    service_accounts = {
+      sa-pubsub = {
+        roles       = ["roles/iam.serviceAccountTokenCreator", "roles/pubsub.publisher", "roles/pubsub.subscriber", "roles/run.invoker"]
+        description = "Service Account for running pubsub services"
+      },
+      sa-job = {
+        roles       = ["projects/bcrbk9-test/roles/rolejob"]
+        description = "Service Account for running job services"
+      },
+      sa-api = {
+        roles       = ["projects/bcrbk9-test/roles/roleapi", "roles/pubsub.publisher", "roles/storage.admin", "roles/storage.objectCreator"]
+        description = "Service Account for running api services"
+      },
+      sa-queue = {
+        roles       = ["projects/bcrbk9-test/roles/rolequeue"]
+        description = "Service Account for running queue services"
+      }
+    }
   }
   "analytics-ext-test" = {
     project_id = "sbgmug-test"
@@ -94,22 +382,112 @@ projects = {
   "analytics-int-dev" = {
     project_id = "mvnjri-dev"
     env = "dev"
+    service_accounts = {
+      sa-pubsub = {
+        roles       = ["roles/iam.serviceAccountTokenCreator", "roles/pubsub.publisher", "roles/pubsub.subscriber"]
+        description = "Service Account for running pubsub services"
+      },
+      sa-job = {
+        roles       = ["projects/mvnjri-dev/roles/rolejob"]
+        description = "Service Account for running job services"
+      },
+      sa-api = {
+        roles       = ["projects/mvnjri-dev/roles/roleapi"]
+        description = "Service Account for running api services"
+      },
+      sa-queue = {
+        roles       = ["projects/mvnjri-dev/roles/rolequeue"]
+        description = "Service Account for running queue services"
+      }
+    }
   }
   "common-dev" = {
     project_id = "c4hnrd-dev"
     env = "dev"
+    service_accounts = {
+      sa-pubsub = {
+        roles       = ["projects/c4hnrd-dev/roles/rolequeue", "roles/iam.serviceAccountTokenCreator", "roles/pubsub.publisher", "roles/pubsub.subscriber", "roles/run.invoker"]
+        description = "Service Account for running pubsub services"
+      },
+      sa-job = {
+        roles       = ["projects/c4hnrd-dev/roles/rolejob"]
+        description = "Service Account for running job services"
+      },
+      sa-api = {
+        roles       = ["projects/c4hnrd-dev/roles/roleapi", "roles/cloudsql.instanceUser", "roles/serverless.serviceAgent"]
+        description = "Service Account for running api services"
+      },
+      sa-queue = {
+        roles       = ["projects/c4hnrd-dev/roles/rolequeue"]
+        description = "Service Account for running queue services"
+      }
+    }
   }
   "connect-dev" = {
     project_id = "gtksf3-dev"
     env = "dev"
+    service_accounts = {
+      sa-pubsub = {
+        roles       = ["roles/iam.serviceAccountTokenCreator", "roles/pubsub.publisher", "roles/pubsub.subscriber"]
+        description = "Service Account for running pubsub services"
+      },
+      sa-job = {
+        roles       = ["projects/gtksf3-dev/roles/rolejob"]
+        description = "Service Account for running job services"
+      },
+      sa-api = {
+        roles       = ["projects/gtksf3-dev/roles/roleapi"]
+        description = "Service Account for running api services"
+      },
+      sa-queue = {
+        roles       = ["projects/gtksf3-dev/roles/rolequeue"]
+        description = "Service Account for running queue services"
+      }
+    }
   }
   "bor-dev" = {
     project_id = "yfjq17-dev"
     env = "dev"
+    service_accounts = {
+      sa-pubsub = {
+        roles       = ["roles/iam.serviceAccountTokenCreator", "roles/pubsub.publisher", "roles/pubsub.subscriber"]
+        description = "Service Account for running pubsub services"
+      },
+      sa-job = {
+        roles       = ["projects/yfjq17-dev/roles/rolejob"]
+        description = "Service Account for running job services"
+      },
+      sa-api = {
+        roles       = ["projects/yfjq17-dev/roles/roleapi"]
+        description = "Service Account for running api services"
+      },
+      sa-queue = {
+        roles       = ["projects/yfjq17-dev/roles/rolequeue"]
+        description = "Service Account for running queue services"
+      }
+    }
   }
   "bcr-businesses-dev" = {
     project_id = "a083gt-dev"
     env = "dev"
+    service_accounts = {
+      sa-pubsub = {
+        roles       = ["roles/iam.serviceAccountTokenCreator", "roles/pubsub.publisher", "roles/pubsub.subscriber", "roles/run.invoker"]
+        description = "Service Account for running pubsub services"
+      },
+      sa-job = {
+        roles       = ["projects/a083gt-dev/roles/rolejob"]
+        description = "Service Account for running job services"
+      },
+      sa-api = {
+        roles       = ["projects/a083gt-dev/roles/roleapi"]
+        description = "Service Account for running api services"
+      },
+      sa-queue = {
+        roles       = ["projects/a083gt-dev/roles/rolequeue"]
+        description = "Service Account for running queue services"
+      }
+    }
   }
   "business-number-hub-dev" = {
     project_id = "keee67-dev"
@@ -118,6 +496,20 @@ projects = {
   "ppr-dev" = {
     project_id = "eogruh-dev"
     env = "dev"
+    service_accounts = {
+      sa-pubsub = {
+        roles       = ["roles/iam.serviceAccountTokenCreator", "roles/pubsub.publisher", "roles/pubsub.subscriber"]
+        description = "Service Account for running pubsub services"
+      },
+      sa-api = {
+        roles       = ["projects/eogruh-dev/roles/roleapi"]
+        description = "Service Account for running api services"
+      },
+      sa-queue = {
+        roles       = ["projects/eogruh-dev/roles/rolequeue"]
+        description = "Service Account for running queue services"
+      }
+    }
   }
   "search-dev" = {
     project_id = "k973yf-dev"
@@ -126,10 +518,46 @@ projects = {
   "web-presence-dev" = {
     project_id = "yfthig-dev"
     env = "dev"
+    service_accounts = {
+      sa-pubsub = {
+        roles       = ["roles/iam.serviceAccountTokenCreator", "roles/pubsub.publisher", "roles/pubsub.subscriber"]
+        description = "Service Account for running pubsub services"
+      },
+      sa-job = {
+        roles       = ["projects/yfthig-dev/roles/rolejob"]
+        description = "Service Account for running job services"
+      },
+      sa-api = {
+        roles       = ["projects/yfthig-dev/roles/roleapi"]
+        description = "Service Account for running api services"
+      },
+      sa-queue = {
+        roles       = ["projects/yfthig-dev/roles/rolequeue"]
+        description = "Service Account for running queue services"
+      }
+    }
   }
   "strr-dev" = {
     project_id = "bcrbk9-dev"
     env = "dev"
+    service_accounts = {
+      sa-pubsub = {
+        roles       = ["roles/iam.serviceAccountTokenCreator", "roles/pubsub.publisher", "roles/pubsub.subscriber", "roles/run.invoker"]
+        description = "Service Account for running pubsub services"
+      },
+      sa-job = {
+        roles       = ["projects/bcrbk9-dev/roles/rolejob"]
+        description = "Service Account for running job services"
+      },
+      sa-api = {
+        roles       = ["projects/bcrbk9-dev/roles/roleapi", "roles/pubsub.publisher", "roles/storage.admin", "roles/storage.objectCreator"]
+        description = "Service Account for running api services"
+      },
+      sa-queue = {
+        roles       = ["projects/bcrbk9-dev/roles/rolequeue"]
+        description = "Service Account for running queue services"
+      }
+    }
   }
   "analytics-ext-dev" = {
     project_id = "sbgmug-dev"
@@ -142,18 +570,90 @@ projects = {
   "common-sandbox" = {
     project_id = "c4hnrd-sandbox"
     env = "sandbox"
+    service_accounts = {
+      sa-pubsub = {
+        roles       = ["roles/iam.serviceAccountTokenCreator", "roles/pubsub.publisher", "roles/pubsub.subscriber"]
+        description = "Service Account for running pubsub services"
+      },
+      sa-job = {
+        roles       = ["projects/c4hnrd-sandbox/roles/rolejob"]
+        description = "Service Account for running job services"
+      },
+      sa-api = {
+        roles       = ["projects/c4hnrd-sandbox/roles/roleapi"]
+        description = "Service Account for running api services"
+      },
+      sa-queue = {
+        roles       = ["projects/c4hnrd-sandbox/roles/rolequeue"]
+        description = "Service Account for running queue services"
+      }
+    }
   }
   "connect-sandbox" = {
     project_id = "gtksf3-tools"
     env = "sandbox"
+    service_accounts = {
+      sa-pubsub = {
+        roles       = ["roles/iam.serviceAccountTokenCreator", "roles/pubsub.publisher", "roles/pubsub.subscriber"]
+        description = "Service Account for running pubsub services"
+      },
+      sa-job = {
+        roles       = ["projects/gtksf3-tools/roles/rolejob"]
+        description = "Service Account for running job services"
+      },
+      sa-api = {
+        roles       = ["projects/gtksf3-tools/roles/roleapi", "roles/cloudsql.client"]
+        description = "Service Account for running api services"
+      },
+      sa-queue = {
+        roles       = ["projects/gtksf3-tools/roles/rolequeue"]
+        description = "Service Account for running queue services"
+      }
+    }
   }
   "bor-sandbox" = {
     project_id = "yfjq17-tools"
     env = "sandbox"
+    service_accounts = {
+      sa-pubsub = {
+        roles       = ["roles/iam.serviceAccountTokenCreator", "roles/pubsub.publisher", "roles/pubsub.subscriber"]
+        description = "Service Account for running pubsub services"
+      },
+      sa-job = {
+        roles       = ["projects/yfjq17-tools/roles/rolejob"]
+        description = "Service Account for running job services"
+      },
+      sa-api = {
+        roles       = ["projects/yfjq17-tools/roles/roleapi"]
+        description = "Service Account for running api services"
+      },
+      sa-queue = {
+        roles       = ["projects/yfjq17-tools/roles/rolequeue"]
+        description = "Service Account for running queue services"
+      }
+    }
   }
   "bcr-businesses-tools" = {
     project_id = "a083gt-tools"
     env = "sandbox"
+    service_accounts = {
+      sa-pubsub = {
+        roles       = ["roles/iam.serviceAccountTokenCreator", "roles/pubsub.publisher", "roles/pubsub.subscriber"]
+        description = "Service Account for running pubsub services"
+      },
+      sa-job = {
+        roles       = ["projects/a083gt-tools/roles/rolejob"]
+        description = "Service Account for running job services"
+      },
+      sa-api = {
+        roles       = ["projects/a083gt-tools/roles/roleapi"]
+        description = "Service Account for running api services"
+      },
+      sa-queue = {
+        roles       = ["projects/a083gt-tools/roles/rolequeue"]
+        description = "Service Account for running queue services"
+      }
+    }
   }
   "business-number-hub-sandbox" = {
     project_id = "keee67-tools"
@@ -162,6 +662,24 @@ projects = {
   "ppr-sandbox" = {
     project_id = "eogruh-sandbox"
     env = "sandbox"
+    service_accounts = {
+      sa-pubsub = {
+        roles       = ["roles/iam.serviceAccountTokenCreator", "roles/pubsub.publisher", "roles/pubsub.subscriber"]
+        description = "Service Account for running pubsub services"
+      },
+      sa-job = {
+        roles       = ["projects/eogruh-sandbox/roles/rolejob"]
+        description = "Service Account for running job services"
+      },
+      sa-api = {
+        roles       = ["projects/eogruh-sandbox/roles/roleapi"]
+        description = "Service Account for running api services"
+      },
+      sa-queue = {
+        roles       = ["projects/eogruh-sandbox/roles/rolequeue"]
+        description = "Service Account for running queue services"
+      }
+    }
   }
   "search-sandbox" = {
     project_id = "k973yf--tools"
@@ -170,10 +688,38 @@ projects = {
   "web-presence-sandbox" = {
     project_id = "yfthig-tools"
     env = "sandbox"
+    service_accounts = {
+      sa-job = {
+        roles       = ["projects/yfthig-tools/roles/rolejob"]
+        description = "Service Account for running job services"
+      },
+      sa-api = {
+        roles       = ["projects/yfthig-tools/roles/roleapi"]
+        description = "Service Account for running api services"
+      }
+    }
   }
   "strr-sandbox" = {
     project_id = "bcrbk9-tools"
     env = "sandbox"
+    service_accounts = {
+      sa-pubsub = {
+        roles       = ["roles/iam.serviceAccountTokenCreator", "roles/pubsub.publisher", "roles/pubsub.subscriber"]
+        description = "Service Account for running pubsub services"
+      },
+      sa-job = {
+        roles       = ["projects/bcrbk9-tools/roles/rolejob"]
+        description = "Service Account for running job services"
+      },
+      sa-api = {
+        roles       = ["projects/bcrbk9-tools/roles/roleapi", "roles/storage.admin"]
+        description = "Service Account for running api services"
+      },
+      sa-queue = {
+        roles       = ["projects/bcrbk9-tools/roles/rolequeue"]
+        description = "Service Account for running queue services"
+      }
+    }
   }
   "analytics-ext-sandbox" = {
     project_id = "sbgmug-sandbox"
@@ -188,10 +734,22 @@ projects = {
     env = "sandbox"
 
     service_accounts = {
-      # "test-tf-sa" = {
-      #   roles = ["roles/storage.admin", "roles/logging.viewer"]
-      #   description = ""
-      # }
+      sa-pubsub = {
+        roles       = ["roles/iam.serviceAccountTokenCreator", "roles/pubsub.publisher", "roles/pubsub.subscriber", "roles/run.invoker"]
+        description = "Service Account for running pubsub services"
+      },
+      sa-job = {
+        roles       = ["projects/a083gt-integration/roles/rolejob"]
+        description = "Service Account for running job services"
+      },
+      sa-api = {
+        roles       = ["projects/a083gt-integration/roles/roleapi"]
+        description = "Service Account for running api services"
+      },
+      sa-queue = {
+        roles       = ["projects/a083gt-integration/roles/rolequeue"]
+        description = "Service Account for running queue services"
+      }
     }
     custom_roles = {
       # "testTFRole2" = {
@@ -299,6 +857,24 @@ projects = {
         ]
       }
     }
+    service_accounts = {
+      sa-job = {
+        roles       = ["projects/c4hnrd-tools/roles/rolejob", "projects/c4hnrd-tools/roles/cdcloudrun"]
+        description = "Service Account for running pubsub services"
+      },
+      sa-pubsub = {
+        roles       = ["roles/iam.serviceAccountTokenCreator", "roles/pubsub.publisher", "roles/pubsub.subscriber"]
+        description = "Service Account for running job services"
+      },
+      sa-api = {
+        roles       = ["projects/c4hnrd-tools/roles/roleapi", "roles/cloudtrace.agent"]
+        description = "Service Account for running api services"
+      },
+      sa-queue = {
+        roles       = ["projects/c4hnrd-tools/roles/rolequeue"]
+        description = "Service Account for running queue services"
+      }
+    }
   }
 
 }
@@ -306,9 +882,9 @@ projects = {
 environments = {
   "sandbox" = {
     environment_service_accounts = {
-      # "sandbox-sa" = {
-      #   roles       = ["roles/logging.viewer"]
-      #   description = "Environment-specific service account"
+      # sa-job = {
+      #   roles       = ["roles/rolejob"]
+      #   description = "Service Account for running pubsub services"
       # }
     }
 
@@ -537,6 +1113,13 @@ environments = {
         ]
       }
     }
+    environment_service_accounts = {
+      # sa-job = {
+      #   roles       = ["roles/rolejob"]
+      #   description = "Service Account for running job services"
+      # }
+
+    }
   }
   "test" = {
     environment_custom_roles = {
@@ -638,6 +1221,13 @@ environments = {
           "cloudconfig.configs.update"
         ]
       }
+    }
+    environment_service_accounts = {
+      # sa-job = {
+      #   roles       = ["roles/rolejob"]
+      #   description = "Service Account for running job services"
+      # }
+
     }
   }
   "prod" = {
@@ -796,6 +1386,12 @@ environments = {
           "cloudconfig.configs.update"
         ]
       }
+    }
+    environment_service_accounts = {
+      # sa-job = {
+      #   roles       = ["roles/rolejob"]
+      #   description = "Service Account for running job services"
+      # }
     }
   }
   "tools" = {
@@ -1283,7 +1879,7 @@ global_custom_roles = {
       "clouddeploy.deployPolicies.list",
       "clouddeploy.deployPolicies.override",
       "clouddeploy.deployPolicies.update",
-            "clouddeploy.jobRuns.get",
+      "clouddeploy.jobRuns.get",
       "clouddeploy.jobRuns.list",
       "clouddeploy.jobRuns.terminate",
       "clouddeploy.locations.get",
