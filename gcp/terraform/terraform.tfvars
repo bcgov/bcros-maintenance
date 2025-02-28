@@ -2,112 +2,112 @@ projects = {
   "analytics-int-prod" = {
     project_id = "mvnjri-prod"
     env = "prod"
-    # service_accounts = {
-    #   sa-pubsub = {
-    #     roles       = ["roles/iam.serviceAccountTokenCreator", "roles/pubsub.publisher", "roles/pubsub.subscriber"]
-    #     description = "Service Account for running pubsub services	"
-    #   },
-    #   sa-job = {
-    #     roles       = ["projects/mvnjri-prod/roles/roleapi"]
-    #     description = "Service Account for running job services"
-    #   },
-    #   sa-api = {
-    #     roles       = ["projects/mvnjri-prod/roles/rolejob"]
-    #     description = "Service Account for running api services"
-    #   },
-    #   sa-queue = {
-    #     roles       = ["projects/mvnjri-prod/roles/rolequeue"]
-    #     description = "Service Account for running queue services"
-    #   }
-    # }
+    service_accounts = {
+      sa-pubsub = {
+        roles       = ["roles/iam.serviceAccountTokenCreator", "roles/pubsub.publisher", "roles/pubsub.subscriber"]
+        description = "Service Account for running pubsub services"
+      },
+      sa-job = {
+        roles       = ["projects/mvnjri-prod/roles/rolejob"]
+        description = "Service Account for running job services"
+      },
+      sa-api = {
+        roles       = ["projects/mvnjri-prod/roles/roleapi"]
+        description = "Service Account for running api services"
+      },
+      sa-queue = {
+        roles       = ["projects/mvnjri-prod/roles/rolequeue"]
+        description = "Service Account for running queue services"
+      }
+    }
   }
   "common-prod" = {
     project_id = "c4hnrd-prod"
     env = "prod"
-    # service_accounts = {
-    #   sa-pubsub = {
-    #     roles       = ["projects/c4hnrd-prod/roles/rolequeue", "roles/iam.serviceAccountTokenCreator", "roles/pubsub.publisher", "roles/pubsub.subscriber", "roles/run.invoker"]
-    #     description = "Service Account for running pubsub services"
-    #   },
-    #   sa-job = {
-    #     roles       = ["projects/c4hnrd-prod/roles/rolejob"]
-    #     description = "Service Account for running job services"
-    #   },
-    #   sa-api = {
-    #     roles       = ["projects/c4hnrd-prod/roles/roleapi", "roles/cloudsql.instanceUser", "roles/run.serviceAgent"]
-    #     description = "Service Account for running api services"
-    #   },
-    #   sa-queue = {
-    #     roles       = ["projects/c4hnrd-prod/roles/rolequeue"]
-    #     description = "Service Account for running queue services"
-    #   }
-    # }
+    service_accounts = {
+      sa-pubsub = {
+        roles       = ["projects/c4hnrd-prod/roles/rolequeue", "roles/iam.serviceAccountTokenCreator", "roles/pubsub.publisher", "roles/pubsub.subscriber", "roles/run.invoker"]
+        description = "Service Account for running pubsub services"
+      },
+      sa-job = {
+        roles       = ["projects/c4hnrd-prod/roles/rolejob"]
+        description = "Service Account for running job services"
+      },
+      sa-api = {
+        roles       = ["projects/c4hnrd-prod/roles/roleapi", "roles/cloudsql.instanceUser", "roles/run.serviceAgent"]
+        description = "Service Account for running api services"
+      },
+      sa-queue = {
+        roles       = ["projects/c4hnrd-prod/roles/rolequeue"]
+        description = "Service Account for running queue services"
+      }
+    }
   }
   "connect-prod" = {
     project_id = "gtksf3-prod"
     env = "prod"
-    # service_accounts = {
-    #   sa-pubsub = {
-    #     roles       = ["roles/iam.serviceAccountTokenCreator", "roles/pubsub.publisher", "roles/pubsub.subscriber", "roles/run.invoker"]
-    #     description = "Service Account for running pubsub services"
-    #   },
-    #   sa-job = {
-    #     roles       = ["projects/gtksf3-prod/roles/rolejob"]
-    #     description = "Service Account for running job services"
-    #   },
-    #   sa-api = {
-    #     roles       = ["projects/gtksf3-prod/roles/roleapi", "roles/cloudsql.client"]
-    #     description = "Service Account for running api services"
-    #   },
-    #   sa-queue = {
-    #     roles       = ["projects/gtksf3-prod/roles/rolequeue"]
-    #     description = "Service Account for running queue services"
-    #   }
-    # }
+    service_accounts = {
+      sa-pubsub = {
+        roles       = ["roles/iam.serviceAccountTokenCreator", "roles/pubsub.publisher", "roles/pubsub.subscriber", "roles/run.invoker"]
+        description = "Service Account for running pubsub services"
+      },
+      sa-job = {
+        roles       = ["projects/gtksf3-prod/roles/rolejob"]
+        description = "Service Account for running job services"
+      },
+      sa-api = {
+        roles       = ["projects/gtksf3-prod/roles/roleapi", "roles/cloudsql.client"]
+        description = "Service Account for running api services"
+      },
+      sa-queue = {
+        roles       = ["projects/gtksf3-prod/roles/rolequeue"]
+        description = "Service Account for running queue services"
+      }
+    }
   }
   "bor-prod" = {
     project_id = "yfjq17-prod"
     env = "prod"
-    # service_accounts = {
-    #   sa-pubsub = {
-    #     roles       = ["roles/iam.serviceAccountTokenCreator", "roles/pubsub.publisher", "roles/pubsub.subscriber"]
-    #     description = "Service Account for running pubsub services"
-    #   },
-    #   sa-job = {
-    #     roles       = ["projects/yfjq17-prod/roles/rolejob"]
-    #     description = "Service Account for running job services"
-    #   },
-    #   sa-api = {
-    #     roles       = ["projects/yfjq17-prod/roles/roleapi"]
-    #     description = "Service Account for running api services"
-    #   },
-    #   sa-queue = {
-    #     roles       = ["projects/yfjq17-prod/roles/rolequeue"]
-    #     description = "Service Account for running queue services"
-    #   }
-    # }
+    service_accounts = {
+      sa-pubsub = {
+        roles       = ["roles/iam.serviceAccountTokenCreator", "roles/pubsub.publisher", "roles/pubsub.subscriber"]
+        description = "Service Account for running pubsub services"
+      },
+      sa-job = {
+        roles       = ["projects/yfjq17-prod/roles/rolejob"]
+        description = "Service Account for running job services"
+      },
+      sa-api = {
+        roles       = ["projects/yfjq17-prod/roles/roleapi"]
+        description = "Service Account for running api services"
+      },
+      sa-queue = {
+        roles       = ["projects/yfjq17-prod/roles/rolequeue"]
+        description = "Service Account for running queue services"
+      }
+    }
   }
   "bcr-businesses-prod" = {
     project_id = "a083gt-prod"
     env = "prod"
-    # service_accounts = {
-    #   sa-pubsub = {
-    #     roles       = ["roles/iam.serviceAccountTokenCreator", "roles/pubsub.publisher", "roles/pubsub.subscriber", "roles/run.invoker"]
-    #     description = "Service Account for running pubsub services"
-    #   },
-    #   sa-job = {
-    #     roles       = ["projects/a083gt-prod/roles/rolejob"]
-    #     description = "Service Account for running job services"
-    #   },
-    #   sa-api = {
-    #     roles       = ["projects/a083gt-prod/roles/roleapi"]
-    #     description = "Service Account for running api services"
-    #   },
-    #   sa-queue = {
-    #     roles       = ["projects/a083gt-prod/roles/rolequeue"]
-    #     description = "Service Account for running queue services"
-    #   }
-    # }
+    service_accounts = {
+      sa-pubsub = {
+        roles       = ["roles/iam.serviceAccountTokenCreator", "roles/pubsub.publisher", "roles/pubsub.subscriber", "roles/run.invoker"]
+        description = "Service Account for running pubsub services"
+      },
+      sa-job = {
+        roles       = ["projects/a083gt-prod/roles/rolejob"]
+        description = "Service Account for running job services"
+      },
+      sa-api = {
+        roles       = ["projects/a083gt-prod/roles/roleapi"]
+        description = "Service Account for running api services"
+      },
+      sa-queue = {
+        roles       = ["projects/a083gt-prod/roles/rolequeue"]
+        description = "Service Account for running queue services"
+      }
+    }
   }
   "business-number-hub-prod" = {
     project_id = "keee67-prod"
@@ -116,90 +116,90 @@ projects = {
   "ppr-prod" = {
     project_id = "eogruh-prod"
     env = "prod"
-    # service_accounts = {
-    #   sa-pubsub = {
-    #     roles       = ["roles/iam.serviceAccountTokenCreator", "roles/pubsub.publisher", "roles/pubsub.subscriber"]
-    #     description = "Service Account for running pubsub services"
-    #   },
-    #   sa-job = {
-    #     roles       = ["projects/eogruh-prod/roles/rolejob"]
-    #     description = "Service Account for running job services"
-    #   }
-    #   sa-api = {
-    #     roles       = ["projects/eogruh-prod/roles/roleapi"]
-    #     description = "Service Account for running api services"
-    #   },
-    #   sa-queue = {
-    #     roles       = ["projects/eogruh-prod/roles/rolequeue"]
-    #     description = "Service Account for running queue services"
-    #   }
-    # }
+    service_accounts = {
+      sa-pubsub = {
+        roles       = ["roles/iam.serviceAccountTokenCreator", "roles/pubsub.publisher", "roles/pubsub.subscriber"]
+        description = "Service Account for running pubsub services"
+      },
+      sa-job = {
+        roles       = ["projects/eogruh-prod/roles/rolejob"]
+        description = "Service Account for running job services"
+      }
+      sa-api = {
+        roles       = ["projects/eogruh-prod/roles/roleapi"]
+        description = "Service Account for running api services"
+      },
+      sa-queue = {
+        roles       = ["projects/eogruh-prod/roles/rolequeue"]
+        description = "Service Account for running queue services"
+      }
+    }
   }
   "search-prod" = {
     project_id = "k973yf-prod"
     env = "prod"
-    # service_accounts = {
-    #   sa-pubsub = {
-    #     roles       = ["roles/iam.serviceAccountTokenCreator", "roles/pubsub.publisher", "roles/pubsub.subscriber"]
-    #     description = "Service Account for running pubsub services"
-    #   },
-    #   sa-job = {
-    #     roles       = ["projects/k973yf-prod/roles/rolejob"]
-    #     description = "Service Account for running job services"
-    #   },
-    #   sa-api = {
-    #     roles       = ["projects/k973yf-prod/roles/roleapi"]
-    #     description = "Service Account for running api services"
-    #   },
-    #   sa-queue = {
-    #     roles       = ["projects/k973yf-prod/roles/rolequeue"]
-    #     description = "Service Account for running queue services"
-    #   }
-    # }
+    service_accounts = {
+      sa-pubsub = {
+        roles       = ["roles/iam.serviceAccountTokenCreator", "roles/pubsub.publisher", "roles/pubsub.subscriber"]
+        description = "Service Account for running pubsub services"
+      },
+      sa-job = {
+        roles       = ["projects/k973yf-prod/roles/rolejob"]
+        description = "Service Account for running job services"
+      },
+      sa-api = {
+        roles       = ["projects/k973yf-prod/roles/roleapi"]
+        description = "Service Account for running api services"
+      },
+      sa-queue = {
+        roles       = ["projects/k973yf-prod/roles/rolequeue"]
+        description = "Service Account for running queue services"
+      }
+    }
   }
   "web-presence-prod" = {
     project_id = "yfthig-prod"
     env = "prod"
-    # service_accounts = {
-    #   sa-pubsub = {
-    #     roles       = ["roles/iam.serviceAccountTokenCreator", "roles/pubsub.publisher", "roles/pubsub.subscriber"]
-    #     description = "Service Account for running pubsub services"
-    #   },
-    #   sa-job = {
-    #     roles       = ["projects/yfthig-prod/roles/rolejob"]
-    #     description = "Service Account for running job services"
-    #   },
-    #   sa-api = {
-    #     roles       = ["projects/yfthig-prod/roles/roleapi"]
-    #     description = "Service Account for running api services"
-    #   },
-    #   sa-queue = {
-    #     roles       = ["projects/yfthig-prod/roles/rolequeue"]
-    #     description = "Service Account for running queue services"
-    #   }
-    # }
+    service_accounts = {
+      sa-pubsub = {
+        roles       = ["roles/iam.serviceAccountTokenCreator", "roles/pubsub.publisher", "roles/pubsub.subscriber"]
+        description = "Service Account for running pubsub services"
+      },
+      sa-job = {
+        roles       = ["projects/yfthig-prod/roles/rolejob"]
+        description = "Service Account for running job services"
+      },
+      sa-api = {
+        roles       = ["projects/yfthig-prod/roles/roleapi"]
+        description = "Service Account for running api services"
+      },
+      sa-queue = {
+        roles       = ["projects/yfthig-prod/roles/rolequeue"]
+        description = "Service Account for running queue services"
+      }
+    }
   }
   "strr-prod" = {
     project_id = "bcrbk9-prod"
     env = "prod"
-    # service_accounts = {
-    #   sa-pubsub = {
-    #     roles       = ["roles/bigquery.dataOwner", "roles/iam.serviceAccountTokenCreator", "roles/pubsub.publisher", "roles/pubsub.subscriber", "roles/run.invoker"]
-    #     description = "Service Account for running pubsub services"
-    #   },
-    #   sa-job = {
-    #     roles       = ["projects/bcrbk9-prod/roles/rolejob"]
-    #     description = "Service Account for running job services"
-    #   },
-    #   sa-api = {
-    #     roles       = ["projects/bcrbk9-prod/roles/roleapi"]
-    #     description = "Service Account for running api services"
-    #   },
-    #   sa-queue = {
-    #     roles       = ["projects/bcrbk9-prod/roles/rolequeue"]
-    #     description = "Service Account for running queue services"
-    #   }
-    # }
+    service_accounts = {
+      sa-pubsub = {
+        roles       = ["roles/bigquery.dataOwner", "roles/iam.serviceAccountTokenCreator", "roles/pubsub.publisher", "roles/pubsub.subscriber", "roles/run.invoker"]
+        description = "Service Account for running pubsub services"
+      },
+      sa-job = {
+        roles       = ["projects/bcrbk9-prod/roles/rolejob", "roles/pubsub.publisher"]
+        description = "Service Account for running job services"
+      },
+      sa-api = {
+        roles       = ["projects/bcrbk9-prod/roles/roleapi", "roles/pubsub.publisher", "roles/storage.admin", "roles/storage.objectCreator"]
+        description = "Service Account for running api services"
+      },
+      sa-queue = {
+        roles       = ["projects/bcrbk9-prod/roles/rolequeue"]
+        description = "Service Account for running queue services"
+      }
+    }
   }
   "analytics-ext-prod" = {
     project_id = "sbgmug-prod"
@@ -1498,22 +1498,11 @@ environments = {
   }
 }
 
-
-# global_service_accounts = {
-#   "global-sa" = {
-#     roles       = ["roles/storage.admin"]
-#     description = "global service account"
-#   }
-# }
-
-# global_custom_roles = {
-#   "globalRole" = {
-#     permissions = ["run.routes.list"]
-#     description = "global custom role"
-#   }
-# }
-
 global_service_accounts = {
+  #   global-sa = {
+  #     roles       = ["roles/storage.admin"]
+  #     description = "global service account"
+  #   }
   }
 
 global_custom_roles = {
