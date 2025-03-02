@@ -18,6 +18,30 @@ projects = {
       sa-queue = {
         roles       = ["projects/mvnjri-prod/roles/rolequeue"]
         description = "Service Account for running queue services"
+      },
+      jupyter-dashboard-int-prod = {
+        roles       = ["roles/iam.serviceAccountUser"]
+        description = ""
+      },
+      sa-staff-warehouse-mvnjri = {
+        roles       = ["roles/cloudsql.client", "roles/cloudsql.instanceUser", "roles/cloudsql.viewer"]
+        description = "Service Account for enabling staff connecton to data warehouse"
+      },
+      fin-warehouse-bucket-writer = {
+        roles       = ["roles/iam.serviceAccountUser", "roles/storage.objectCreator", "roles/storage.objectViewer"]
+        description = ""
+      },
+      github-actions = {
+        roles       = ["roles/iam.serviceAccountUser", "roles/serviceusage.apiKeysViewer", "roles/storage.objectAdmin"]
+        description = " Data syncing between bcgov-registries/analytics sql files and data warehouse bucket"
+      },
+      sa-analytics-fin-warehouse = {
+        roles       = ["roles/cloudsql.client", "roles/cloudsql.viewer"]
+        description = "fin_warehouse database access"
+      },
+      client-sql-proxy-service-accnt = {
+        roles       = ["roles/cloudsql.admin", "roles/cloudsql.client", "roles/cloudsql.editor"]
+        description = ""
       }
     }
   }
@@ -62,6 +86,14 @@ projects = {
       sa-queue = {
         roles       = ["projects/gtksf3-prod/roles/rolequeue"]
         description = "Service Account for running queue services"
+      },
+      auth-db-bucket-writer = {
+        roles       = ["roles/iam.serviceAccountUser", "roles/storage.objectAdmin", "roles/storage.objectCreator", "roles/storage.objectViewer"]
+        description = "Service Account for syncing anon extension masking rule files to auth-db dump bucket"
+      },
+      sa-auth-db-standby = {
+        roles       = ["roles/cloudsql.client", "roles/cloudsql.viewer"]
+        description = "Service account used to backup auth db in OpenShift Gold Cluster, as part of disaster recovery plan."
       }
     }
   }
@@ -106,12 +138,30 @@ projects = {
       sa-queue = {
         roles       = ["projects/a083gt-prod/roles/rolequeue"]
         description = "Service Account for running queue services"
+      },
+      sa-lear-db-standby = {
+        roles       = ["roles/cloudsql.client", "roles/cloudsql.viewer"]
+        description = "Service account used to backup business db in OpenShift Gold Cluster, as part of disaster recovery plan."
       }
     }
   }
   "business-number-hub-prod" = {
     project_id = "keee67-prod"
     env = "prod"
+    service_accounts = {
+      bn-tasks-run-invoker-prod = {
+        roles       = ["roles/editor", "roles/iam.serviceAccountUser"]
+        description = ""
+      },
+      bn-batch-processor-prod = {
+        roles       = ["roles/cloudtasks.admin", "roles/editor"]
+        description = ""
+      },
+      sa-bni-file-upload-prod = {
+        roles       = ["roles/storage.objectCreator"]
+        description = "Service Account to upload raw batch files to the BNI storage bucket"
+      }
+    }
   }
   "ppr-prod" = {
     project_id = "eogruh-prod"
@@ -132,6 +182,26 @@ projects = {
       sa-queue = {
         roles       = ["projects/eogruh-prod/roles/rolequeue"]
         description = "Service Account for running queue services"
+      },
+      ppr-prod-sa = {
+        roles       = ["roles/iam.serviceAccountTokenCreator", "roles/pubsub.admin", "roles/storage.admin"]
+        description = "Default service account for ppr cloud services"
+      },
+      sa-ppr-document-storage = {
+        roles       = ["projects/eogruh-prod/roles/CustomStorageAdmin", "roles/iam.serviceAccountTokenCreator"]
+        description = "Default service account for ppr cloud services"
+      },
+      document-pubsub-invoker = {
+        roles       = ["roles/pubsub.admin"]
+        description = ""
+      },
+      sa-analytics-status-update-not = {
+        roles       = ["roles/cloudsql.client", "roles/cloudsql.viewer"]
+        description = ""
+      },
+      bc-ppr-client-direct-docs-prod = {
+        roles       = ["projects/eogruh-prod/roles/CustomStorageAdmin", "roles/iam.serviceAccountTokenCreator"]
+        description = ""
       }
     }
   }
@@ -154,6 +224,10 @@ projects = {
       sa-queue = {
         roles       = ["projects/k973yf-prod/roles/rolequeue"]
         description = "Service Account for running queue services"
+      },
+      gha-wif = {
+        roles       = ["roles/compute.admin"]
+        description = "Service account used by WIF POC"
       }
     }
   }
@@ -176,6 +250,10 @@ projects = {
       sa-queue = {
         roles       = ["projects/yfthig-prod/roles/rolequeue"]
         description = "Service Account for running queue services"
+      },
+      github-actions = {
+        roles       = ["roles/cloudbuild.builds.editor", "roles/firebaseauth.admin", "roles/firebasehosting.admin", "roles/run.viewer", "roles/serviceusage.apiKeysViewer", "roles/serviceusage.serviceUsageConsumer", "roles/storage.admin"]
+        description = "A service account with permission to deploy to Firebase Hosting for the GitHub repository"
       }
     }
   }
@@ -208,6 +286,12 @@ projects = {
   "api-gateway-prod" = {
     project_id = "okagqp-prod"
     env = "prod"
+    service_accounts = {
+      apigee-prod-sa = {
+        roles       = ["roles/apigee.developerAdmin", "roles/bigquery.dataEditor", "roles/bigquery.jobUser", "roles/iam.serviceAccountTokenCreator", "roles/logging.admin", "roles/storage.admin"]
+        description = "Service account for the BC Registries Apigee prod environment."
+      }
+    }
   }
   "common-test" = {
     project_id = "c4hnrd-test"
@@ -250,6 +334,10 @@ projects = {
       sa-queue = {
         roles       = ["projects/gtksf3-test/roles/rolequeue"]
         description = "Service Account for running queue services"
+      },
+      sa-auth-db-standby = {
+        roles       = ["roles/cloudsql.client", "roles/cloudsql.viewer"]
+        description = "Service account used to backup auth db in OpenShift Gold Cluster, as part of disaster recovery plan."
       }
     }
   }
@@ -294,12 +382,39 @@ projects = {
       sa-queue = {
         roles       = ["projects/a083gt-test/roles/rolequeue"]
         description = "Service Account for running queue services"
+      },
+      sa-bni-file-upload-test = {
+        roles       = ["roles/storage.objectCreator"]
+        description = "Service Account to upload raw batch files to the BNI storage bucket"
+      },
+      business-ar-job-proc-paid-test = {
+        roles       = ["roles/run.invoker"]
+        description = "submit AR back to the SOR"
+      },
+      sa-lear-db-standby = {
+        roles       = ["roles/cloudsql.client", "roles/cloudsql.viewer"]
+        description = ""
       }
+
     }
   }
   "business-number-hub-test" = {
     project_id = "keee67-test"
     env = "test"
+    service_accounts = {
+      bn-batch-processor-test = {
+        roles       = ["roles/cloudtasks.admin", "roles/editor", "roles/run.invoker", "roles/storage.admin"]
+        description = ""
+      },
+      bn-tasks-run-invoker-test = {
+        roles       = ["roles/editor", "roles/iam.serviceAccountUser", "roles/storage.objectCreator"]
+        description = ""
+      },
+      sa-bni-file-upload-test = {
+        roles       = ["roles/storage.objectCreator"]
+        description = "Service Account to upload raw batch files to the BNI storage bucket"
+      }
+    }
   }
   "ppr-test" = {
     project_id = "eogruh-test"
@@ -320,12 +435,34 @@ projects = {
       sa-queue = {
         roles       = ["projects/eogruh-test/roles/rolequeue"]
         description = "Service Account for running queue services"
+      },
+      ppr-temp-verification-sa = {
+        roles       = ["roles/iam.serviceAccountTokenCreator", "roles/pubsub.admin"]
+        description = ""
+      },
+      sa-ppr-documents-test = {
+        roles       = ["projects/eogruh-test/roles/ppr_document_storage_test", "roles/cloudsql.client", "roles/iam.serviceAccountTokenCreator"]
+        description = ""
+      },
+      notify-identity = {
+        roles       = ["roles/cloudsql.client"]
+        description = ""
+      },
+      ppr-test-sa = {
+        roles       = ["roles/iam.serviceAccountTokenCreator", "roles/pubsub.admin", "roles/storage.admin"]
+        description = ""
       }
     }
   }
   "search-test" = {
     project_id = "k973yf-test"
     env = "test"
+    service_accounts = {
+      gha-wif = {
+        roles       = ["roles/compute.admin"]
+        description = "Service account used by WIF POC"
+      }
+    }
   }
   "web-presence-test" = {
     project_id = "yfthig-test"
@@ -346,6 +483,14 @@ projects = {
       sa-queue = {
         roles       = ["projects/yfthig-test/roles/rolequeue"]
         description = "Service Account for running queue services"
+      },
+      github-action-416185190 = {
+        roles       = ["roles/cloudbuild.builds.editor", "roles/firebaseauth.admin", "roles/firebasehosting.admin", "roles/run.viewer", "roles/serviceusage.apiKeysViewer", "roles/serviceusage.serviceUsageConsumer", "roles/storage.admin"]
+        description = "A service account with permission to deploy to Firebase Hosting for the GitHub repository thorwolpert/fh-test"
+      },
+      sa-cdcloudrun = {
+        roles       = ["projects/yfthig-test/roles/rolecdcloudrun"]
+        description = "Service Account for running cdcloudrun services"
       }
     }
   }
@@ -378,6 +523,12 @@ projects = {
   "api-gateway-test" = {
     project_id = "okagqp-test"
     env = "test"
+    service_accounts = {
+      apigee-test-sa = {
+        roles       = ["roles/apigee.apiAdminV2", "roles/apigee.developerAdmin", "roles/logging.admin", "roles/logging.serviceAgent", "roles/storage.admin"]
+        description = "Service account for apigee gateway integration including logging"
+      }
+    }
   }
   "analytics-int-dev" = {
     project_id = "mvnjri-dev"
@@ -420,6 +571,22 @@ projects = {
       sa-queue = {
         roles       = ["projects/c4hnrd-dev/roles/rolequeue"]
         description = "Service Account for running queue services"
+      },
+      open-shift-artifact-registry = {
+        roles       = ["roles/artifactregistry.serviceAgent", "roles/cloudbuild.builds.builder", "roles/containerregistry.ServiceAgent"]
+        description = ""
+      },
+      documentai-workflow-service-ac = {
+        roles       = ["roles/composer.environmentAndStorageObjectViewer", "roles/documentai.apiUser", "roles/eventarc.eventReceiver", "roles/logging.logWriter", "roles/serviceusage.serviceUsageConsumer", "roles/storage.objectUser", "roles/storagetransfer.user", "roles/workflows.invoker"]
+        description = ""
+      },
+      doc-dev-sa = {
+        roles       = ["roles/artifactregistry.serviceAgent", "roles/compute.admin", "roles/storage.admin"]
+        description = "Document Services Service Account"
+      },
+      synthetic-monitoring = {
+        roles       = ["roles/cloudfunctions.developer", "roles/logging.logWriter", "roles/monitoring.editor", "roles/run.admin", "roles/run.serviceAgent", "roles/secretmanager.secretAccessor", "roles/secretmanager.viewer"]
+        description = "POC for synthetic monitoring"
       }
     }
   }
@@ -442,6 +609,22 @@ projects = {
       sa-queue = {
         roles       = ["projects/gtksf3-dev/roles/rolequeue"]
         description = "Service Account for running queue services"
+      },
+      pay-test = {
+        roles       = ["roles/iam.serviceAccountTokenCreator", "roles/pubsub.publisher", "roles/pubsub.subscriber"]
+        description = ""
+      },
+      pay-pubsub-sa = {
+        roles       = ["roles/iam.serviceAccountTokenCreator", "roles/pubsub.publisher", "roles/pubsub.subscriber"]
+        description = "Service Account for handling pay pusub subscriptions"
+      },
+      sa-auth-db-standby-759 = {
+        roles       = ["roles/cloudsql.client", "roles/cloudsql.viewer"]
+        description = "Service account used to backup auth db in OpenShift Gold Cluster, as part of disaster recovery plan."
+      },
+      sre-role-testing-account = {
+        roles       = ["projects/gtksf3-dev/roles/SRE"]
+        description = ""
       }
     }
   }
@@ -486,12 +669,38 @@ projects = {
       sa-queue = {
         roles       = ["projects/a083gt-dev/roles/rolequeue"]
         description = "Service Account for running queue services"
+      },
+      business-ar-job-process-paid = {
+        roles       = ["roles/run.invoker"]
+        description = ""
+      },
+      sa-lear-db-standby = {
+        roles       = ["roles/cloudsql.client", "roles/cloudsql.viewer"]
+        description = ""
+      },
+      sa-bni-file-upload-dev = {
+        roles       = ["roles/storage.objectCreator"]
+        description = ""
+      },
+      business-pubsub-sa = {
+        roles       = ["roles/iam.serviceAccountTokenCreator", "roles/pubsub.publisher", "roles/pubsub.subscriber"]
+        description = ""
       }
     }
   }
   "business-number-hub-dev" = {
     project_id = "keee67-dev"
     env = "dev"
+    service_accounts = {
+      bn-tasks-cloud-run-invoker = {
+        roles       = ["roles/cloudtasks.enqueuer", "roles/iam.serviceAccountUser", "roles/run.invoker"]
+        description = "BN Tasks Cloud Run Invoker"
+      },
+      sa-bni-file-upload-dev = {
+        roles       = ["roles/storage.objectCreator"]
+        description = "Service Account to upload raw batch files to the BNI storage bucket"
+      }
+    }
   }
   "ppr-dev" = {
     project_id = "eogruh-dev"
@@ -508,12 +717,26 @@ projects = {
       sa-queue = {
         roles       = ["projects/eogruh-dev/roles/rolequeue"]
         description = "Service Account for running queue services"
+      },
+      sa-ppr-db-standby = {
+        roles       = ["roles/cloudsql.client", "roles/cloudsql.viewer"]
+        description = ""
+      },
+      ppr-dev-sa = {
+        roles       = ["roles/containerregistry.ServiceAgent", "roles/iam.serviceAccountTokenCreator", "roles/pubsub.admin", "roles/pubsub.serviceAgent", "roles/storage.admin", "roles/storage.objectCreator"]
+        description = "Default service account for ppr cloud services"
       }
     }
   }
   "search-dev" = {
     project_id = "k973yf-dev"
     env = "dev"
+    service_accounts = {
+      gha-wif = {
+        roles       = ["roles/compute.admin", "roles/storage.objectAdmin"]
+        description = "Service account used by WIF POC"
+      }
+    }
   }
   "web-presence-dev" = {
     project_id = "yfthig-dev"
@@ -534,6 +757,14 @@ projects = {
       sa-queue = {
         roles       = ["projects/yfthig-dev/roles/rolequeue"]
         description = "Service Account for running queue services"
+      },
+      apigee-dev-sa = {
+        roles       = ["roles/logging.admin", "roles/storage.admin"]
+        description = "Service account for BC Registries Apigee dev environment."
+      },
+      github-action-467311281 = {
+        roles       = ["roles/cloudbuild.builds.editor", "roles/firebaseauth.admin", "roles/firebasehosting.admin", "roles/run.viewer", "roles/serviceusage.apiKeysViewer", "roles/serviceusage.serviceUsageConsumer", "roles/storage.admin"]
+        description = "A service account with permission to deploy to Firebase Hosting for the GitHub repository thorwolpert/bcregistry"
       }
     }
   }
@@ -556,7 +787,20 @@ projects = {
       sa-queue = {
         roles       = ["projects/bcrbk9-dev/roles/rolequeue"]
         description = "Service Account for running queue services"
-      }
+      },
+      sa-eventarc = {
+        roles       = ["roles/eventarc.eventReceiver", "roles/run.invoker"]
+        description = "Service Account for running queue services"
+      },
+      test-notebook-dev = {
+        roles       = ["roles/cloudsql.client", "roles/cloudsql.instanceUser", "roles/cloudsql.schemaViewer"]
+        description = "used with the test services"
+      },
+      client-sql-proxy-service-accnt = {
+        roles       = ["roles/cloudsql.admin", "roles/cloudsql.client"]
+        description = ""
+      },
+
     }
   }
   "analytics-ext-dev" = {
@@ -566,6 +810,12 @@ projects = {
   "api-gateway-dev" = {
     project_id = "okagqp-dev"
     env = "dev"
+    service_accounts = {
+      apigee-dev-sa = {
+        roles       = ["roles/logging.admin", "roles/storage.admin"]
+        description = "Service accont for apigee gateway integration including logging."
+      }
+    }
   }
   "common-sandbox" = {
     project_id = "c4hnrd-sandbox"
@@ -630,6 +880,10 @@ projects = {
       sa-queue = {
         roles       = ["projects/yfjq17-tools/roles/rolequeue"]
         description = "Service Account for running queue services"
+      },
+      btr-cd = {
+        roles       = ["roles/editor"]
+        description = ""
       }
     }
   }
@@ -678,6 +932,10 @@ projects = {
       sa-queue = {
         roles       = ["projects/eogruh-sandbox/roles/rolequeue"]
         description = "Service Account for running queue services"
+      },
+      ppr-sandbox-sa = {
+        roles       = ["roles/iam.serviceAccountTokenCreator", "roles/pubsub.admin", "roles/storage.admin"]
+        description = "Default service account for ppr cloud services"
       }
     }
   }
@@ -696,6 +954,10 @@ projects = {
       sa-api = {
         roles       = ["projects/yfthig-tools/roles/roleapi"]
         description = "Service Account for running api services"
+      },
+      sa-cdcloudrun = {
+        roles       = ["projects/yfthig-tools/roles/rolecdcloudrun"]
+        description = "Service Account for running cdcloudrun services"
       }
     }
   }
@@ -728,6 +990,12 @@ projects = {
   "api-gateway-sandbox" = {
     project_id = "okagqp-sandbox"
     env = "sandbox"
+    service_accounts = {
+      apigee-sandbox-sa = {
+        roles       = ["roles/apigee.developerAdmin", "roles/bigquery.dataEditor", "roles/bigquery.jobUser", "roles/iam.serviceAccountTokenCreator", "roles/logging.admin", "roles/storage.admin"]
+        description = "Service account for the BC Registries Apigee sandbox/uat environment."
+      }
+    }
   }
   "bcr-businesses-sandbox" = {
     project_id = "a083gt-integration"
@@ -749,6 +1017,10 @@ projects = {
       sa-queue = {
         roles       = ["projects/a083gt-integration/roles/rolequeue"]
         description = "Service Account for running queue services"
+      },
+      sa-cdcloudrun = {
+        roles       = ["projects/a083gt-integration/roles/rolecdcloudrun"]
+        description = "Service Account for running cdcloudrun services"
       }
     }
     custom_roles = {
@@ -873,10 +1145,13 @@ projects = {
       sa-queue = {
         roles       = ["projects/c4hnrd-tools/roles/rolequeue"]
         description = "Service Account for running queue services"
+      },
+      github-actions = {
+        roles       = ["projects/c4hnrd-tools/roles/cdcloudbuild", "projects/c4hnrd-tools/roles/cdclouddeploy", "roles/cloudbuild.builds.builder", "roles/cloudbuild.builds.editor", "roles/iam.serviceAccountTokenCreator", "roles/iam.serviceAccountUser", "roles/run.developer", "roles/run.viewer", "roles/storage.admin"]
+        description = "A service account with permission to deploy from GitHub repository"
       }
     }
   }
-
 }
 
 environments = {
