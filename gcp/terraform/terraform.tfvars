@@ -450,7 +450,7 @@ projects = {
       },
       ppr-test-sa = {
         roles       = ["roles/iam.serviceAccountTokenCreator", "roles/pubsub.admin", "roles/storage.admin"]
-        description = ""
+        description = "Default service account for ppr cloud services"
       }
     }
   }
@@ -680,7 +680,7 @@ projects = {
       },
       sa-bni-file-upload-dev = {
         roles       = ["roles/storage.objectCreator"]
-        description = ""
+        description = "Service Account to upload raw batch files to the BNI storage bucket"
       },
       business-pubsub-sa = {
         roles       = ["roles/iam.serviceAccountTokenCreator", "roles/pubsub.publisher", "roles/pubsub.subscriber"]
