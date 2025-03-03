@@ -1,9 +1,4 @@
 locals {
-  merged_service_accounts = merge(
-    var.global_service_accounts,
-    var.env.environment_service_accounts,
-    var.service_accounts
-  )
   merged_custom_roles = merge(
     var.global_custom_roles,
     var.env.environment_custom_roles,
@@ -12,7 +7,7 @@ locals {
 }
 
 resource "google_service_account" "sa" {
-  for_each     = local.merged_service_accounts
+  for_each     = var.service_accounts
   project      = var.project_id
   account_id   = each.key
   display_name = each.key
@@ -22,7 +17,7 @@ resource "google_service_account" "sa" {
 resource "google_project_iam_member" "iam_members" {
   for_each = {
     for combo in flatten([
-      for sa_name, sa_attrs in local.merged_service_accounts : [
+      for sa_name, sa_attrs in var.service_accounts : [
         for role in sa_attrs.roles != null ? sa_attrs.roles : [] : {
           sa_name = sa_name
           role    = role
@@ -32,6 +27,24 @@ resource "google_project_iam_member" "iam_members" {
   }
 
   project = var.project_id
+  role    = each.value.role
+  member  = "serviceAccount:${google_service_account.sa[each.value.sa_name].email}"
+}
+
+resource "google_project_iam_member" "external_iam_members" {
+  for_each = {
+    for combo in flatten([
+      for sa_name, sa_attrs in var.service_accounts : [
+        for role in sa_attrs.external_roles != null ? sa_attrs.external_roles : [] : {
+          sa_name    = sa_name
+          role       = role.role
+          project_id = role.project_id
+        }
+      ]
+    ]) : "${combo.project_id}-${combo.sa_name}-${combo.role}" => combo
+  }
+
+  project = each.value.project_id
   role    = each.value.role
   member  = "serviceAccount:${google_service_account.sa[each.value.sa_name].email}"
 }

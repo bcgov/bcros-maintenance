@@ -228,6 +228,10 @@ projects = {
       gha-wif = {
         roles       = ["roles/compute.admin"]
         description = "Service account used by WIF POC"
+        external_roles = [{
+          role        = "roles/compute.imageUser"
+          project_id  = "k973yf-dev"
+        }]
       }
     }
   }
@@ -290,6 +294,10 @@ projects = {
       apigee-prod-sa = {
         roles       = ["roles/apigee.developerAdmin", "roles/bigquery.dataEditor", "roles/bigquery.jobUser", "roles/iam.serviceAccountTokenCreator", "roles/logging.admin", "roles/storage.admin"]
         description = "Service account for the BC Registries Apigee prod environment."
+        external_roles = [{
+          role        = "roles/cloudfunctions.invoker"
+          project_id  = "mvnjri-prod"
+        }]
       }
     }
   }
@@ -461,6 +469,10 @@ projects = {
       gha-wif = {
         roles       = ["roles/compute.admin"]
         description = "Service account used by WIF POC"
+        external_roles = [{
+          role        = "roles/compute.imageUser"
+          project_id  = "k973yf-dev"
+        }]
       }
     }
   }
@@ -617,6 +629,24 @@ projects = {
       pay-pubsub-sa = {
         roles       = ["roles/iam.serviceAccountTokenCreator", "roles/pubsub.publisher", "roles/pubsub.subscriber"]
         description = "Service Account for handling pay pusub subscriptions"
+        external_roles = [{
+          role        = "roles/iam.serviceAccountTokenCreator"
+          project_id  = "bcrbk9-dev"
+        },
+        {
+          role        = "roles/run.invoker"
+          project_id  = "bcrbk9-dev"
+        },
+        {
+          role        = "roles/run.invoker"
+          project_id  = "a083gt-dev"
+        },
+        {
+          role        = "roles/iam.serviceAccountTokenCreator"
+          project_id  = "a083gt-dev"
+        }
+      ]
+
       },
       sa-auth-db-standby-759 = {
         roles       = ["roles/cloudsql.client", "roles/cloudsql.viewer"]
@@ -1156,13 +1186,6 @@ projects = {
 
 environments = {
   "sandbox" = {
-    environment_service_accounts = {
-      # sa-job = {
-      #   roles       = ["roles/rolejob"]
-      #   description = "Service Account for running pubsub services"
-      # }
-    }
-
     environment_custom_roles = {
       roledeveloper = {
         title = "Role Developer"
@@ -1388,13 +1411,6 @@ environments = {
         ]
       }
     }
-    environment_service_accounts = {
-      # sa-job = {
-      #   roles       = ["roles/rolejob"]
-      #   description = "Service Account for running job services"
-      # }
-
-    }
   }
   "test" = {
     environment_custom_roles = {
@@ -1496,13 +1512,6 @@ environments = {
           "cloudconfig.configs.update"
         ]
       }
-    }
-    environment_service_accounts = {
-      # sa-job = {
-      #   roles       = ["roles/rolejob"]
-      #   description = "Service Account for running job services"
-      # }
-
     }
   }
   "prod" = {
@@ -1662,12 +1671,6 @@ environments = {
         ]
       }
     }
-    environment_service_accounts = {
-      # sa-job = {
-      #   roles       = ["roles/rolejob"]
-      #   description = "Service Account for running job services"
-      # }
-    }
   }
   "tools" = {
     environment_custom_roles = {
@@ -1773,12 +1776,6 @@ environments = {
   }
 }
 
-global_service_accounts = {
-  #   global-sa = {
-  #     roles       = ["roles/storage.admin"]
-  #     description = "global service account"
-  #   }
-  }
 
 global_custom_roles = {
   rolequeue = {

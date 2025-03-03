@@ -15,7 +15,6 @@ provider "google" {
 
 locals {
   default_environment = {
-    environment_service_accounts = {}
     environment_custom_roles     = {}
   }
 }
@@ -28,6 +27,5 @@ module "iam" {
   env              = lookup(var.environments, each.value.env, local.default_environment)
   service_accounts = each.value.service_accounts
   custom_roles     = each.value.custom_roles
-  global_service_accounts = var.global_service_accounts
   global_custom_roles = var.global_custom_roles
 }

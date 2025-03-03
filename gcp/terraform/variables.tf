@@ -8,12 +8,17 @@ variable "region" {
     default = "northamerica-northeast1"
 }
 
+
 variable "projects" {
   type = map(object({
     project_id       = string
     env              = string
     service_accounts = optional(map(object({
       roles        = list(string)
+      external_roles = optional(list(object({
+        role        = string
+        project_id = string
+      })), [])
       description  = optional(string, "Managed by Terraform")
     })), {})
 
@@ -34,21 +39,8 @@ variable "global_custom_roles" {
   default = {}
 }
 
-variable "global_service_accounts" {
-  type = map(object({
-    roles        = list(string)
-    description  = optional(string, "Managed by Terraform")
-  }))
-  default = {}
-}
-
 variable "environments" {
   type = map(object({
-    environment_service_accounts = optional(map(object({
-      roles        = list(string)
-      description  = optional(string, "Managed by Terraform")
-    })), {})
-
     environment_custom_roles = optional(map(object({
       title = string
       permissions  = list(string)
