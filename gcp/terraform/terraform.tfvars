@@ -30,6 +30,13 @@ projects = {
       fin-warehouse-bucket-writer = {
         roles       = ["roles/iam.serviceAccountUser", "roles/storage.objectCreator", "roles/storage.objectViewer"]
         description = ""
+        resource_roles = [
+          {
+            resource = "projects/mvnjri-prod/serviceAccounts/fin-warehouse-bucket-writer@mvnjri-prod.iam.gserviceaccount.com"
+            roles    = ["roles/iam.serviceAccountUser"]
+            resource_type = "sa_iam_member"
+          }
+        ]
       },
       github-actions = {
         roles       = ["roles/iam.serviceAccountUser", "roles/serviceusage.apiKeysViewer", "roles/storage.objectAdmin"]
@@ -286,6 +293,13 @@ projects = {
           roles        = ["roles/compute.imageUser"]
           project_id  = "k973yf-dev"
         }]
+        resource_roles = [
+          {
+            resource = "projects/k973yf-prod/serviceAccounts/357033077029-compute@developer.gserviceaccount.com"
+            roles    = ["roles/iam.serviceAccountUser"]
+            resource_type = "sa_iam_member"
+          }
+        ]
       }
     }
   }
@@ -553,6 +567,13 @@ projects = {
       bn-tasks-run-invoker-test = {
         roles       = ["roles/editor", "roles/iam.serviceAccountUser", "roles/storage.objectCreator"]
         description = ""
+        resource_roles = [
+          {
+            resource = "projects/keee67-test/serviceAccounts/bn-tasks-run-invoker-test@keee67-test.iam.gserviceaccount.com"
+            roles    = ["roles/iam.serviceAccountAdmin"]
+            resource_type = "sa_iam_member"
+          }
+        ]
       },
       sa-bni-file-upload-test = {
         roles       = ["roles/storage.objectCreator"]
@@ -638,6 +659,13 @@ projects = {
           roles        = ["roles/compute.imageUser"]
           project_id  = "k973yf-dev"
         }]
+        resource_roles = [
+            {
+              resource = "projects/k973yf-test/serviceAccounts/107836257140-compute@developer.gserviceaccount.com"
+              roles    = ["roles/iam.serviceAccountUser"]
+              resource_type = "sa_iam_member"
+            }
+          ]
       }
     }
   }
@@ -1004,6 +1032,13 @@ projects = {
       gha-wif = {
         roles       = ["roles/compute.admin", "roles/storage.objectAdmin"]
         description = "Service account used by WIF POC"
+        resource_roles = [
+          {
+            resource = "projects/k973yf-dev/serviceAccounts/952634948388-compute@developer.gserviceaccount.com"
+            roles    = ["roles/iam.serviceAccountUser"]
+            resource_type = "sa_iam_member"
+          }
+        ]
       }
     }
   }
@@ -1292,12 +1327,6 @@ projects = {
         description = "Service Account for running cdcloudrun services"
       }
     }
-    custom_roles = {
-      # "testTFRole2" = {
-      #   permissions = ["run.routes.list"]
-      #   description  = ""
-      # }
-    }
   }
   "common-tools" = {
     project_id = "c4hnrd-tools"
@@ -1418,6 +1447,13 @@ projects = {
       github-actions = {
         roles       = ["projects/c4hnrd-tools/roles/cdcloudbuild", "projects/c4hnrd-tools/roles/cdclouddeploy", "roles/cloudbuild.builds.builder", "roles/cloudbuild.builds.editor", "roles/iam.serviceAccountTokenCreator", "roles/iam.serviceAccountUser", "roles/run.developer", "roles/run.viewer", "roles/storage.admin"]
         description = "A service account with permission to deploy from GitHub repository"
+        resource_roles = [
+          {
+            resource = "projects/c4hnrd-tools/serviceAccounts/github-actions@c4hnrd-tools.iam.gserviceaccount.com"
+            roles    = ["roles/cloudbuild.serviceAgent"]
+            resource_type = "sa_iam_member"
+          }
+        ]
       }
     }
   }
