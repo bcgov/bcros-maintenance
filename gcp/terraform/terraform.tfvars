@@ -758,6 +758,22 @@ projects = {
           { resource = "registries-synthetic-monitor"
             roles    = ["roles/storage.legacyBucketReader", "roles/storage.objectAdmin"]
             resource_type = "storage_bucket"
+          },
+          { resource = "projects/366678529892/secrets/PWDIDIR"
+            roles    = ["roles/secretmanager.secretAccessor"]
+            resource_type = "secret_manager"
+          },
+          { resource = "projects/366678529892/secrets/USERNAMEIDIR"
+            roles    = ["roles/secretmanager.secretAccessor"]
+            resource_type = "secret_manager"
+          },
+          { resource = "projects/366678529892/secrets/PWDSCBC"
+            roles    = ["roles/secretmanager.secretAccessor"]
+            resource_type = "secret_manager"
+          },
+          { resource = "projects/366678529892/secrets/USERNAMESCBC"
+            roles    = ["roles/secretmanager.secretAccessor"]
+            resource_type = "secret_manager"
           }
         ]
       }
