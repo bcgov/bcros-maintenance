@@ -185,6 +185,16 @@ projects = {
       sa-bni-file-upload-prod = {
         roles       = ["roles/storage.objectCreator"]
         description = "Service Account to upload raw batch files to the BNI storage bucket"
+      },
+      pubsub-cloud-run-invoker-prod = {
+      description = ""
+      resource_roles = [
+          {
+            resource = "projects/keee67-prod/locations/northamerica-northeast1/services/bn-batch-parser"
+            roles    = ["roles/run.invoker"]
+            resource_type = "cloud_run"
+          }
+        ]
       }
     }
   }
@@ -211,6 +221,13 @@ projects = {
       ppr-prod-sa = {
         roles       = ["roles/iam.serviceAccountTokenCreator", "roles/pubsub.admin", "roles/storage.admin"]
         description = "Default service account for ppr cloud services"
+        resource_roles = [
+            {
+              resource = "projects/eogruh-prod/locations/northamerica-northeast1/services/gotenberg"
+              roles    = ["roles/run.invoker"]
+              resource_type = "cloud_run"
+            }
+          ]
       },
       sa-ppr-document-storage = {
         roles       = ["projects/eogruh-prod/roles/CustomStorageAdmin", "roles/iam.serviceAccountTokenCreator"]
@@ -219,6 +236,13 @@ projects = {
       document-pubsub-invoker = {
         roles       = ["roles/pubsub.admin"]
         description = ""
+        resource_roles = [
+            {
+              resource = "projects/eogruh-prod/locations/northamerica-northeast1/services/document-delivery-service"
+              roles    = ["roles/run.invoker"]
+              resource_type = "cloud_run"
+            }
+          ]
       },
       sa-analytics-status-update-not = {
         roles       = ["roles/cloudsql.client", "roles/cloudsql.viewer"]
@@ -323,6 +347,63 @@ projects = {
           roles        = ["roles/cloudfunctions.invoker"]
           project_id  = "mvnjri-prod"
         }]
+        resource_roles = [
+            {
+              resource = "projects/yfjq17-prod/locations/northamerica-northeast1/services/pam-request-grant-create-bor"
+              roles    = ["roles/run.invoker"]
+              resource_type = "cloud_run"
+            },
+            {
+              resource = "projects/keee67-prod/locations/northamerica-northeast1/services/pam-request-grant-create-vans-db-prod"
+              roles    = ["roles/run.invoker"]
+              resource_type = "cloud_run"
+            },
+            {
+              resource = "projects/keee67-prod/locations/northamerica-northeast1/services/pam-request-grant-create-bni-hub"
+              roles    = ["roles/run.invoker"]
+              resource_type = "cloud_run"
+            },
+            {
+              resource = "projects/gtksf3-prod/locations/northamerica-northeast1/services/pam-request-grant-create-auth-db"
+              roles    = ["roles/run.invoker"]
+              resource_type = "cloud_run"
+            },
+            {
+              resource = "projects/c4hnrd-prod/locations/northamerica-northeast1/services/pam-request-grant-create-docs"
+              roles    = ["roles/run.invoker"]
+              resource_type = "cloud_run"
+            },
+            {
+              resource = "projects/c4hnrd-prod/locations/northamerica-northeast1/services/pam-request-grant-create-notify"
+              roles    = ["roles/run.invoker"]
+              resource_type = "cloud_run"
+            },
+            {
+              resource = "projects/a083gt-prod/locations/northamerica-northeast1/services/pam-request-grant-create-legal-entities"
+              roles    = ["roles/run.invoker"]
+              resource_type = "cloud_run"
+            },
+            {
+              resource = "projects/a083gt-prod/locations/northamerica-northeast1/services/pam-request-grant-create-business-ar"
+              roles    = ["roles/run.invoker"]
+              resource_type = "cloud_run"
+            },
+            {
+              resource = "projects/k973yf-prod/locations/northamerica-northeast1/services/pam-request-grant-create-search"
+              roles    = ["roles/run.invoker"]
+              resource_type = "cloud_run"
+            },
+            {
+              resource = "projects/eogruh-prod/locations/northamerica-northeast1/services/pam-request-grant-create-ppr"
+              roles    = ["roles/run.invoker"]
+              resource_type = "cloud_run"
+            },
+            {
+              resource = "projects/mvnjri-prod/locations/northamerica-northeast1/services/pam-request-grant-create"
+              roles    = ["roles/run.invoker"]
+              resource_type = "cloud_run"
+            }
+          ]
       }
     }
   }
@@ -471,6 +552,16 @@ projects = {
       sa-bni-file-upload-test = {
         roles       = ["roles/storage.objectCreator"]
         description = "Service Account to upload raw batch files to the BNI storage bucket"
+      },
+      pubsub-cloud-run-invoker-test = {
+      description = ""
+      resource_roles = [
+          {
+            resource = "projects/keee67-test/locations/northamerica-northeast1/services/bn-batch-parser"
+            roles    = ["roles/run.invoker"]
+            resource_type = "cloud_run"
+          }
+        ]
       }
     }
   }
@@ -516,6 +607,13 @@ projects = {
       ppr-test-sa = {
         roles       = ["roles/iam.serviceAccountTokenCreator", "roles/pubsub.admin", "roles/storage.admin"]
         description = "Default service account for ppr cloud services"
+        resource_roles = [
+            {
+              resource = "projects/eogruh-test/locations/northamerica-northeast1/services/gotenberg"
+              roles    = ["roles/run.invoker"]
+              resource_type = "cloud_run"
+            }
+          ]
       }
     }
   }
@@ -784,6 +882,16 @@ projects = {
       sa-bni-file-upload-dev = {
         roles       = ["roles/storage.objectCreator"]
         description = "Service Account to upload raw batch files to the BNI storage bucket"
+      },
+      pubsub-cloud-run-invoker = {
+      description = ""
+      resource_roles = [
+          {
+            resource = "projects/keee67-dev/locations/northamerica-northeast1/services/bn-batch-parser"
+            roles    = ["roles/run.invoker"]
+            resource_type = "cloud_run"
+          }
+        ]
       }
     }
   }
