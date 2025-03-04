@@ -1,5 +1,6 @@
-
 #!/bin/bash
+
+# first, create service account / role binding via Terraform
 
 declare -a environments=("dev" "test" "tools" "prod" "integration" "sandbox")
 declare -a projects=("" "")
@@ -20,29 +21,6 @@ do
                 SA_NAME="sa-$se"
                 SA_FULL_NAME="$SA_NAME@${PROJECT_ID}.iam.gserviceaccount.com"
                 SA_DESCRIPTION="Service Account for running $se services"
-
-                # create service account
-                if [[ -z `gcloud iam service-accounts describe $SA_FULL_NAME --project=${PROJECT_ID} --verbosity=none` ]]; then
-                    gcloud iam service-accounts create $SA_NAME \
-                        --description="$SA_DESCRIPTION" \
-                        --display-name="$SA_NAME"
-                fi
-
-                # role binding
-                gcloud projects add-iam-policy-binding ${PROJECT_ID} \
-                    --member="serviceAccount:$SA_FULL_NAME" \
-                    --role="roles/pubsub.publisher"
-
-                gcloud projects add-iam-policy-binding ${PROJECT_ID} \
-                    --member="serviceAccount:$SA_FULL_NAME" \
-                    --role="roles/pubsub.subscriber"
-
-                gcloud projects add-iam-policy-binding ${PROJECT_ID} \
-                    --member="serviceAccount:$SA_FULL_NAME" \
-                    --role="roles/iam.serviceAccountTokenCreator"
-                gcloud projects add-iam-policy-binding ${PROJECT_ID} \
-                    --member="serviceAccount:$SA_FULL_NAME" \
-                    --role="roles/run.invoker"
 
                 # create key
                 gcloud iam service-accounts keys create ${SA_NAME}-${PROJECT_ID}.json --iam-account=${SA_FULL_NAME}
