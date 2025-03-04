@@ -26,7 +26,7 @@ jobs:
     # Only allow run the CD flow in protected branch
     if: github.ref_protected == true
 
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
 
     defaults:
       run:
@@ -64,7 +64,7 @@ jobs:
 
   deploy:
     needs: setup
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
 
     environment:
       name: "${{ needs.setup.outputs.TARGET }}"

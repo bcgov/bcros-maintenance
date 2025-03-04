@@ -33,7 +33,7 @@ jobs:
     # Only allow run the CD flow in protected branch
     if: github.ref_protected == true
 
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
 
     defaults:
       run:
@@ -70,7 +70,7 @@ jobs:
 
   deploy:
     needs: setup
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
 
     environment:
       name: "${{ needs.setup.outputs.TARGET }}"
@@ -102,6 +102,11 @@ jobs:
           APP_ENV: ${{ needs.setup.outputs.TARGET }}
         run: |-
           op inject -i ./devops/vaults.ocp.env -o .env -f
+
+      - name: Install CLI tools from OpenShift
+        uses: redhat-actions/openshift-tools-installer@v1
+        with:
+          oc: "4"
 
       - name: Login Openshift
         shell: bash

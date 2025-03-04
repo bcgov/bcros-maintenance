@@ -13,7 +13,7 @@ on:
 
 jobs:
   restart-services:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     environment: ${{ github.event.inputs.environment }}
     steps:
       - uses: actions/checkout@v4
@@ -24,6 +24,10 @@ jobs:
         if: env.TAG_NAME == ''
         run: |
           echo "TAG_NAME=prod" >> $GITHUB_ENV
+      - name: Install CLI tools from OpenShift
+        uses: redhat-actions/openshift-tools-installer@v1
+        with:
+          oc: "4"
       - name: Login Openshift
         run: |
           oc login --server=${{secrets.OPENSHIFT4_LOGIN_REGISTRY}} --token=${{secrets.OPENSHIFT4_SA_TOKEN}}
