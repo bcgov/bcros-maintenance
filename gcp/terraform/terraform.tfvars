@@ -64,15 +64,33 @@ projects = {
       sa-queue = {
         roles       = ["projects/c4hnrd-prod/roles/rolequeue"]
         description = "Service Account for running queue services"
+      },
+      doc-prod-sa = {
+        description = "Document Services Service Account"
+        resource_roles = [
+          {
+            resource = "docs_ppr_prod"
+            roles    = ["roles/storage.admin"]
+            resource_type = "storage_bucket"
+          },
+          {
+            resource = "docs_nr_prod"
+            roles    = ["roles/storage.admin"]
+            resource_type = "storage_bucket"
+          },
+          {
+            resource = "docs_mhr_prod"
+            roles    = ["roles/storage.admin"]
+            resource_type = "storage_bucket"
+          },
+          {
+            resource = "docs_business_prod"
+            roles    = ["roles/storage.admin"]
+            resource_type = "storage_bucket"
+          }
+        ]
       }
     }
-    # resource_roles = [
-    #   {
-    #     resource = "docs_ppr_prod"
-    #     roles    = ["roles/storage.admin"]
-    #     resource_type = "storage_bucket"
-    #   }
-    # ]
   }
   "connect-prod" = {
     project_id = "gtksf3-prod"
@@ -327,6 +345,31 @@ projects = {
       sa-queue = {
         roles       = ["projects/c4hnrd-test/roles/rolequeue"]
         description = "Service Account for running queue services"
+      },
+      doc-test-sa = {
+        description = "Document Services Service Account"
+        resource_roles = [
+          {
+            resource = "docs_ppr_test"
+            roles    = ["roles/storage.admin"]
+            resource_type = "storage_bucket"
+          },
+          {
+            resource = "docs_nr_test"
+            roles    = ["roles/storage.admin"]
+            resource_type = "storage_bucket"
+          },
+          {
+            resource = "docs_mhr_test"
+            roles    = ["roles/storage.admin"]
+            resource_type = "storage_bucket"
+          },
+          {
+            resource = "docs_business_test"
+            roles    = ["roles/storage.admin"]
+            resource_type = "storage_bucket"
+          }
+        ]
       }
     }
   }
@@ -458,6 +501,13 @@ projects = {
       sa-ppr-documents-test = {
         roles       = ["projects/eogruh-test/roles/ppr_document_storage_test", "roles/cloudsql.client", "roles/iam.serviceAccountTokenCreator"]
         description = ""
+        resource_roles = [
+          {
+            resource = "ppr_documents_test"
+            roles    = ["projects/eogruh-test/roles/ppr_document_storage_test"]
+            resource_type = "storage_bucket"
+          }
+        ]
       },
       notify-identity = {
         roles       = ["roles/cloudsql.client"]
@@ -606,6 +656,12 @@ projects = {
       synthetic-monitoring = {
         roles       = ["roles/cloudfunctions.developer", "roles/logging.logWriter", "roles/monitoring.editor", "roles/run.admin", "roles/run.serviceAgent", "roles/secretmanager.secretAccessor", "roles/secretmanager.viewer"]
         description = "POC for synthetic monitoring"
+        resource_roles = [
+          { resource = "registries-synthetic-monitor"
+            roles    = ["roles/storage.legacyBucketReader", "roles/storage.objectAdmin"]
+            resource_type = "storage_bucket"
+          }
+        ]
       }
     }
   }
@@ -754,6 +810,12 @@ projects = {
       ppr-dev-sa = {
         roles       = ["roles/containerregistry.ServiceAgent", "roles/iam.serviceAccountTokenCreator", "roles/pubsub.admin", "roles/pubsub.serviceAgent", "roles/storage.admin", "roles/storage.objectCreator"]
         description = "Default service account for ppr cloud services"
+        resource_roles = [
+          { resource = "eogruh-dev_cloudbuild"
+            roles    = ["roles/storage.legacyBucketWriter"]
+            resource_type = "storage_bucket"
+          }
+        ]
       }
     }
   }

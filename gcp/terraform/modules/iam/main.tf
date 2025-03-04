@@ -76,6 +76,7 @@ resource "google_project_iam_custom_role" "custom_roles" {
 resource "google_cloud_run_service_iam_member" "resource_iam_members" {
   for_each = { for combo in local.resource_iam_bindings :
     "${combo.sa_name}-${combo.role}-${combo.resource}" => combo
+    if combo.resource_type == "cloud_run"
   }
 
   service = each.value.resource

@@ -4,7 +4,7 @@ variable "project_id" {
 
 variable "service_accounts" {
   type = map(object({
-    roles        = list(string)
+    roles        = optional(list(string), [])
     external_roles = optional(list(object({
       roles        = list(string)
       project_id = string

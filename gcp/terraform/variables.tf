@@ -14,7 +14,7 @@ variable "projects" {
     project_id       = string
     env              = string
     service_accounts = optional(map(object({
-      roles        = list(string)
+      roles        = optional(list(string), [])
       external_roles = optional(list(object({
         roles        = list(string)
         project_id = string
