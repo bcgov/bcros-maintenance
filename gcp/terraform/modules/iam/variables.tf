@@ -6,8 +6,13 @@ variable "service_accounts" {
   type = map(object({
     roles        = list(string)
     external_roles = optional(list(object({
-      role        = string
+      roles        = list(string)
       project_id = string
+    })), [])
+    resource_roles = optional(list(object({
+      resource = string
+      roles    = list(string)
+      resource_type = string
     })), [])
     description  = optional(string, "Managed by Terraform")
   }))

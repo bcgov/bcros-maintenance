@@ -66,6 +66,13 @@ projects = {
         description = "Service Account for running queue services"
       }
     }
+    # resource_roles = [
+    #   {
+    #     resource = "docs_ppr_prod"
+    #     roles    = ["roles/storage.admin"]
+    #     resource_type = "storage_bucket"
+    #   }
+    # ]
   }
   "connect-prod" = {
     project_id = "gtksf3-prod"
@@ -229,7 +236,7 @@ projects = {
         roles       = ["roles/compute.admin"]
         description = "Service account used by WIF POC"
         external_roles = [{
-          role        = "roles/compute.imageUser"
+          roles        = ["roles/compute.imageUser"]
           project_id  = "k973yf-dev"
         }]
       }
@@ -295,7 +302,7 @@ projects = {
         roles       = ["roles/apigee.developerAdmin", "roles/bigquery.dataEditor", "roles/bigquery.jobUser", "roles/iam.serviceAccountTokenCreator", "roles/logging.admin", "roles/storage.admin"]
         description = "Service account for the BC Registries Apigee prod environment."
         external_roles = [{
-          role        = "roles/cloudfunctions.invoker"
+          roles        = ["roles/cloudfunctions.invoker"]
           project_id  = "mvnjri-prod"
         }]
       }
@@ -470,7 +477,7 @@ projects = {
         roles       = ["roles/compute.admin"]
         description = "Service account used by WIF POC"
         external_roles = [{
-          role        = "roles/compute.imageUser"
+          roles        = ["roles/compute.imageUser"]
           project_id  = "k973yf-dev"
         }]
       }
@@ -630,19 +637,11 @@ projects = {
         roles       = ["roles/iam.serviceAccountTokenCreator", "roles/pubsub.publisher", "roles/pubsub.subscriber"]
         description = "Service Account for handling pay pusub subscriptions"
         external_roles = [{
-          role        = "roles/iam.serviceAccountTokenCreator"
+          roles       = ["roles/iam.serviceAccountTokenCreator", "roles/run.invoker"]
           project_id  = "bcrbk9-dev"
         },
         {
-          role        = "roles/run.invoker"
-          project_id  = "bcrbk9-dev"
-        },
-        {
-          role        = "roles/run.invoker"
-          project_id  = "a083gt-dev"
-        },
-        {
-          role        = "roles/iam.serviceAccountTokenCreator"
+          roles        = ["roles/iam.serviceAccountTokenCreator", "roles/run.invoker"]
           project_id  = "a083gt-dev"
         }
       ]
