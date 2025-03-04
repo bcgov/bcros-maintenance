@@ -226,6 +226,11 @@ projects = {
               resource = "projects/eogruh-prod/locations/northamerica-northeast1/services/gotenberg"
               roles    = ["roles/run.invoker"]
               resource_type = "cloud_run"
+            },
+            {
+              resource = "projects/c4hnrd-prod/topics/doc-api-app-create-record"
+              roles    = ["roles/pubsub.publisher"]
+              resource_type = "pubsub_topic"
             }
           ]
       },
@@ -612,6 +617,11 @@ projects = {
               resource = "projects/eogruh-test/locations/northamerica-northeast1/services/gotenberg"
               roles    = ["roles/run.invoker"]
               resource_type = "cloud_run"
+            },
+            {
+              resource = "projects/c4hnrd-test/topics/doc-api-app-create-record"
+              roles    = ["roles/pubsub.publisher"]
+              resource_type = "pubsub_topic"
             }
           ]
       }
@@ -938,6 +948,10 @@ projects = {
           { resource = "eogruh-dev_cloudbuild"
             roles    = ["roles/storage.legacyBucketWriter"]
             resource_type = "storage_bucket"
+          },
+          { resource = "projects/c4hnrd-dev/topics/doc-api-app-create-record"
+            roles    = ["roles/pubsub.publisher"]
+            resource_type = "pubsub_topic"
           }
         ]
       }
