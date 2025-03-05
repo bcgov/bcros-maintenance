@@ -10,7 +10,21 @@ terraform {
 provider "google" {
   project = null
   region  = var.region
-  credentials = var.GOOGLE_CREDENTIALS
+}
+
+variable "TFC_GCP_PROVIDER_AUTH" {
+  description = "Terraform Cloud will use dynamic credentials to authenticate to GCP"
+  type        = string
+}
+
+variable "TFC_GCP_RUN_SERVICE_ACCOUNT_EMAIL" {
+  description = "The service account email address that Terraform Cloud will use to authenticate to Google Cloud"
+  type        = string
+}
+
+variable "TFC_GCP_WORKLOAD_PROVIDER_NAME" {
+  description = "The canonical name of the workload identity provider"
+  type        = string
 }
 
 locals {
