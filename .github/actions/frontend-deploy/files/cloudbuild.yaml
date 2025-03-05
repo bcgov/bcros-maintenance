@@ -108,8 +108,18 @@ steps:
     [[ -z "$DEPLOY_PROJECT_ID" ]] && { echo "Error: DEPLOY_PROJECT_ID is empty"; exit 1; }
 
     # Simplified firebase config update
-    jq --arg site "$APP_HOST_NAME" '.hosting.site = $site' "firebase-${_DEPLOYMENT_ENV}.json" > "firebase-${_DEPLOYMENT_ENV}.tmp.json" &&
-    mv "firebase-${_DEPLOYMENT_ENV}.tmp.json" "firebase-${_DEPLOYMENT_ENV}.json"
+    # Firebase config update with fallback creation
+    if [ -f "firebase-${_DEPLOYMENT_ENV}.json" ]; then
+      # Update existing configuration
+      jq --arg site "$APP_HOST_NAME" '.hosting.site = $site' "firebase-${_DEPLOYMENT_ENV}.json" > "firebase-${_DEPLOYMENT_ENV}.tmp.json" &&
+      mv "firebase-${_DEPLOYMENT_ENV}.tmp.json" "firebase-${_DEPLOYMENT_ENV}.json"
+    else
+      # Create new configuration based on another environment
+      echo "Firebase config for ${_DEPLOYMENT_ENV} not found, creating from sandbox configuration"
+      cp firebase-sandbox.json "firebase-${_DEPLOYMENT_ENV}.json"
+      jq --arg site "$APP_HOST_NAME" '.hosting.site = $site' "firebase-${_DEPLOYMENT_ENV}.json" > "firebase-${_DEPLOYMENT_ENV}.tmp.json" &&
+      mv "firebase-${_DEPLOYMENT_ENV}.tmp.json" "firebase-${_DEPLOYMENT_ENV}.json"
+    fi
 
     # Write project details efficiently
     echo "$DEPLOY_PROJECT_ID" > /workspace/project_id.txt
