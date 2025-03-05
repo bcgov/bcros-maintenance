@@ -107,7 +107,7 @@ steps:
     [[ -z "$APP_HOST_NAME" ]] && { echo "Error: APP_HOST_NAME is empty"; exit 1; }
     [[ -z "$DEPLOY_PROJECT_ID" ]] && { echo "Error: DEPLOY_PROJECT_ID is empty"; exit 1; }
 
-    # Simplified firebase config update
+    # Simplified firebase config update - added fallback
     # Firebase config update with fallback creation
     if [ -f "firebase-${_DEPLOYMENT_ENV}.json" ]; then
       # Update existing configuration
