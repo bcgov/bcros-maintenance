@@ -14,7 +14,9 @@ Before updating Terraform configuration, ensure you have the following:
 2. Create a New Branch
 3. Modify Terraform Configuration in `terraform.tfvars` file
 
-- `terraform.tfvars` is divided into 3 sections:
+- There are three variable files that can be modified:
+
+`project_account_bindings.auto.tfvars`
 
   1) projects -  a list of GCP projects, where each project consists of:
 
@@ -40,7 +42,10 @@ Before updating Terraform configuration, ensure you have the following:
       permissions           # List of permissions assigned to the role
       description           # Description of the custom role
 
+For example, if you want to grant sa-pubsub service account in Connect Dev an invoker role for Cloud Run in Business Dev:
+![invoker-grant](./images/cloud-run-invoker-role.png)
 
+`environment_custom_roles.auto.tfvars`
 
   2) environments - a list of environments with theier corresponding environment_custom_roles
 
@@ -49,6 +54,8 @@ Before updating Terraform configuration, ensure you have the following:
       permissions              # List of permissions assigned to the role
       description              # Description of the custom role
 
+`global_custom_roles.auto.tfvars`
+
   3) global_custom_roles -  a list of global custom roles shared across all projects
 
     title                 # Name of the custom IAM role
@@ -56,4 +63,4 @@ Before updating Terraform configuration, ensure you have the following:
     description           # Description of the custom role
 4. Merging the new branch into main will trigger 'terraform plan'
 5. Output of terraform plan can be reviewed in https://app.terraform.io/app/BCRegistry/workspaces/gcp-iam/runs
-6. If no errors are present, and if Terraform state changes are as expected, 'terraform apply' can be executed for the run in the UI.
+6. If no errors are present, and if Terraform state changes are as expected, 'terraform apply' can be executed for the run in the UI (will either need permissions to access or ask SRE team to review)
